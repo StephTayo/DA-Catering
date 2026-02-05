@@ -44,28 +44,36 @@ const buildWhatsAppMessage = (items, context) => {
   return `${intro}\n${lines.join("\n")}`;
 };
 
-const updateOrderSummary = () => {
-  const container = document.querySelector("[data-order-summary]");
-  if (!container) return;
-
-  const items = getStoredOrder();
+const renderBookingOrderSummary = (items, container) => {
   container.innerHTML = "";
 
   if (!items.length) {
-    container.innerHTML = "<p>Your selected items will appear here. Add dishes from the menu to build your order.</p>";
+    container.innerHTML = '<p class="booking-empty">Your order is empty. <a href="index.html#menu" class="booking-link">Browse our menu</a> to add items.</p>';
     return;
   }
 
   let subtotal = 0;
-  items.forEach((item) => {
+  items.forEach((item, index) => {
     const price = Number(item.price);
-    subtotal += price * item.qty;
+    const lineTotal = price * item.qty;
+    subtotal += lineTotal;
 
     const row = document.createElement("div");
     row.className = "order-item";
     row.innerHTML = `
-      <span>${item.name} x${item.qty}</span>
-      <span>${formatCurrency(price * item.qty)}</span>
+      <div class="order-item-info">
+        <div class="order-item-title">${item.name}</div>
+        ${item.notes ? `<div class="order-item-notes">Notes: ${item.notes}</div>` : ""}
+      </div>
+      <div class="order-item-actions">
+        <div class="order-qty">
+          <button type="button" class="order-qty-btn" data-qty-action="minus" data-idx="${index}">-</button>
+          <span class="order-qty-value">${item.qty}</span>
+          <button type="button" class="order-qty-btn" data-qty-action="plus" data-idx="${index}">+</button>
+        </div>
+        <div class="order-item-price">${formatCurrency(lineTotal)}</div>
+        <button type="button" class="order-remove" data-qty-action="remove" data-idx="${index}">Remove</button>
+      </div>
     `;
     container.appendChild(row);
   });
@@ -74,6 +82,44 @@ const updateOrderSummary = () => {
   total.className = "order-item order-total";
   total.innerHTML = `<span>Estimated subtotal</span><span>${formatCurrency(subtotal)}</span>`;
   container.appendChild(total);
+};
+
+const updateOrderSummary = () => {
+  const container = document.querySelector("[data-order-summary]");
+  if (!container) return;
+
+  const items = getStoredOrder();
+  const isBooking = document.body.classList.contains("booking-page");
+
+  if (isBooking) {
+    renderBookingOrderSummary(items, container);
+  } else {
+    container.innerHTML = "";
+
+    if (!items.length) {
+      container.innerHTML = "<p>Your selected items will appear here. Add dishes from the menu to build your order.</p>";
+      return;
+    }
+
+    let subtotal = 0;
+    items.forEach((item) => {
+      const price = Number(item.price);
+      subtotal += price * item.qty;
+
+      const row = document.createElement("div");
+      row.className = "order-item";
+      row.innerHTML = `
+        <span>${item.name} x${item.qty}</span>
+        <span>${formatCurrency(price * item.qty)}</span>
+      `;
+      container.appendChild(row);
+    });
+
+    const total = document.createElement("div");
+    total.className = "order-item order-total";
+    total.innerHTML = `<span>Estimated subtotal</span><span>${formatCurrency(subtotal)}</span>`;
+    container.appendChild(total);
+  }
 
   const whatsappLink = document.querySelector("[data-order-whatsapp]");
   if (whatsappLink) {
@@ -167,6 +213,38 @@ const initOrderSummary = () => {
   updateOrderSummary();
 };
 
+const initBookingOrderControls = () => {
+  const page = document.querySelector(".booking-page");
+  if (!page) return;
+
+  const container = page.querySelector("[data-order-summary]");
+  if (!container) return;
+
+  container.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-qty-action]");
+    if (!button) return;
+
+    const action = button.getAttribute("data-qty-action");
+    const index = Number(button.getAttribute("data-idx"));
+    if (Number.isNaN(index)) return;
+
+    const items = getStoredOrder();
+    const item = items[index];
+    if (!item) return;
+
+    if (action === "plus") {
+      item.qty += 1;
+    } else if (action === "minus") {
+      item.qty = Math.max(1, item.qty - 1);
+    } else if (action === "remove") {
+      items.splice(index, 1);
+    }
+
+    saveOrder(items);
+    updateOrderSummary();
+  });
+};
+
 const initDeliveryToggle = () => {
   const deliverySelect = document.querySelector("[data-delivery-toggle]");
   const deliveryFields = document.querySelectorAll("[data-delivery-field]");
@@ -197,12 +275,97 @@ const initDeliveryToggle = () => {
   }
 };
 
+const initHeroIsoAnimations = () => {
+  const cards = document.querySelectorAll(".hero-iso__image-card");
+  if (!cards.length || !("IntersectionObserver" in window)) return;
+
+  cards.forEach((card) => card.classList.add("is-hidden"));
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.remove("is-hidden");
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+  );
+
+  cards.forEach((card) => observer.observe(card));
+};
+
+const initBookingTabs = () => {
+  const page = document.querySelector(".booking-page");
+  if (!page) return;
+
+  const buttons = page.querySelectorAll(".tab-btn");
+  const contents = page.querySelectorAll(".tab-content");
+  if (!buttons.length || !contents.length) return;
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const tabId = button.getAttribute("data-tab");
+
+      buttons.forEach((btn) => btn.classList.remove("active"));
+      contents.forEach((content) => content.classList.remove("active"));
+
+      button.classList.add("active");
+      const target = page.querySelector(`#${tabId}`);
+      if (target) {
+        target.classList.add("active");
+      }
+    });
+  });
+};
+
+const initBookingForms = () => {
+  const page = document.querySelector(".booking-page");
+  if (!page) return;
+
+  const cateringForm = page.querySelector("#cateringForm");
+  if (cateringForm) {
+    cateringForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Booking request submitted! We'll contact you within 2 hours.");
+    });
+  }
+
+  const checkoutForm = page.querySelector("#checkoutForm");
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Order placed successfully! Check your email for confirmation.");
+    });
+  }
+};
+
+const initBookingSmoothScroll = () => {
+  const page = document.querySelector(".booking-page");
+  if (!page) return;
+
+  page.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener("click", (e) => {
+      const target = page.querySelector(anchor.getAttribute("href"));
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: "smooth" });
+    });
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initMenuActions();
   initFilters();
   initMobileMenu();
   initOrderSummary();
   initDeliveryToggle();
+  initHeroIsoAnimations();
+  initBookingOrderControls();
+  initBookingTabs();
+  initBookingForms();
+  initBookingSmoothScroll();
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {
