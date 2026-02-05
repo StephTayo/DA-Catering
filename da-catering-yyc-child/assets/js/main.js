@@ -557,6 +557,69 @@ const initSmoothiesDeck = () => {
   updateActive();
 };
 
+const initFaqAccordion = () => {
+  const items = Array.from(document.querySelectorAll(".faq-item"));
+  if (!items.length) return;
+
+  items.forEach((item) => {
+    item.addEventListener("toggle", () => {
+      if (!item.open) return;
+      items.forEach((other) => {
+        if (other !== item) {
+          other.removeAttribute("open");
+        }
+      });
+    });
+  });
+};
+
+const initCountUp = () => {
+  const targets = Array.from(document.querySelectorAll("[data-count]"));
+  if (!targets.length) return;
+
+  const animate = (el) => {
+    const target = Number(el.getAttribute("data-count") || 0);
+    const suffix = el.getAttribute("data-suffix") || "";
+    const duration = 1400;
+    const startTime = performance.now();
+
+    const step = (now) => {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const value = Math.floor(progress * target);
+      el.textContent = `${value}${suffix}`;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      }
+    };
+
+    requestAnimationFrame(step);
+  };
+
+  const observer = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          animate(entry.target);
+          obs.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.6 }
+  );
+
+  targets.forEach((el) => observer.observe(el));
+};
+
+const initWhatsappWidget = () => {
+  const widget = document.querySelector("[data-whatsapp-widget]");
+  const closeBtn = document.querySelector("[data-whatsapp-close]");
+  if (!widget || !closeBtn) return;
+
+  closeBtn.addEventListener("click", () => {
+    widget.style.display = "none";
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initMenuActions();
   initFilters();
@@ -571,6 +634,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initBookingSmoothScroll();
   initBookingOrderControls();
   initSmoothiesDeck();
+  initFaqAccordion();
+  initCountUp();
+  initWhatsappWidget();
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {

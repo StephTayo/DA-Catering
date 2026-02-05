@@ -24,21 +24,26 @@
           Book Catering Now
           <span aria-hidden="true">→</span>
         </a>
-        <a class="hero-iso__btn hero-iso__btn--secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener">
-          WhatsApp Order
+        <a class="hero-iso__btn hero-iso__btn--secondary" href="<?php echo esc_url(home_url('/#menu')); ?>">
+          View Menu
         </a>
+      </div>
+      <div class="hero-iso__trust">
+        <span>Trusted by 500+ Calgary events</span>
+        <span aria-hidden="true">•</span>
+        <span>4.9/5 average rating</span>
       </div>
       <div class="hero-iso__stats">
         <div class="hero-iso__stat">
-          <div class="hero-iso__stat-number">100+</div>
+          <div class="hero-iso__stat-number" data-count="100" data-suffix="+">100+</div>
           <div class="hero-iso__stat-label">Dishes</div>
         </div>
         <div class="hero-iso__stat">
-          <div class="hero-iso__stat-number">500+</div>
+          <div class="hero-iso__stat-number" data-count="500" data-suffix="+">500+</div>
           <div class="hero-iso__stat-label">Happy Clients</div>
         </div>
         <div class="hero-iso__stat">
-          <div class="hero-iso__stat-number">5<span class="hero-iso__star" aria-hidden="true">★</span></div>
+          <div class="hero-iso__stat-number" data-count="5" data-suffix="★">5<span class="hero-iso__star" aria-hidden="true">★</span></div>
           <div class="hero-iso__stat-label">Rating</div>
         </div>
       </div>
@@ -47,7 +52,7 @@
     <div class="hero-iso__media">
       <div class="hero-iso__image-grid">
         <div class="hero-iso__image-card">
-          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=80" alt="African dish with colorful garnish" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=80" alt="African dish with colorful garnish" loading="eager" fetchpriority="high">
         </div>
         <div class="hero-iso__image-card hero-iso__image-card--offset-top">
           <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80" alt="Refreshing beverages and juices" loading="lazy">
@@ -99,6 +104,11 @@
   <div class="container">
     <h2 class="section-title">Menu / Shop</h2>
     <p class="section-subtitle">What we have on our menu today.</p>
+    <div class="menu-quick-steps">
+      <span class="menu-quick-step">1. Pick dishes</span>
+      <span class="menu-quick-step">2. Choose delivery or pickup</span>
+      <span class="menu-quick-step">3. Confirm in 60 seconds</span>
+    </div>
     <div class="hero-actions" style="margin-bottom: 18px;">
       <a class="btn btn-primary" href="<?php echo esc_url(home_url('/shop')); ?>">Go to Shop &amp; Checkout</a>
       <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/cart')); ?>">View Cart</a>
@@ -663,6 +673,36 @@
     <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1600&q=80" alt="Fresh juices and smoothies" loading="lazy">
   </div>
 </section>
+<section class="section event-types">
+  <div class="container">
+    <div class="event-types-head">
+      <h2 class="section-title">Events We Cater</h2>
+      <p class="section-subtitle">Corporate, family, and community gatherings across Calgary and surrounding areas.</p>
+    </div>
+    <div class="event-types-grid">
+      <div class="event-type-card">
+        <span class="event-type-icon" aria-hidden="true">💼</span>
+        <h3>Corporate Lunches</h3>
+        <p>Executive lunches, office celebrations, and client meetings.</p>
+      </div>
+      <div class="event-type-card">
+        <span class="event-type-icon" aria-hidden="true">🎉</span>
+        <h3>Birthdays &amp; Milestones</h3>
+        <p>Family-friendly spreads with crowd-pleasing favorites.</p>
+      </div>
+      <div class="event-type-card">
+        <span class="event-type-icon" aria-hidden="true">💍</span>
+        <h3>Weddings</h3>
+        <p>Elegant service, custom menus, and cultural favorites.</p>
+      </div>
+      <div class="event-type-card">
+        <span class="event-type-icon" aria-hidden="true">🤝</span>
+        <h3>Community Gatherings</h3>
+        <p>Faith events, cultural festivals, and community dinners.</p>
+      </div>
+    </div>
+  </div>
+</section>
 <section id="video" class="section video-section">
   <div class="container">
     <h2 class="section-title">Food in Motion</h2>
@@ -707,33 +747,58 @@
     <p class="section-subtitle">Honest feedback from Calgary families, corporate teams, and event planners.</p>
     <div class="testimonial-grid" data-drag-track>
       <div class="testimonial-card">
-        <span>★★★★★</span>
-        <strong>Nadia M. - Downtown</strong>
+        <div class="testimonial-head">
+          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=140&q=80" alt="Smiling customer" loading="lazy">
+          <div>
+            <strong>Nadia M.</strong>
+            <span>Corporate lunch • Downtown</span>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★★</div>
         <p>The jollof rice and suya were a hit at our office lunch. Delivery arrived right on time and was still hot.</p>
       </div>
       <div class="testimonial-card">
-        <span>★★★★★</span>
-        <strong>Kola A. - Beltline</strong>
+        <div class="testimonial-head">
+          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=140&q=80" alt="Happy customer" loading="lazy">
+          <div>
+            <strong>Kola A.</strong>
+            <span>Family dinner • Beltline</span>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★★</div>
         <p>We ordered egusi with pounded yam for a family dinner. The flavors tasted like home and portions were generous.</p>
       </div>
       <div class="testimonial-card">
-        <span>★★★★☆</span>
-        <strong>Stephanie R. - Sage Hill</strong>
+        <div class="testimonial-head">
+          <img src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=140&q=80" alt="Event planner" loading="lazy">
+          <div>
+            <strong>Stephanie R.</strong>
+            <span>Graduation • Sage Hill</span>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★☆</div>
         <p>Booking for our graduation celebration was simple. They were responsive on WhatsApp and handled dietary notes well.</p>
       </div>
       <div class="testimonial-card">
-        <span>★★★★★</span>
-        <strong>Yaw K. - Airdrie</strong>
-        <p>The catering trays were perfect for our memorial service. Everything was packed neatly and labeled.</p>
-      </div>
-      <div class="testimonial-card">
-        <span>★★★★★</span>
-        <strong>Fatima L. - Tuscany</strong>
+        <div class="testimonial-head">
+          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=140&q=80" alt="Customer testimonial" loading="lazy">
+          <div>
+            <strong>Fatima L.</strong>
+            <span>Family celebration • Tuscany</span>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★★</div>
         <p>Fresh smoothies and zobo were refreshing. Loved the variety of menu options for vegetarians.</p>
       </div>
       <div class="testimonial-card">
-        <span>★★★★☆</span>
-        <strong>Chris P. - University District</strong>
+        <div class="testimonial-head">
+          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=140&q=80" alt="Customer review" loading="lazy">
+          <div>
+            <strong>Chris P.</strong>
+            <span>Birthday • University District</span>
+          </div>
+        </div>
+        <div class="testimonial-rating">★★★★☆</div>
         <p>Great value for the family tray and clear pickup instructions. We will order again for birthdays.</p>
       </div>
     </div>
@@ -848,3 +913,13 @@
     </div>
   </div>
 </section>
+
+<div class="whatsapp-concierge" data-whatsapp-widget>
+  <button class="whatsapp-concierge__close" type="button" aria-label="Close WhatsApp concierge" data-whatsapp-close>×</button>
+  <div class="whatsapp-concierge__content">
+    <span class="whatsapp-concierge__badge">Need help fast?</span>
+    <h4>Chat with our catering concierge</h4>
+    <p>Tell us your guest count and event date. We reply in minutes.</p>
+    <a class="btn btn-primary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I%20need%20help%20with%20my%20order.%20My%20event%20date%20is%20____%20and%20guest%20count%20is%20____." target="_blank" rel="noopener">Message on WhatsApp</a>
+  </div>
+</div>
