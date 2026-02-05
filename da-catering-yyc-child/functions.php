@@ -38,6 +38,22 @@ function da_catering_yyc_child_enqueue_scripts() {
 }
 add_action('wp_enqueue_scripts', 'da_catering_yyc_child_enqueue_scripts', 20);
 
+function da_catering_yyc_child_allow_logo_uploads($mimes) {
+    $mimes['svg'] = 'image/svg+xml';
+    $mimes['webp'] = 'image/webp';
+    return $mimes;
+}
+add_filter('upload_mimes', 'da_catering_yyc_child_allow_logo_uploads');
+
+function da_catering_yyc_child_fix_svg_display($data, $file, $filename, $mimes) {
+    if (strpos((string) $filename, '.svg') !== false) {
+        $data['ext'] = 'svg';
+        $data['type'] = 'image/svg+xml';
+    }
+    return $data;
+}
+add_filter('wp_check_filetype_and_ext', 'da_catering_yyc_child_fix_svg_display', 10, 4);
+
 function da_catering_yyc_child_redirect_shop() {
     if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
         return;

@@ -335,6 +335,25 @@ const initMenuCardFocus = () => {
   if (!cards.length) return;
 
   let ticking = false;
+  const dotsContainer = document.querySelector("[data-menu-dots]");
+
+  const getVisibleCards = () => cards.filter((card) => card.style.display !== "none");
+
+  const buildDots = () => {
+    if (!dotsContainer) return;
+    const visibleCards = getVisibleCards();
+    dotsContainer.innerHTML = "";
+    visibleCards.forEach((card, index) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "menu-dot";
+      dot.setAttribute("aria-label", `Go to menu item ${index + 1}`);
+      dot.addEventListener("click", () => {
+        card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      });
+      dotsContainer.appendChild(dot);
+    });
+  };
 
   const updateActiveCard = () => {
     const trackRect = menuTrack.getBoundingClientRect();
@@ -358,6 +377,14 @@ const initMenuCardFocus = () => {
     if (closestCard) {
       closestCard.classList.add("is-active");
     }
+
+    if (dotsContainer) {
+      const visibleCards = getVisibleCards();
+      const activeIndex = visibleCards.indexOf(closestCard);
+      dotsContainer.querySelectorAll(".menu-dot").forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === activeIndex);
+      });
+    }
   };
 
   const onScroll = () => {
@@ -376,10 +403,14 @@ const initMenuCardFocus = () => {
   const filterButtons = document.querySelectorAll("#menu [data-filter]");
   filterButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      setTimeout(updateActiveCard, 0);
+      setTimeout(() => {
+        buildDots();
+        updateActiveCard();
+      }, 0);
     });
   });
 
+  buildDots();
   updateActiveCard();
 };
 
@@ -474,6 +505,58 @@ const initBookingOrderControls = () => {
   });
 };
 
+const initSmoothiesDeck = () => {
+  const deck = document.querySelector("[data-smoothies-deck]");
+  if (!deck) return;
+
+  const cards = Array.from(deck.querySelectorAll("[data-smoothie-card]"));
+  if (!cards.length) return;
+
+  const dotsContainer = document.querySelector("[data-smoothies-dots]");
+  let currentIndex = 0;
+
+  const updateActive = () => {
+    cards.forEach((card, idx) => {
+      card.classList.toggle("is-active", idx === currentIndex);
+    });
+
+    if (dotsContainer) {
+      dotsContainer.querySelectorAll(".smoothies-dot").forEach((dot, idx) => {
+        dot.classList.toggle("active", idx === currentIndex);
+      });
+    }
+  };
+
+  const nextCard = () => {
+    currentIndex = (currentIndex + 1) % cards.length;
+    updateActive();
+  };
+
+  cards.forEach((card) => {
+    card.addEventListener("click", () => {
+      nextCard();
+    });
+  });
+
+  if (dotsContainer) {
+    dotsContainer.innerHTML = "";
+    cards.forEach((card, idx) => {
+      const dot = document.createElement("button");
+      dot.type = "button";
+      dot.className = "smoothies-dot";
+      dot.setAttribute("aria-label", `Show smoothie ${idx + 1}`);
+      dot.addEventListener("click", (event) => {
+        event.stopPropagation();
+        currentIndex = idx;
+        updateActive();
+      });
+      dotsContainer.appendChild(dot);
+    });
+  }
+
+  updateActive();
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initMenuActions();
   initFilters();
@@ -487,6 +570,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initBookingForms();
   initBookingSmoothScroll();
   initBookingOrderControls();
+  initSmoothiesDeck();
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {

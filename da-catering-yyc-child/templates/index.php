@@ -1,5 +1,11 @@
 ﻿
 <section id="home" class="hero-iso">
+  <div class="hero-iso__video" aria-hidden="true">
+    <video autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1400&q=80">
+      <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero.mp4'); ?>" type="video/mp4">
+    </video>
+  </div>
+  <div class="hero-iso__scrim" aria-hidden="true"></div>
   <div class="container hero-iso__container">
     <div class="hero-iso__content">
       <span class="hero-iso__badge">
@@ -415,6 +421,7 @@
       </div>
       <button class="carousel-btn next" type="button" aria-label="Scroll menu right" data-carousel-next>&rsaquo;</button>
     </div>
+    <div class="menu-pagination" data-menu-dots></div>
   </div>
 </section>
 
@@ -558,80 +565,99 @@
       <p><strong>You</strong> pick the flavor; we handle the freshness.</p>
     </div>
 
-    <div class="smoothies-list">
-      <article class="drink-card">
+    <div class="smoothies-deck" data-smoothies-deck>
+      <article class="drink-card is-active" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Tropical mango smoothie - DA Catering YYC" loading="lazy">
-        <h3>Tropical Mango Smoothie</h3>
-        <p>Mango, banana, and coconut.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$6-$9</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Tropical Mango Smoothie</h3>
+          <p>Mango, banana, and coconut.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$6-$9</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Pineapple ginger smoothie - DA Catering YYC" loading="lazy">
-        <h3>Pineapple Ginger Zing</h3>
-        <p>Pineapple, ginger, lime.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$6-$9</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Pineapple Ginger Zing</h3>
+          <p>Pineapple, ginger, lime.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$6-$9</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Watermelon cooler drink - DA Catering YYC" loading="lazy">
-        <h3>Watermelon Cooler</h3>
-        <p>Watermelon, mint, lime.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$6-$9</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Watermelon Cooler</h3>
+          <p>Watermelon, mint, lime.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$6-$9</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=1200&q=80" alt="Orange carrot boost juice - DA Catering YYC" loading="lazy">
-        <h3>Orange Carrot Boost</h3>
-        <p>Orange, carrot, turmeric.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$6-$9</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Orange Carrot Boost</h3>
+          <p>Orange, carrot, turmeric.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$6-$9</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80" alt="Berry blast smoothie - DA Catering YYC" loading="lazy">
-        <h3>Berry Blast</h3>
-        <p>Mixed berries, yogurt, honey.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$6-$9</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Berry Blast</h3>
+          <p>Mixed berries, yogurt, honey.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$6-$9</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Zobo hibiscus drink - DA Catering YYC" loading="lazy">
-        <h3>Zobo / Hibiscus Drink</h3>
-        <p>Traditional Nigerian hibiscus infusion.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$5-$8</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Zobo / Hibiscus Drink</h3>
+          <p>Traditional Nigerian hibiscus infusion.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$5-$8</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1507914372368-b2b085b925a1?auto=format&fit=crop&w=1200&q=80" alt="Kunu tigernut drink - DA Catering YYC" loading="lazy">
-        <h3>Kunu / Tigernut Drink</h3>
-        <p>Creamy tigernut beverage with spice.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$5-$8</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Kunu / Tigernut Drink</h3>
+          <p>Creamy tigernut beverage with spice.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$5-$8</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Chapman non-alcoholic cocktail - DA Catering YYC" loading="lazy">
-        <h3>Chapman</h3>
-        <p>Nigerian non-alcoholic cocktail with citrus.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$5-$8</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Chapman</h3>
+          <p>Nigerian non-alcoholic cocktail with citrus.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$5-$8</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
-      <article class="drink-card">
+      <article class="drink-card" data-smoothie-card>
         <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Sobolo Ghanaian hibiscus drink - DA Catering YYC" loading="lazy">
-        <h3>Sobolo</h3>
-        <p>Ghanaian hibiscus drink with pineapple notes.</p>
-        <p>Sizes: Small, Medium, Large</p>
-        <strong>$5-$8</strong>
-        <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        <div class="drink-details">
+          <h3>Sobolo</h3>
+          <p>Ghanaian hibiscus drink with pineapple notes.</p>
+          <p>Sizes: Small, Medium, Large</p>
+          <strong>$5-$8</strong>
+          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+        </div>
       </article>
     </div>
+    <div class="smoothies-dots" data-smoothies-dots></div>
   </div>
   <div class="smoothies-sticky-image">
     <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1600&q=80" alt="Fresh juices and smoothies" loading="lazy">

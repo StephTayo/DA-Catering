@@ -460,6 +460,27 @@ Text Domain: da-catering-yyc-child
   min-height: 100vh;
   padding: 80px 20px 60px;
   background: linear-gradient(135deg, #fef8f5 0%, #fff5ed 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-iso__video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-iso__video video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.hero-iso__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 245, 237, 0.82);
+  z-index: 1;
 }
 
 .hero-iso__container {
@@ -469,6 +490,8 @@ Text Domain: da-catering-yyc-child
   grid-template-columns: 1fr 1fr;
   gap: 60px;
   align-items: center;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-iso__content {
@@ -776,11 +799,12 @@ Text Domain: da-catering-yyc-child
     left: auto;
     height: 100vh;
     width: 280px;
-    padding: 100px 32px 32px;
+    padding: 160px 32px 32px;
     background: #ffffff;
     box-shadow: -12px 0 30px rgba(0, 0, 0, 0.12);
     gap: 22px;
-    align-items: flex-start;
+    align-items: flex-end;
+    text-align: right;
     z-index: 1100;
   }
 
@@ -788,11 +812,12 @@ Text Domain: da-catering-yyc-child
     color: var(--color-primary);
     font-size: 1rem;
     width: 100%;
+    text-align: right;
   }
 
   .header-actions.mobile-open {
     position: fixed;
-    top: 72px;
+    top: 96px;
     right: 24px;
     background: transparent;
     padding: 0;
@@ -802,16 +827,23 @@ Text Domain: da-catering-yyc-child
   }
 
   .header-actions.mobile-open .btn {
-    width: 130px;
-    padding: 8px 12px;
-    font-size: 0.8rem;
-    justify-content: center;
-  }
+      width: 120px;
+      padding: 6px 10px;
+      font-size: 0.75rem;
+      white-space: nowrap;
+      justify-content: center;
+    }
 
-  .mobile-toggle {
-    z-index: 1102;
+  .header-actions.mobile-open .btn-primary {
+      background: #d35400;
+      border-color: #d35400;
+      color: #fff;
+    }
+
+    .mobile-toggle {
+      z-index: 1102;
+    }
   }
-}
 
 .ordering-steps .section-title,
 .ordering-steps .section-subtitle,
@@ -997,6 +1029,34 @@ Text Domain: da-catering-yyc-child
   margin: 0 auto;
 }
 
+/* Featured African Delicacies - single horizontal row */
+.featured-grid {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 6px 56px 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  cursor: grab;
+}
+
+.featured-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.featured-grid.dragging {
+  cursor: grabbing;
+}
+
+.featured-card {
+  min-width: 260px;
+  max-width: 300px;
+  scroll-snap-align: start;
+}
+
 #menu .menu-filters,
 #menu .hero-actions {
   justify-content: center;
@@ -1009,32 +1069,100 @@ Text Domain: da-catering-yyc-child
 }
 
 #menu .product-grid {
+  display: flex;
   gap: 0;
-  padding: 20px 40px 30px;
+  padding: 24px 40px 40px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  cursor: grab;
 }
 
 #menu .product-card {
   min-width: 360px;
-  max-width: 440px;
-}
-
-#menu .product-card:not(:first-child) {
-  margin-left: -40px;
-}
-
-#menu .product-card {
+  max-width: 400px;
+  margin: 0 -40px;
   position: relative;
   z-index: 1;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transform: scale(0.9);
+  opacity: 0.7;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  scroll-snap-align: center;
+}
+
+#menu .product-card.is-active {
+  transform: scale(1.1);
+  opacity: 1;
+  z-index: 3;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
 }
 
 #menu .product-card:hover {
-  transform: translateY(-6px);
-  z-index: 2;
+  transform: scale(1.03);
+}
+
+#menu .product-body {
+  text-align: center;
+}
+
+#menu .product-body::before {
+  content: "✦";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #c4a747, #d4af37);
+  color: #fff;
+  font-size: 24px;
+  margin: 6px auto 16px;
+  box-shadow: 0 8px 24px rgba(196, 167, 71, 0.35);
+}
+
+#menu .product-body h3 {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 #menu .product-card img {
-  height: 180px;
+  height: 220px;
+}
+
+#menu .menu-carousel .carousel-btn {
+  background: #c4a747;
+  color: #fff;
+  border: none;
+  box-shadow: 0 8px 24px rgba(196, 167, 71, 0.3);
+}
+
+#menu .menu-carousel .carousel-btn:hover {
+  background: #b09640;
+  transform: translateY(-50%) scale(1.06);
+}
+
+#menu .menu-pagination {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+#menu .menu-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #d0d0d0;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#menu .menu-dot.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.2);
 }
 
 /* Mobile hamburger animation */
@@ -1043,13 +1171,16 @@ Text Domain: da-catering-yyc-child
   width: 34px;
   height: 28px;
   padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .mobile-toggle span {
   position: absolute;
   width: 22px;
   height: 2px;
-  background: #fff;
+  background: #000;
   border-radius: 2px;
   left: 50%;
   transform: translateX(-50%);
@@ -1178,6 +1309,86 @@ Text Domain: da-catering-yyc-child
   border-radius: 14px;
 }
 
+.smoothies-deck {
+  position: relative;
+  max-width: 760px;
+  height: 360px;
+}
+
+.smoothies-deck .drink-card {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  box-shadow: 0 18px 36px rgba(36, 59, 52, 0.14);
+  border: 1px solid rgba(36, 59, 52, 0.08);
+  display: grid;
+  grid-template-columns: minmax(0, 42%) minmax(0, 58%);
+  gap: 18px;
+  align-items: center;
+  opacity: 0;
+  transform: scale(0.96);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.smoothies-deck .drink-card.is-active {
+  opacity: 1;
+  transform: scale(1);
+  z-index: 2;
+}
+
+.smoothies-deck .drink-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.smoothies-deck .drink-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.smoothies-deck .drink-details h3 {
+  font-size: 1.25rem;
+  color: var(--color-primary);
+}
+
+.smoothies-deck .drink-details p {
+  color: #4a5650;
+  margin: 0;
+}
+
+.smoothies-deck .drink-details strong {
+  color: var(--color-primary);
+}
+
+.smoothies-dots {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  align-items: center;
+}
+
+.smoothies-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(36, 59, 52, 0.3);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.smoothies-dot.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  transform: scale(1.2);
+}
+
 .smoothies-sticky-image {
   position: sticky;
   top: 0;
@@ -1195,15 +1406,17 @@ Text Domain: da-catering-yyc-child
 
 @media (max-width: 900px) {
   #menu .product-card {
-    min-width: 380px;
-    max-width: 420px;
+    min-width: 320px;
+    max-width: 360px;
+    margin: 0 -30px;
   }
 }
 
 @media (max-width: 640px) {
   #menu .product-card {
-    min-width: 300px;
-    max-width: 340px;
+    min-width: 280px;
+    max-width: 320px;
+    margin: 0 -20px;
   }
 
   .smoothies-sticky {
@@ -1218,6 +1431,20 @@ Text Domain: da-catering-yyc-child
   .smoothies-sticky-image {
     position: relative;
     height: 60vh;
+  }
+
+  .smoothies-deck {
+    height: 520px;
+    max-width: 100%;
+  }
+
+  .smoothies-deck .drink-card {
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+
+  .smoothies-deck .drink-card img {
+    height: 220px;
   }
 }
 
