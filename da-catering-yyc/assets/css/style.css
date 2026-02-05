@@ -90,6 +90,26 @@ button {
   margin-bottom: 32px;
 }
 
+.ordering-steps .section-title,
+.ordering-steps .section-subtitle {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.catering-section .section-title,
+.catering-section .section-subtitle,
+.smoothies-section .section-title,
+.smoothies-section .section-subtitle,
+.video-section .section-title,
+.video-section .section-subtitle,
+.instagram-section .section-title,
+.instagram-section .section-subtitle {
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -117,7 +137,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 0;
+  padding: 20px 0;
   gap: 20px;
 }
 
@@ -215,7 +235,7 @@ button {
 .hero {
   background: var(--color-bg);
   color: var(--color-primary);
-  padding: 120px 0 90px;
+  padding: 100px 0 90px;
   position: relative;
   overflow: hidden;
 }
@@ -347,6 +367,11 @@ button {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
+}
+
+.ordering-steps .steps {
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .step-card {
@@ -566,6 +591,11 @@ button {
   gap: 22px;
 }
 
+.catering-section .packages {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
 .package-card {
   border-radius: var(--radius-lg);
   background: #fff;
@@ -754,6 +784,12 @@ button {
   cursor: grab;
 }
 
+.smoothies-section .drink-carousel,
+.smoothies-section .drink-grid {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
 .drink-grid::-webkit-scrollbar {
   display: none;
 }
@@ -826,6 +862,11 @@ button {
   box-shadow: 0 20px 40px rgba(36, 59, 52, 0.12);
 }
 
+.video-section .video-frame {
+  max-width: 980px;
+  margin: 0 auto;
+}
+
 .video-frame video {
   width: 100%;
   border-radius: 18px;
@@ -863,6 +904,16 @@ button {
   flex-direction: column;
   gap: 8px;
   margin-bottom: 24px;
+}
+
+.instagram-section .section-head {
+  text-align: center;
+  align-items: center;
+}
+
+.instagram-section .instagram-track {
+  max-width: 980px;
+  margin: 0 auto;
 }
 
 .instagram-carousel {

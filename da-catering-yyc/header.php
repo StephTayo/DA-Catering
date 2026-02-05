@@ -31,7 +31,7 @@
     </nav>
     <div class="header-actions" data-actions>
       <a class="btn btn-primary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener">Order on WhatsApp</a>
-      <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/shop')); ?>">Place Order Now</a>
+      <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/booking/#checkout')); ?>">Place Order Now</a>
     </div>
     <button class="mobile-toggle" type="button" data-mobile-toggle>Menu</button>
   </div>

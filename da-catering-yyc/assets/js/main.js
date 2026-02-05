@@ -125,7 +125,7 @@ const initMenuActions = () => {
         saveOrder(items);
         addBtn.textContent = "Added";
         setTimeout(() => (addBtn.textContent = "Add to Order"), 1200);
-        window.location.href = `${window.location.origin}/shop`;
+        window.location.href = `${window.location.origin}/booking/#checkout`;
       });
     }
   });

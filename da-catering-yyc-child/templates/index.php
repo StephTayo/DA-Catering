@@ -6,47 +6,53 @@
     </video>
   </div>
   <div class="hero-scrim" aria-hidden="true"></div>
-  <div class="container hero-grid">
-    <div class="hero-media" aria-hidden="true">
-      <div class="hero-shot tall">
+  <div class="container hero-layout">
+    <div class="hero-content">
+      <span class="hero-badge">Now Serving Calgary &amp; Area</span>
+      <h1>Authentic African <span>Flavors Delivered</span></h1>
+      <p class="hero-subtitle">Experience the rich taste of Africa with our bespoke catering services. From intimate gatherings to grand celebrations, we bring authentic cuisine to your table.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">
+          <span>Book Catering Now</span>
+          <span class="btn-icon" aria-hidden="true">→</span>
+        </a>
+        <a class="btn btn-secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener">
+          <span class="btn-icon" aria-hidden="true">
+            <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
+              <path fill="currentColor" d="M16.03 4A11.94 11.94 0 004 15.94c0 2.1.55 4.14 1.6 5.95L4 28l6.34-1.6a11.94 11.94 0 005.69 1.45h.01A11.96 11.96 0 0028 15.9 11.95 11.95 0 0016.03 4zm0 21.83h-.01a9.93 9.93 0 01-5.06-1.4l-.36-.21-3.76.95.98-3.66-.24-.38a9.92 9.92 0 017.45-15.07h.01a9.94 9.94 0 019.93 9.93 9.94 9.94 0 01-9.94 9.84zm5.66-7.42c-.31-.15-1.82-.9-2.1-1-.28-.1-.49-.15-.7.15-.2.3-.8 1-.98 1.2-.18.2-.36.22-.67.07-.31-.15-1.32-.49-2.51-1.56-.93-.83-1.55-1.86-1.73-2.17-.18-.31-.02-.48.14-.63.14-.14.31-.36.46-.54.15-.18.2-.3.31-.5.1-.2.05-.39-.03-.54-.08-.15-.7-1.7-.96-2.33-.25-.6-.5-.52-.7-.53-.18-.01-.39-.01-.6-.01-.21 0-.54.08-.83.39-.29.3-1.09 1.07-1.09 2.61 0 1.54 1.12 3.03 1.27 3.24.15.21 2.17 3.32 5.27 4.64.74.32 1.29.5 1.73.64.74.24 1.4.2 1.93.12.6-.09 1.82-.74 2.07-1.45.26-.7.26-1.31.18-1.44-.08-.12-.28-.19-.59-.34z"/>
+            </svg>
+          </span>
+          <span>WhatsApp Order</span>
+        </a>
+      </div>
+      <div class="hero-stats">
+        <div>
+          <strong>100+</strong>
+          <span>Dishes</span>
+        </div>
+        <div>
+          <strong>500+</strong>
+          <span>Happy Clients</span>
+        </div>
+        <div>
+          <strong>5★</strong>
+          <span>Rating</span>
+        </div>
+      </div>
+    </div>
+    <div class="hero-gallery" aria-hidden="true">
+      <div class="hero-gallery-card hero-gallery-card--large">
+        <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="">
+      </div>
+      <div class="hero-gallery-card">
         <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="">
       </div>
-      <div class="hero-shot wide">
+      <div class="hero-gallery-card">
         <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1100&q=80" alt="">
       </div>
-      <div class="hero-shot tall">
-        <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80" alt="">
+      <div class="hero-gallery-card hero-gallery-card--wide">
+        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1100&q=80" alt="">
       </div>
-    </div>
-    <div class="hero-copy">
-      <h1>Authentic African flavors, delivered fresh</h1>
-      <p class="hero-subtitle">Bespoke meals for every occasion - from comfort food to full-service catering. Enjoy 100+ dishes, smoothies, and juices, all made fresh and delivered with care.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener">Order now</a>
-        <a class="btn btn-secondary" href="#menu">Browse menu</a>
-      </div>
-    </div>
-  </div>
-  <div class="container hero-highlights">
-    <div class="highlight-card">
-      <span>100+</span>
-      <strong>African Dishes</strong>
-      <p>Party rice, soups, and specials.</p>
-    </div>
-    <div class="highlight-card">
-      <span>Fresh</span>
-      <strong>Smoothies &amp; Juices</strong>
-      <p>Cold-pressed and blended daily.</p>
-    </div>
-    <div class="highlight-card">
-      <span>Events</span>
-      <strong>Full-Service Catering</strong>
-      <p>From small chops to big events.</p>
-    </div>
-    <div class="highlight-card">
-      <span>YYC</span>
-      <strong>Pickup &amp; Delivery</strong>
-      <p>Choose your preferred time.</p>
     </div>
   </div>
 </section>
@@ -406,26 +412,35 @@
 
 <section id="catering" class="section catering-section">
   <div class="container">
-    <h2 class="section-title">Catering Packages</h2>
-    <p class="section-subtitle">Corporate catering in Calgary, wedding catering, birthdays, and gatherings with flexible packages.</p>
-    <div class="packages">
-      <div class="package-card">
-        <h3>Small Gathering (5-10 people)</h3>
-        <p>Two rice dishes, one stew, grilled protein, and sides with sauces.</p>
-        <strong>Starting at $150</strong>
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book This Package</a>
+    <div class="catering-header">
+      <span class="catering-pill">Perfect for Any Event</span>
+      <h2 class="section-title">Catering Packages</h2>
+      <p class="section-subtitle">From intimate gatherings to grand celebrations, we've got you covered with flexible, delicious options.</p>
+    </div>
+    <div class="catering-grid">
+      <div class="catering-card">
+        <div class="catering-icon" aria-hidden="true"></div>
+        <h3>Small Gathering</h3>
+        <p>Perfect for 5-10 people. Two rice dishes, one stew, grilled protein, and sides with sauces.</p>
+        <span class="catering-label">Starting at</span>
+        <strong>$150</strong>
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
-      <div class="package-card">
-        <h3>Family Tray (10-20 people)</h3>
-        <p>Expanded menu with jollof, fried rice, soups, and assorted small chops.</p>
-        <strong>Starting at $300</strong>
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book This Package</a>
+      <div class="catering-card">
+        <div class="catering-icon" aria-hidden="true"></div>
+        <h3>Family Tray</h3>
+        <p>Ideal for 10-20 people. Expanded menu with jollof, fried rice, soups, and assorted small chops.</p>
+        <span class="catering-label">Starting at</span>
+        <strong>$300</strong>
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
-      <div class="package-card">
-        <h3>Event Catering (20-100+ people)</h3>
-        <p>Full-service options, custom menu, and staffing support for large events.</p>
-        <strong>Starting at $500 (Custom quotes available)</strong>
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book This Package</a>
+      <div class="catering-card">
+        <div class="catering-icon" aria-hidden="true"></div>
+        <h3>Event Catering</h3>
+        <p>For 20-100+ people. Full-service options, custom menu, and staffing support for large events.</p>
+        <span class="catering-label">Starting at</span>
+        <strong>$500+</strong>
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
     </div>
   </div>
@@ -625,81 +640,25 @@
 <section id="instagram" class="section instagram-section">
   <div class="container">
     <div class="section-head">
-      <h2 class="section-title">Instagram Highlights</h2>
-      <p class="section-subtitle">Follow @dacateringyyc for the latest dishes, events, and behind-the-scenes moments.</p>
+      <h2 class="section-title">Gallery</h2>
+      <p class="section-subtitle">A glimpse of our culinary artistry.</p>
     </div>
-    <div class="instagram-carousel" data-carousel>
-      <button class="carousel-btn prev" type="button" aria-label="Scroll Instagram left" data-carousel-prev>&lsaquo;</button>
-      <div class="instagram-track" data-carousel-track data-drag-track>
-        <article class="instagram-post">
-          <div class="instagram-header">
-            <div class="instagram-user">
-              <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=200&q=80" alt="Instagram avatar" loading="lazy">
-              <span>raisedbydocs</span>
-            </div>
-            <span class="instagram-menu">...</span>
-          </div>
-          <img class="instagram-photo" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="African catering platter - DA Catering Calgary" loading="lazy">
-          <div class="instagram-actions">
-            <span>Like</span>
-            <span>Comment</span>
-            <span>Share</span>
-          </div>
-          <p class="instagram-caption"><strong>@dacateringyyc</strong> Family-style catering that keeps everyone coming back.</p>
-        </article>
-        <article class="instagram-post">
-          <div class="instagram-header">
-            <div class="instagram-user">
-              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80" alt="Instagram avatar" loading="lazy">
-              <span>maygrenna</span>
-            </div>
-            <span class="instagram-menu">...</span>
-          </div>
-          <img class="instagram-photo" src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="African stew and sides - Nigerian catering Calgary" loading="lazy">
-          <div class="instagram-actions">
-            <span>Like</span>
-            <span>Comment</span>
-            <span>Share</span>
-          </div>
-          <p class="instagram-caption"><strong>@dacateringyyc</strong> Weeknight plates that taste like home.</p>
-        </article>
-        <article class="instagram-post">
-          <div class="instagram-header">
-            <div class="instagram-user">
-              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=200&q=80" alt="Instagram avatar" loading="lazy">
-              <span>cliffpavlovic</span>
-            </div>
-            <span class="instagram-menu">...</span>
-          </div>
-          <img class="instagram-photo" src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80" alt="Suya skewers - African food delivery YYC" loading="lazy">
-          <div class="instagram-actions">
-            <span>Like</span>
-            <span>Comment</span>
-            <span>Share</span>
-          </div>
-          <p class="instagram-caption"><strong>@dacateringyyc</strong> Suya skewers served fresh and spicy.</p>
-        </article>
-        <article class="instagram-post">
-          <div class="instagram-header">
-            <div class="instagram-user">
-              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=200&q=80" alt="Instagram avatar" loading="lazy">
-              <span>goodfoodca</span>
-            </div>
-            <span class="instagram-menu">...</span>
-          </div>
-          <img class="instagram-photo" src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Fresh juice and smoothie lineup - DA Catering YYC" loading="lazy">
-          <div class="instagram-actions">
-            <span>Like</span>
-            <span>Comment</span>
-            <span>Share</span>
-          </div>
-          <p class="instagram-caption"><strong>@dacateringyyc</strong> Smoothies and juices to finish strong.</p>
-        </article>
+    <div class="gallery-grid">
+      <div class="gallery-card gallery-card--large">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80" alt="Plated chef special for DA Catering YYC" loading="lazy">
       </div>
-      <button class="carousel-btn next" type="button" aria-label="Scroll Instagram right" data-carousel-next>&rsaquo;</button>
-    </div>
-    <div class="instagram-footer">
-      <a class="btn btn-primary" href="https://instagram.com/dacateringyyc" target="_blank" rel="noopener">See More on Instagram</a>
+      <div class="gallery-card">
+        <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Catering tray with fruits and bites" loading="lazy">
+      </div>
+      <div class="gallery-card">
+        <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=900&q=80" alt="Dessert table setup for events" loading="lazy">
+      </div>
+      <div class="gallery-card">
+        <img src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=900&q=80" alt="Buffet spread for catering" loading="lazy">
+      </div>
+      <div class="gallery-card">
+        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Chef preparing fresh dishes" loading="lazy">
+      </div>
     </div>
   </div>
 </section>
@@ -740,6 +699,79 @@
         <p>Great value for the family tray and clear pickup instructions. We will order again for birthdays.</p>
       </div>
     </div>
+  </div>
+</section>
+
+<section id="contact" class="section contact-section">
+  <div class="container contact-grid">
+    <div class="contact-info">
+      <h2 class="section-title">Get in Touch</h2>
+      <p class="section-subtitle">Ready to plan your next event? Contact us today for a personalized quote.</p>
+      <div class="contact-list">
+        <div class="contact-item">
+          <span class="contact-icon" aria-hidden="true">📞</span>
+          <div>
+            <strong>Phone</strong>
+            <p>(403) 478-2475</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon" aria-hidden="true">✉️</span>
+          <div>
+            <strong>Email</strong>
+            <p>order@dacatering.ca</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon" aria-hidden="true">📍</span>
+          <div>
+            <strong>Location</strong>
+            <p>Calgary, Alberta</p>
+          </div>
+        </div>
+        <div class="contact-item">
+          <span class="contact-icon" aria-hidden="true">🕒</span>
+          <div>
+            <strong>Hours</strong>
+            <p>Mon - Fri: 9AM - 6PM<br>Sat - Sun: By Appointment</p>
+          </div>
+        </div>
+      </div>
+      <div class="contact-social">
+        <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">f</a>
+        <a href="https://instagram.com/dacateringyyc" target="_blank" rel="noopener" aria-label="Instagram">ig</a>
+        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">x</a>
+      </div>
+    </div>
+    <form class="contact-card" action="mailto:order@dacatering.ca" method="post" enctype="text/plain">
+      <label>
+        Full Name
+        <input type="text" name="full_name" placeholder="John Doe" required>
+      </label>
+      <label>
+        Email Address
+        <input type="email" name="email" placeholder="john@example.com" required>
+      </label>
+      <label>
+        Phone Number
+        <input type="tel" name="phone" placeholder="(403) 478-2475">
+      </label>
+      <label>
+        Event Type
+        <select name="event_type" required>
+          <option value="" selected>Select event type</option>
+          <option>Wedding</option>
+          <option>Corporate Event</option>
+          <option>Private Party</option>
+          <option>Other</option>
+        </select>
+      </label>
+      <label>
+        Message
+        <textarea name="message" rows="5" placeholder="Tell us about your event..."></textarea>
+      </label>
+      <button class="btn btn-primary" type="submit">Send Message</button>
+    </form>
   </div>
 </section>
 
