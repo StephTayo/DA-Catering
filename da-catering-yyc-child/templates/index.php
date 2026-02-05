@@ -1,57 +1,65 @@
 ﻿
-<section id="home" class="hero">
-  <div class="hero-video" aria-hidden="true">
-    <video autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80">
-      <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero.mp4'); ?>" type="video/mp4">
-    </video>
-  </div>
-  <div class="hero-scrim" aria-hidden="true"></div>
-  <div class="container hero-layout">
-    <div class="hero-content">
-      <span class="hero-badge">Now Serving Calgary &amp; Area</span>
-      <h1>Authentic African <span>Flavors Delivered</span></h1>
-      <p class="hero-subtitle">Experience the rich taste of Africa with our bespoke catering services. From intimate gatherings to grand celebrations, we bring authentic cuisine to your table.</p>
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">
-          <span>Book Catering Now</span>
-          <span class="btn-icon" aria-hidden="true">→</span>
+<section id="home" class="hero-iso">
+  <div class="container hero-iso__container">
+    <div class="hero-iso__content">
+      <span class="hero-iso__badge">
+        <span class="hero-iso__badge-dot" aria-hidden="true"></span>
+        Now Serving Calgary &amp; Area
+      </span>
+      <h1 class="hero-iso__title">
+        Authentic African
+        <span>Flavors Delivered</span>
+      </h1>
+      <p class="hero-iso__description">
+        Experience the rich taste of Africa with our bespoke catering services. From intimate gatherings to grand celebrations, we bring authentic cuisine to your table.
+      </p>
+      <div class="hero-iso__actions">
+        <a class="hero-iso__btn hero-iso__btn--primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">
+          Book Catering Now
+          <span aria-hidden="true">→</span>
         </a>
-        <a class="btn btn-secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener">
-          <span class="btn-icon" aria-hidden="true">
-            <svg viewBox="0 0 32 32" focusable="false" aria-hidden="true">
-              <path fill="currentColor" d="M16.03 4A11.94 11.94 0 004 15.94c0 2.1.55 4.14 1.6 5.95L4 28l6.34-1.6a11.94 11.94 0 005.69 1.45h.01A11.96 11.96 0 0028 15.9 11.95 11.95 0 0016.03 4zm0 21.83h-.01a9.93 9.93 0 01-5.06-1.4l-.36-.21-3.76.95.98-3.66-.24-.38a9.92 9.92 0 017.45-15.07h.01a9.94 9.94 0 019.93 9.93 9.94 9.94 0 01-9.94 9.84zm5.66-7.42c-.31-.15-1.82-.9-2.1-1-.28-.1-.49-.15-.7.15-.2.3-.8 1-.98 1.2-.18.2-.36.22-.67.07-.31-.15-1.32-.49-2.51-1.56-.93-.83-1.55-1.86-1.73-2.17-.18-.31-.02-.48.14-.63.14-.14.31-.36.46-.54.15-.18.2-.3.31-.5.1-.2.05-.39-.03-.54-.08-.15-.7-1.7-.96-2.33-.25-.6-.5-.52-.7-.53-.18-.01-.39-.01-.6-.01-.21 0-.54.08-.83.39-.29.3-1.09 1.07-1.09 2.61 0 1.54 1.12 3.03 1.27 3.24.15.21 2.17 3.32 5.27 4.64.74.32 1.29.5 1.73.64.74.24 1.4.2 1.93.12.6-.09 1.82-.74 2.07-1.45.26-.7.26-1.31.18-1.44-.08-.12-.28-.19-.59-.34z"/>
-            </svg>
-          </span>
-          <span>WhatsApp Order</span>
+        <a class="hero-iso__btn hero-iso__btn--secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener">
+          WhatsApp Order
         </a>
       </div>
-      <div class="hero-stats">
-        <div>
-          <strong>100+</strong>
-          <span>Dishes</span>
+      <div class="hero-iso__stats">
+        <div class="hero-iso__stat">
+          <div class="hero-iso__stat-number">100+</div>
+          <div class="hero-iso__stat-label">Dishes</div>
         </div>
-        <div>
-          <strong>500+</strong>
-          <span>Happy Clients</span>
+        <div class="hero-iso__stat">
+          <div class="hero-iso__stat-number">500+</div>
+          <div class="hero-iso__stat-label">Happy Clients</div>
         </div>
-        <div>
-          <strong>5★</strong>
-          <span>Rating</span>
+        <div class="hero-iso__stat">
+          <div class="hero-iso__stat-number">5<span class="hero-iso__star" aria-hidden="true">★</span></div>
+          <div class="hero-iso__stat-label">Rating</div>
         </div>
       </div>
     </div>
-    <div class="hero-gallery" aria-hidden="true">
-      <div class="hero-gallery-card hero-gallery-card--large">
-        <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="">
+
+    <div class="hero-iso__media">
+      <div class="hero-iso__image-grid">
+        <div class="hero-iso__image-card">
+          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=80" alt="African dish with colorful garnish" loading="lazy">
+        </div>
+        <div class="hero-iso__image-card hero-iso__image-card--offset-top">
+          <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80" alt="Refreshing beverages and juices" loading="lazy">
+        </div>
+        <div class="hero-iso__image-card hero-iso__image-card--offset-bottom">
+          <img src="https://images.unsplash.com/photo-1608039829574-0afbe07f2005?auto=format&fit=crop&w=900&q=80" alt="Catering event buffet setup" loading="lazy">
+        </div>
+        <div class="hero-iso__image-card hero-iso__image-card--tall">
+          <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Colorful African food platter" loading="lazy">
+        </div>
       </div>
-      <div class="hero-gallery-card">
-        <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="">
-      </div>
-      <div class="hero-gallery-card">
-        <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=1100&q=80" alt="">
-      </div>
-      <div class="hero-gallery-card hero-gallery-card--wide">
-        <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=1100&q=80" alt="">
+
+      <div class="hero-iso__rating-card">
+        <div class="hero-iso__rating-icon" aria-hidden="true">⭐</div>
+        <div class="hero-iso__rating-text">
+          <div class="hero-iso__rating-score">4.9/5</div>
+          <div class="hero-iso__rating-label">500+ Reviews</div>
+        </div>
       </div>
     </div>
   </div>
