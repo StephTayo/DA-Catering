@@ -161,6 +161,24 @@ const initMobileMenu = () => {
   toggle.addEventListener("click", () => {
     nav.classList.toggle("mobile-open");
     actions.classList.toggle("mobile-open");
+    toggle.classList.toggle("active");
+  });
+
+  nav.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => {
+      nav.classList.remove("mobile-open");
+      actions.classList.remove("mobile-open");
+      toggle.classList.remove("active");
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    if (toggle.contains(event.target) || nav.contains(event.target) || actions.contains(event.target)) {
+      return;
+    }
+    nav.classList.remove("mobile-open");
+    actions.classList.remove("mobile-open");
+    toggle.classList.remove("active");
   });
 };
 
@@ -190,6 +208,62 @@ const initCarousel = () => {
       track.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
     });
   });
+};
+
+const initMenuCardFocus = () => {
+  const menuTrack = document.querySelector("#menu .product-grid");
+  if (!menuTrack) return;
+
+  const cards = Array.from(menuTrack.querySelectorAll(".product-card"));
+  if (!cards.length) return;
+
+  let ticking = false;
+
+  const updateActiveCard = () => {
+    const trackRect = menuTrack.getBoundingClientRect();
+    const centerX = trackRect.left + trackRect.width / 2;
+
+    let closestCard = null;
+    let closestDistance = Infinity;
+
+    cards.forEach((card) => {
+      if (card.style.display === "none") return;
+      const rect = card.getBoundingClientRect();
+      const cardCenter = rect.left + rect.width / 2;
+      const distance = Math.abs(centerX - cardCenter);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestCard = card;
+      }
+    });
+
+    cards.forEach((card) => card.classList.remove("is-active"));
+    if (closestCard) {
+      closestCard.classList.add("is-active");
+    }
+  };
+
+  const onScroll = () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        updateActiveCard();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  };
+
+  menuTrack.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", updateActiveCard);
+
+  const filterButtons = document.querySelectorAll("#menu [data-filter]");
+  filterButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setTimeout(updateActiveCard, 0);
+    });
+  });
+
+  updateActiveCard();
 };
 
 const initOrderSummary = () => {
@@ -268,6 +342,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initMobileMenu();
   initCarousel();
   initDragScroll();
+  initMenuCardFocus();
   initOrderSummary();
   initDeliveryToggle();
 

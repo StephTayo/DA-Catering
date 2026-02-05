@@ -1,238 +1,309 @@
-﻿
-<section class="section">
-  <div class="container">
-    <span class="badge">Booking + Checkout</span>
-    <h1 class="section-title">Book Catering or Submit Your Order</h1>
-    <p class="section-subtitle">Tell us about your event or submit your order details. We will confirm by WhatsApp, email, and SMS.</p>
-    <div class="hero-actions">
-      <a class="btn btn-primary" href="#booking">Submit Booking Request</a>
-      <a class="btn btn-secondary" href="#checkout">Go to Checkout</a>
-    </div>
-  </div>
-</section>
+<div class="bg-animation">
+  <div class="bg-gradient-orb orb-1"></div>
+  <div class="bg-gradient-orb orb-2"></div>
+  <div class="bg-gradient-orb orb-3"></div>
+</div>
 
-<section id="booking" class="section accent">
-  <div class="container">
-    <h2 class="section-title">Catering Booking Form</h2>
-    <?php if (shortcode_exists('wpforms')) : ?>
-      <?php echo do_shortcode('[wpforms id="1" title="false" description="false"]'); ?>
-    <?php else : ?>
-    <form>
-      <div class="form-grid">
-        <div>
-          <label for="full-name">Full Name *</label>
-          <input id="full-name" type="text" placeholder="Your full name" required>
+<div class="main-container">
+  <div class="hero-booking">
+    <div class="hero-badge">Now Booking Events</div>
+    <h1 class="hero-title">Book Your Perfect Event</h1>
+    <p class="hero-subtitle">From intimate gatherings to grand celebrations, we bring authentic African flavors to your table with exceptional service.</p>
+  </div>
+
+  <div class="tab-nav">
+    <button class="tab-btn active" data-tab="catering">
+      Catering Booking
+    </button>
+    <button class="tab-btn" data-tab="checkout">
+      Quick Order Checkout
+    </button>
+  </div>
+
+  <div class="tab-content active" id="catering">
+    <div class="glass-card fade-in-up">
+      <div class="progress-steps">
+        <div class="progress-step">
+          <div class="step-circle active">1</div>
+          <span class="step-label">Event Details</span>
         </div>
-        <div>
-          <label for="email">Email Address *</label>
-          <input id="email" type="email" placeholder="you@email.com" required>
+        <div class="progress-step">
+          <div class="step-circle">2</div>
+          <span class="step-label">Contact Info</span>
         </div>
-        <div>
-          <label for="phone">Phone Number *</label>
-          <input id="phone" type="tel" placeholder="(403) 478-2475" required>
+        <div class="progress-step">
+          <div class="step-circle">3</div>
+          <span class="step-label">Preferences</span>
         </div>
-        <div>
-          <label for="event-type">Event Type *</label>
-          <select id="event-type" required>
-            <option value="">Select event type</option>
-            <option>Corporate Lunch/Meeting</option>
-            <option>Birthday Party</option>
-            <option>Wedding Reception</option>
-            <option>Graduation Celebration</option>
-            <option>Baby Shower</option>
-            <option>Funeral/Memorial Service</option>
-            <option>Community Gathering</option>
-            <option>Private Dinner Party</option>
-            <option>Office Potluck</option>
-            <option>Holiday Celebration</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div>
-          <label for="event-date">Event Date *</label>
-          <input id="event-date" type="date" required>
-        </div>
-        <div>
-          <label for="event-time">Event Time *</label>
-          <input id="event-time" type="time" required>
-        </div>
-        <div>
-          <label for="guest-count">Number of Guests *</label>
-          <select id="guest-count" required>
-            <option value="">Select range</option>
-            <option>5-10</option>
-            <option>10-20</option>
-            <option>20-30</option>
-            <option>30-50</option>
-            <option>50-75</option>
-            <option>75-100</option>
-            <option>100+</option>
-          </select>
-        </div>
-        <div>
-          <label for="budget">Budget Range</label>
-          <select id="budget">
-            <option value="">Select budget</option>
-            <option>Under $200</option>
-            <option>$200-$500</option>
-            <option>$500-$1,000</option>
-            <option>$1,000-$2,000</option>
-            <option>$2,000-$5,000</option>
-            <option>$5,000+</option>
-            <option>Flexible/To Be Discussed</option>
-          </select>
-        </div>
-        <div>
-          <label for="delivery-option">Delivery vs Pickup *</label>
-          <select id="delivery-option" data-delivery-toggle required>
-            <option value="pickup">Pickup</option>
-            <option value="delivery">Delivery</option>
-          </select>
+        <div class="progress-step">
+          <div class="step-circle">4</div>
+          <span class="step-label">Confirm</span>
         </div>
       </div>
-      <div class="form-grid" style="margin-top: 16px;">
-        <div>
-          <label for="dietary">Dietary Restrictions &amp; Allergy Notes</label>
-          <textarea id="dietary" placeholder="Allergies, dietary restrictions, or special preparation notes"></textarea>
-        </div>
-        <div>
-          <label for="delivery-address">Delivery Address</label>
-          <textarea id="delivery-address" data-delivery-field placeholder="Full address with postal code"></textarea>
-        </div>
-        <div>
-          <label for="delivery-notes">Special Delivery Instructions</label>
-          <textarea id="delivery-notes" placeholder="Gate code, buzzer, drop-off notes"></textarea>
-        </div>
-        <div>
-          <label>Preferred Contact Method</label>
-          <div>
-            <label><input type="checkbox"> WhatsApp</label>
-            <label><input type="checkbox"> Phone Call</label>
-            <label><input type="checkbox"> Email</label>
-            <label><input type="checkbox"> Text/SMS</label>
+
+      <form id="cateringForm">
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Event Details
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Event Type <span class="required">*</span></label>
+              <select required>
+                <option value="">Select event type</option>
+                <option>Corporate Lunch/Meeting</option>
+                <option>Birthday Party</option>
+                <option>Wedding Reception</option>
+                <option>Graduation Celebration</option>
+                <option>Baby Shower</option>
+                <option>Funeral/Memorial</option>
+                <option>Community Gathering</option>
+                <option>Private Dinner</option>
+                <option>Holiday Celebration</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Event Date <span class="required">*</span></label>
+              <input type="date" required>
+            </div>
+            <div class="form-group">
+              <label>Event Time <span class="required">*</span></label>
+              <input type="time" required>
+            </div>
+            <div class="form-group">
+              <label>Number of Guests <span class="required">*</span></label>
+              <select required>
+                <option value="">Select range</option>
+                <option>5-10 guests</option>
+                <option>10-20 guests</option>
+                <option>20-30 guests</option>
+                <option>30-50 guests</option>
+                <option>50-75 guests</option>
+                <option>75-100 guests</option>
+                <option>100+ guests</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Budget Range</label>
+              <select>
+                <option value="">Select budget (optional)</option>
+                <option>Under $200</option>
+                <option>$200-$500</option>
+                <option>$500-$1,000</option>
+                <option>$1,000-$2,000</option>
+                <option>$2,000-$5,000</option>
+                <option>$5,000+</option>
+                <option>Flexible</option>
+              </select>
+            </div>
           </div>
         </div>
-        <div>
-          <label for="additional-notes">Additional Notes or Special Requests</label>
-          <textarea id="additional-notes" placeholder="Menu ideas, cultural preferences, service notes"></textarea>
+
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Contact Information
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name <span class="required">*</span></label>
+              <input type="text" placeholder="John Doe" required>
+            </div>
+            <div class="form-group">
+              <label>Email Address <span class="required">*</span></label>
+              <input type="email" placeholder="john@example.com" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number <span class="required">*</span></label>
+              <input type="tel" placeholder="(403) 000-0000" required>
+            </div>
+            <div class="form-group">
+              <label>Preferred Contact Method</label>
+              <div class="checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox"> WhatsApp
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox"> Phone
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox"> Email
+                </label>
+                <label class="checkbox-label">
+                  <input type="checkbox"> SMS
+                </label>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="hero-actions" style="margin-top: 24px;">
-        <button class="btn btn-primary" type="submit">Submit Booking Request</button>
-        <a class="btn btn-secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20book%20catering%20for%20my%20event.%20Event%20type:%20____%20Date:%20____%20Guests:%20____%20My%20name%20is%20____" target="_blank" rel="noopener">Send Request via WhatsApp</a>
-      </div>
-    </form>
-    <?php endif; ?>
-  </div>
-</section>
-<section id="checkout" class="section">
-  <div class="container">
-    <h2 class="section-title">Order Submission / Checkout</h2>
-    <?php if (shortcode_exists('wpforms')) : ?>
-      <?php echo do_shortcode('[wpforms id="2" title="false" description="false"]'); ?>
-    <?php else : ?>
-    <div class="form-grid">
-      <div>
-        <label for="order-name">Full Name *</label>
-        <input id="order-name" type="text" placeholder="Your full name" required>
-      </div>
-      <div>
-        <label for="order-email">Email Address *</label>
-        <input id="order-email" type="email" placeholder="you@email.com" required>
-      </div>
-      <div>
-        <label for="order-email-confirm">Confirm Email *</label>
-        <input id="order-email-confirm" type="email" placeholder="re-enter email" required>
-      </div>
-      <div>
-        <label for="order-phone">Phone Number *</label>
-        <input id="order-phone" type="tel" placeholder="(403) 478-2475" required>
-      </div>
-    </div>
 
-    <div style="margin-top: 24px;">
-      <h3>Order Summary</h3>
-      <div class="order-summary" data-order-summary>
-        <p>Your selected items will appear here. Add dishes from the menu to build your order.</p>
-      </div>
-      <div class="hero-actions" style="margin-top: 12px;">
-        <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/')); ?>#menu">Edit Order</a>
-        <button class="btn btn-outline" type="button" data-clear-order>Clear Order</button>
-      </div>
-    </div>
-
-    <div class="form-grid" style="margin-top: 24px;">
-      <div>
-        <label>Pickup vs Delivery *</label>
-        <div>
-          <label><input type="radio" name="fulfillment" value="pickup" checked> Pickup</label>
-          <label><input type="radio" name="fulfillment" value="delivery"> Delivery</label>
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Service Details
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Service Type <span class="required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="service" value="pickup" checked> Pickup
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="service" value="delivery"> Delivery
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Delivery Address</label>
+              <textarea placeholder="Street address, unit, postal code"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Special Delivery Instructions</label>
+              <textarea placeholder="Gate code, buzzer, parking notes"></textarea>
+            </div>
+          </div>
         </div>
-      </div>
-      <div>
-        <label for="fulfillment-time">Preferred Pickup/Delivery Time *</label>
-        <input id="fulfillment-time" type="datetime-local" required>
-      </div>
-      <div>
-        <label for="delivery-address-checkout">Delivery Address</label>
-        <textarea id="delivery-address-checkout" data-delivery-field placeholder="Street address, unit, Calgary, postal code"></textarea>
-      </div>
-      <div>
-        <label for="delivery-notes-checkout">Delivery Instructions</label>
-        <textarea id="delivery-notes-checkout" placeholder="Gate codes, buzzer, drop-off notes"></textarea>
-      </div>
-      <div>
-        <label for="order-notes">Order Notes</label>
-        <textarea id="order-notes" placeholder="Prep notes, spice level, gift message"></textarea>
-      </div>
-    </div>
 
-    <div class="form-grid" style="margin-top: 24px;">
-      <div>
-        <label>Payment Method *</label>
-        <div>
-          <label><input type="radio" name="payment" value="pickup"> Pay on Pickup</label>
-          <label><input type="radio" name="payment" value="delivery"> Pay on Delivery</label>
-          <label><input type="radio" name="payment" value="etransfer"> Interac eTransfer</label>
-          <label><input type="radio" name="payment" value="card"> Credit Card (if integrated)</label>
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Additional Information
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Dietary Restrictions &amp; Allergies</label>
+              <textarea placeholder="Please list any allergies or dietary restrictions"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Special Requests</label>
+              <textarea placeholder="Menu preferences, setup requirements, cultural notes"></textarea>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
 
-    <div class="hero-actions" style="margin-top: 24px;">
-      <a class="btn btn-primary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I'd%20like%20to%20place%20an%20order.%20My%20name%20is%20____%20and%20my%20order%20details%20are:%20____" target="_blank" rel="noopener" data-order-whatsapp>Send Order to WhatsApp</a>
-      <button class="btn btn-secondary" type="submit">Submit Order</button>
-      <button class="btn btn-outline" type="button">Save Order for Later</button>
-    </div>
-    <?php endif; ?>
-  </div>
-</section>
+        <div class="info-callout">
+          <h4>✨ What Happens Next?</h4>
+          <p>After you submit, we'll confirm your booking within 2 hours via your preferred contact method. You'll receive a detailed quote and menu options tailored to your event.</p>
+        </div>
 
-<section class="section accent">
-  <div class="container">
-    <h2 class="section-title">How Confirmations Work</h2>
-    <div class="callout">
-      <p><strong>For the business:</strong> Instant email notification with order/booking details, SMS alerts for time-sensitive requests, automatic logging to Google Sheets or Airtable, and reply-ready contact details.</p>
-      <p><strong>For the customer:</strong> Immediate email confirmation with order summary, SMS confirmation with estimated pickup/delivery time, and status updates through the preferred contact method.</p>
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">
+            Submit Booking Request →
+          </button>
+          <a href="https://wa.me/14034782475?text=Hi%20DA%20Catering,%20I'd%20like%20to%20book%20catering" class="btn btn-secondary">
+            Send via WhatsApp
+          </a>
+        </div>
+      </form>
     </div>
   </div>
-</section>
 
-<section class="section">
-  <div class="container">
-    <h2 class="section-title">Developer Notes: Automation Setup</h2>
-    <div class="callout">
-      <p>Workflow example using Zapier or Make (Integromat) with Twilio and SendGrid:</p>
-      <ol>
-        <li>Customer submits form on WordPress/Webflow.</li>
-        <li>Form webhook triggers Zapier/Make scenario.</li>
-        <li>Automation creates a row in Google Sheets or Airtable.</li>
-        <li>Automation emails the business inbox with order/booking details.</li>
-        <li>Automation sends SMS alerts to the business phone via Twilio.</li>
-        <li>Automation sends confirmation email to the customer via SendGrid/Mailgun.</li>
-        <li>Automation sends confirmation SMS to the customer via Twilio.</li>
-      </ol>
+  <div class="tab-content" id="checkout">
+    <div class="glass-card fade-in-up">
+      <form id="checkoutForm">
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Your Order
+          </h3>
+          <div class="order-summary-box">
+            <div data-order-summary>
+              <p class="booking-empty">
+                Your order is empty. <a href="<?php echo esc_url(home_url('/')); ?>#menu" class="booking-link">Browse our menu</a> to add items.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Contact Information
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Full Name <span class="required">*</span></label>
+              <input type="text" placeholder="Your name" required>
+            </div>
+            <div class="form-group">
+              <label>Email <span class="required">*</span></label>
+              <input type="email" placeholder="your@email.com" required>
+            </div>
+            <div class="form-group">
+              <label>Phone <span class="required">*</span></label>
+              <input type="tel" placeholder="(403) 000-0000" required>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Fulfillment
+          </h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Pickup or Delivery <span class="required">*</span></label>
+              <div class="radio-group">
+                <label class="radio-label">
+                  <input type="radio" name="fulfillment" value="pickup" checked> Pickup
+                </label>
+                <label class="radio-label">
+                  <input type="radio" name="fulfillment" value="delivery"> Delivery
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Preferred Time <span class="required">*</span></label>
+              <input type="datetime-local" required>
+            </div>
+            <div class="form-group">
+              <label>Delivery Address</label>
+              <textarea placeholder="Required for delivery" data-delivery-field></textarea>
+            </div>
+            <div class="form-group">
+              <label>Order Notes</label>
+              <textarea placeholder="Spice level, prep notes, gift message"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="form-section-title">
+            <span class="section-icon"></span>
+            Payment Method
+          </h3>
+          <div class="radio-group">
+            <label class="radio-label">
+              <input type="radio" name="payment" value="pickup" checked> Pay on Pickup
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="payment" value="delivery"> Pay on Delivery
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="payment" value="etransfer"> Interac e-Transfer
+            </label>
+            <label class="radio-label">
+              <input type="radio" name="payment" value="card"> Credit Card
+            </label>
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button type="submit" class="btn btn-primary">
+            Place Order →
+          </button>
+          <a href="https://wa.me/14034782475" class="btn btn-secondary" data-order-whatsapp>
+            Send to WhatsApp
+          </a>
+          <button type="button" class="btn btn-outline" data-clear-order>
+            Clear Order
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-</section>
-
+</div>

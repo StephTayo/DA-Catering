@@ -1126,6 +1126,14 @@ form textarea {
   background-clip: text;
 }
 
+.booking-page .logo img {
+  display: none;
+}
+
+.booking-page .logo-text {
+  display: inline-block;
+}
+
 .booking-page .nav {
   display: flex;
   gap: 40px;

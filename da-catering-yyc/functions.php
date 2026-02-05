@@ -11,6 +11,14 @@ function da_catering_yyc_enqueue_assets() {
         array(),
         null
     );
+    if (is_page_template('page-booking.php')) {
+        wp_enqueue_style(
+            'da-catering-yyc-booking-fonts',
+            'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap',
+            array(),
+            null
+        );
+    }
     wp_enqueue_style(
         'da-catering-yyc-style',
         get_template_directory_uri() . '/assets/css/style.css',
