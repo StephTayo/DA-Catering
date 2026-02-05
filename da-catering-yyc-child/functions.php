@@ -9,6 +9,14 @@ function da_catering_yyc_child_enqueue_styles() {
         $parent_style,
         get_template_directory_uri() . '/assets/css/style.css'
     );
+    if (is_page_template('page-booking.php')) {
+        wp_enqueue_style(
+            'da-catering-yyc-child-booking-fonts',
+            'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap',
+            array(),
+            null
+        );
+    }
     wp_enqueue_style(
         'da-catering-yyc-child-style',
         get_stylesheet_uri(),
@@ -17,6 +25,18 @@ function da_catering_yyc_child_enqueue_styles() {
     );
 }
 add_action('wp_enqueue_scripts', 'da_catering_yyc_child_enqueue_styles');
+
+function da_catering_yyc_child_enqueue_scripts() {
+    wp_dequeue_script('da-catering-yyc-main');
+    wp_enqueue_script(
+        'da-catering-yyc-child-main',
+        get_stylesheet_directory_uri() . '/assets/js/main.js',
+        array(),
+        wp_get_theme()->get('Version'),
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'da_catering_yyc_child_enqueue_scripts', 20);
 
 function da_catering_yyc_child_redirect_shop() {
     if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
