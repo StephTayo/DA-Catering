@@ -579,7 +579,9 @@
   </div>
 </section>
 
-<section class="sticky-media-stack">
+<section class="smoothies-to-video">
+  <div class="smoothies-bg" aria-hidden="true"></div>
+  <div class="sticky-media-stack">
   <div class="smoothies-sticky">
     <div class="smoothies-content">
       <div class="smoothies-intro">
@@ -718,11 +720,9 @@
       </div>
     </div>
   </div>
-  <div class="smoothies-sticky-image">
-    <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1600&q=80" alt="Fresh juices and smoothies" loading="lazy">
   </div>
-</section>
-<section id="video" class="section video-section">
+
+  <section id="video" class="section video-section">
   <div class="container">
     <h2 class="section-title">Food in Motion</h2>
     <p class="section-subtitle">A quick look at our fresh servings and vibrant plates.</p>
@@ -732,6 +732,7 @@
       </video>
     </div>
   </div>
+  </section>
 </section>
 
 <section id="instagram" class="section instagram-section">

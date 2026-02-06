@@ -1018,6 +1018,15 @@ body {
   margin: 0 auto;
 }
 
+.smoothies-to-video .video-section .video-frame {
+  max-width: 610px;
+}
+
+.smoothies-to-video .video-section .video-frame video {
+  max-height: 300px;
+  object-fit: cover;
+}
+
 .instagram-section .section-head {
   text-align: center;
   align-items: center;
@@ -1348,8 +1357,9 @@ body {
 }
 
 .event-types {
-  background: #ece9e1;
-  padding: 90px 0;
+  background: transparent;
+  padding: 70px 0;
+  margin-top: 0;
 }
 
 .event-types-head {
@@ -1361,7 +1371,10 @@ body {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 20px;
+  max-width: 980px;
+  margin: 0 auto;
 }
+
 
 .event-type-card {
   background: #fff;
@@ -1674,23 +1687,50 @@ body {
 /* Smoothies sticky section */
 .sticky-media-stack {
   position: relative;
-  display: grid;
-  grid-template-columns: 45fr 55fr;
+  display: block;
   background: #f5f4ef;
+}
+
+.smoothies-to-video {
+  position: relative;
+  background: #f5f4ef;
+  overflow: hidden;
+}
+
+.smoothies-bg {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -14%;
+  width: 62%;
+  background-image: url("https://dacatering.ca/wp-content/themes/da-catering-yyc-child/assets/img/parents-kids-spending-time-together.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  transform: skewX(-6deg);
+  transform-origin: top right;
+  opacity: 0.5;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.smoothies-to-video > * {
+  position: relative;
+  z-index: 1;
 }
 
 .smoothies-sticky {
   display: block;
-  min-height: 100vh;
   background: #f5f4ef;
 }
 
 .smoothies-content {
-  background: #ece9e1;
+  background: transparent;
   padding: 110px 80px 110px 90px;
   display: flex;
   flex-direction: column;
   gap: 36px;
+  max-width: 720px;
 }
 
 .smoothies-intro h2 {
@@ -1835,20 +1875,6 @@ body {
   transform: scale(1.2);
 }
 
-.smoothies-sticky-image {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  overflow: hidden;
-  background: #fff;
-}
-
-.smoothies-sticky-image img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
 
 @media (max-width: 900px) {
   #menu .product-card {
