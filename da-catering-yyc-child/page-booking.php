@@ -4,6 +4,7 @@ Template Name: Booking Page
 */
 add_filter('body_class', function ($classes) {
   $classes[] = 'booking-page';
+  $classes[] = 'booking-modern';
   return $classes;
 });
 get_header();

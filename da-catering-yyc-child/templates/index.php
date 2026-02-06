@@ -58,7 +58,7 @@
           <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80" alt="Refreshing beverages and juices" loading="lazy">
         </div>
         <div class="hero-iso__image-card hero-iso__image-card--offset-bottom">
-          <img src="https://images.unsplash.com/photo-1608039829574-0afbe07f2005?auto=format&fit=crop&w=900&q=80" alt="Catering event buffet setup" loading="lazy">
+          <img src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=80" alt="Catering event buffet setup" loading="lazy">
         </div>
         <div class="hero-iso__image-card hero-iso__image-card--tall">
           <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Colorful African food platter" loading="lazy">
@@ -82,16 +82,19 @@
     <p class="section-subtitle">Fast, simple, and built for mobile. Order African food in Calgary in three easy steps.</p>
     <div class="steps">
       <div class="step-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Ordering step preview">
         <div class="step-number">1</div>
         <h3>Pick items + quantities</h3>
         <p>Browse the menu, choose your favorite dishes, and set portions that fit your appetite.</p>
       </div>
       <div class="step-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Delivery step preview">
         <div class="step-number">2</div>
         <h3>Choose pickup or delivery</h3>
         <p>Select pickup or delivery and tell us your preferred time window in Calgary.</p>
       </div>
       <div class="step-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Confirmation step preview">
         <div class="step-number">3</div>
         <h3>Submit + confirm</h3>
         <p>Send your order and receive confirmation by WhatsApp, email, and SMS.</p>
@@ -444,7 +447,8 @@
     </div>
     <div class="catering-grid">
       <div class="catering-card">
-        <div class="catering-icon" aria-hidden="true"></div>
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Small gathering catering preview">
+        <span class="catering-icon" aria-hidden="true">🥘</span>
         <h3>Small Gathering</h3>
         <p>Perfect for 5-10 people. Two rice dishes, one stew, grilled protein, and sides with sauces.</p>
         <span class="catering-label">Starting at</span>
@@ -452,7 +456,8 @@
         <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
       <div class="catering-card">
-        <div class="catering-icon" aria-hidden="true"></div>
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Family tray catering preview">
+        <span class="catering-icon" aria-hidden="true">🍽️</span>
         <h3>Family Tray</h3>
         <p>Ideal for 10-20 people. Expanded menu with jollof, fried rice, soups, and assorted small chops.</p>
         <span class="catering-label">Starting at</span>
@@ -460,7 +465,8 @@
         <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
       <div class="catering-card">
-        <div class="catering-icon" aria-hidden="true"></div>
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Event catering preview">
+        <span class="catering-icon" aria-hidden="true">🎉</span>
         <h3>Event Catering</h3>
         <p>For 20-100+ people. Full-service options, custom menu, and staffing support for large events.</p>
         <span class="catering-label">Starting at</span>
@@ -478,6 +484,7 @@
       <button class="carousel-btn prev" type="button" aria-label="Scroll featured left" data-carousel-prev>&lsaquo;</button>
       <div class="featured-grid" data-carousel-track data-drag-track>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Rice dishes preview">
         <h3>Rice Dishes</h3>
         <ul>
           <li>Fried Rice (West African style)</li>
@@ -489,6 +496,7 @@
         </ul>
       </div>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Stews and sauces preview">
         <h3>Stews &amp; Sauces</h3>
         <ul>
           <li>Red Stew</li>
@@ -498,6 +506,7 @@
         </ul>
       </div>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Soups and swallows preview">
         <h3>Soups &amp; Swallows</h3>
         <ul>
           <li>Egusi Soup &amp; Pounded Yam</li>
@@ -515,6 +524,7 @@
         </ul>
       </div>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Sides and street food preview">
         <h3>Sides &amp; Street Food</h3>
         <ul>
           <li>Dodo (Fried Plantain)</li>
@@ -528,6 +538,7 @@
         </ul>
       </div>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Proteins and grilled preview">
         <h3>Proteins &amp; Grilled</h3>
         <ul>
           <li>Suya</li>
@@ -540,6 +551,7 @@
         </ul>
       </div>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Beans and pasta preview">
         <h3>Beans, Porridges &amp; Pasta</h3>
         <ul>
           <li>Moi Moi</li>
@@ -553,6 +565,7 @@
         </ul>
       </div>
       <div class="featured-card">
+        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Pepper soups preview">
         <h3>Pepper Soups</h3>
         <ul>
           <li>Pepper Soup - Goat</li>
@@ -566,141 +579,147 @@
   </div>
 </section>
 
-<section id="smoothies" class="smoothies-sticky">
-  <div class="smoothies-content">
-    <div class="smoothies-intro">
-      <h2>Smoothies &amp; Fresh Juices</h2>
-      <p class="smoothies-subtitle">Freshly blended smoothies and traditional African beverages to complete your order.</p>
-      <p>Choose bright, refreshing blends made to order. Every drink is crafted with ripe fruit, authentic spices, and the option to customize sweetness and spice.</p>
-      <p><strong>You</strong> pick the flavor; we handle the freshness.</p>
-    </div>
+<section class="sticky-media-stack">
+  <div class="smoothies-sticky">
+    <div class="smoothies-content">
+      <div class="smoothies-intro">
+        <h2>Smoothies &amp; Fresh Juices</h2>
+        <p class="smoothies-subtitle">Freshly blended smoothies and traditional African beverages to complete your order.</p>
+        <p>Choose bright, refreshing blends made to order. Every drink is crafted with ripe fruit, authentic spices, and the option to customize sweetness and spice.</p>
+        <p><strong>You</strong> pick the flavor; we handle the freshness.</p>
+      </div>
 
-    <div class="smoothies-deck" data-smoothies-deck>
-      <article class="drink-card is-active" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Tropical mango smoothie - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Tropical Mango Smoothie</h3>
-          <p>Mango, banana, and coconut.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$6-$9</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Pineapple ginger smoothie - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Pineapple Ginger Zing</h3>
-          <p>Pineapple, ginger, lime.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$6-$9</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Watermelon cooler drink - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Watermelon Cooler</h3>
-          <p>Watermelon, mint, lime.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$6-$9</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=1200&q=80" alt="Orange carrot boost juice - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Orange Carrot Boost</h3>
-          <p>Orange, carrot, turmeric.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$6-$9</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80" alt="Berry blast smoothie - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Berry Blast</h3>
-          <p>Mixed berries, yogurt, honey.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$6-$9</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Zobo hibiscus drink - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Zobo / Hibiscus Drink</h3>
-          <p>Traditional Nigerian hibiscus infusion.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$5-$8</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1507914372368-b2b085b925a1?auto=format&fit=crop&w=1200&q=80" alt="Kunu tigernut drink - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Kunu / Tigernut Drink</h3>
-          <p>Creamy tigernut beverage with spice.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$5-$8</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Chapman non-alcoholic cocktail - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Chapman</h3>
-          <p>Nigerian non-alcoholic cocktail with citrus.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$5-$8</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
-      <article class="drink-card" data-smoothie-card>
-        <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Sobolo Ghanaian hibiscus drink - DA Catering YYC" loading="lazy">
-        <div class="drink-details">
-          <h3>Sobolo</h3>
-          <p>Ghanaian hibiscus drink with pineapple notes.</p>
-          <p>Sizes: Small, Medium, Large</p>
-          <strong>$5-$8</strong>
-          <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
-        </div>
-      </article>
+      <div class="smoothies-deck" data-smoothies-deck>
+        <article class="drink-card is-active" data-smoothie-card data-drink-name="Tropical Mango Smoothie" data-drink-price="8">
+          <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Tropical mango smoothie - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Tropical Mango Smoothie</h3>
+            <p>Mango, banana, and coconut.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$6-$9</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Pineapple Ginger Zing" data-drink-price="8">
+          <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Pineapple ginger smoothie - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Pineapple Ginger Zing</h3>
+            <p>Pineapple, ginger, lime.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$6-$9</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Watermelon Cooler" data-drink-price="7">
+          <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Watermelon cooler drink - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Watermelon Cooler</h3>
+            <p>Watermelon, mint, lime.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$6-$9</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Orange Carrot Boost" data-drink-price="7">
+          <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=1200&q=80" alt="Orange carrot boost juice - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Orange Carrot Boost</h3>
+            <p>Orange, carrot, turmeric.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$6-$9</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Berry Blast" data-drink-price="8">
+          <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80" alt="Berry blast smoothie - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Berry Blast</h3>
+            <p>Mixed berries, yogurt, honey.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$6-$9</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Zobo / Hibiscus Drink" data-drink-price="6">
+          <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Zobo hibiscus drink - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Zobo / Hibiscus Drink</h3>
+            <p>Traditional Nigerian hibiscus infusion.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$5-$8</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Kunu / Tigernut Drink" data-drink-price="6">
+          <img src="https://images.unsplash.com/photo-1507914372368-b2b085b925a1?auto=format&fit=crop&w=1200&q=80" alt="Kunu tigernut drink - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Kunu / Tigernut Drink</h3>
+            <p>Creamy tigernut beverage with spice.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$5-$8</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Chapman" data-drink-price="6">
+          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Chapman non-alcoholic cocktail - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Chapman</h3>
+            <p>Nigerian non-alcoholic cocktail with citrus.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$5-$8</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+        <article class="drink-card" data-smoothie-card data-drink-name="Sobolo" data-drink-price="6">
+          <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Sobolo Ghanaian hibiscus drink - DA Catering YYC" loading="lazy">
+          <div class="drink-details">
+            <h3>Sobolo</h3>
+            <p>Ghanaian hibiscus drink with pineapple notes.</p>
+            <p>Sizes: Small, Medium, Large</p>
+            <strong>$5-$8</strong>
+            <button class="btn btn-primary" type="button">Add Drinks to My Order</button>
+          </div>
+        </article>
+      </div>
+      <div class="smoothies-dots" data-smoothies-dots></div>
     </div>
-    <div class="smoothies-dots" data-smoothies-dots></div>
+  </div>
+  <div class="event-types">
+    <div class="container">
+      <div class="event-types-head">
+        <h2 class="section-title">Events We Cater</h2>
+        <p class="section-subtitle">Corporate, family, and community gatherings across Calgary and surrounding areas.</p>
+      </div>
+      <div class="event-types-grid">
+        <div class="event-type-card">
+          <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Corporate lunches preview">
+          <span class="event-type-icon" aria-hidden="true">💼</span>
+          <h3>Corporate Lunches</h3>
+          <p>Executive lunches, office celebrations, and client meetings.</p>
+        </div>
+        <div class="event-type-card">
+          <img class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Birthdays and milestones preview">
+          <span class="event-type-icon" aria-hidden="true">🎉</span>
+          <h3>Birthdays &amp; Milestones</h3>
+          <p>Family-friendly spreads with crowd-pleasing favorites.</p>
+        </div>
+        <div class="event-type-card">
+          <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Wedding catering preview">
+          <span class="event-type-icon" aria-hidden="true">💍</span>
+          <h3>Weddings</h3>
+          <p>Elegant service, custom menus, and cultural favorites.</p>
+        </div>
+        <div class="event-type-card">
+          <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Community gatherings preview">
+          <span class="event-type-icon" aria-hidden="true">🤝</span>
+          <h3>Community Gatherings</h3>
+          <p>Faith events, cultural festivals, and community dinners.</p>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="smoothies-sticky-image">
     <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1600&q=80" alt="Fresh juices and smoothies" loading="lazy">
-  </div>
-</section>
-<section class="section event-types">
-  <div class="container">
-    <div class="event-types-head">
-      <h2 class="section-title">Events We Cater</h2>
-      <p class="section-subtitle">Corporate, family, and community gatherings across Calgary and surrounding areas.</p>
-    </div>
-    <div class="event-types-grid">
-      <div class="event-type-card">
-        <span class="event-type-icon" aria-hidden="true">💼</span>
-        <h3>Corporate Lunches</h3>
-        <p>Executive lunches, office celebrations, and client meetings.</p>
-      </div>
-      <div class="event-type-card">
-        <span class="event-type-icon" aria-hidden="true">🎉</span>
-        <h3>Birthdays &amp; Milestones</h3>
-        <p>Family-friendly spreads with crowd-pleasing favorites.</p>
-      </div>
-      <div class="event-type-card">
-        <span class="event-type-icon" aria-hidden="true">💍</span>
-        <h3>Weddings</h3>
-        <p>Elegant service, custom menus, and cultural favorites.</p>
-      </div>
-      <div class="event-type-card">
-        <span class="event-type-icon" aria-hidden="true">🤝</span>
-        <h3>Community Gatherings</h3>
-        <p>Faith events, cultural festivals, and community dinners.</p>
-      </div>
-    </div>
   </div>
 </section>
 <section id="video" class="section video-section">
@@ -718,7 +737,7 @@
 <section id="instagram" class="section instagram-section">
   <div class="container">
     <div class="section-head">
-      <h2 class="section-title">Gallery</h2>
+      <h2 class="section-title">Feeds from our Social Media Pages</h2>
       <p class="section-subtitle">A glimpse of our culinary artistry.</p>
     </div>
     <div class="gallery-grid">
@@ -915,7 +934,11 @@
 </section>
 
 <div class="whatsapp-concierge" data-whatsapp-widget>
+  <button class="whatsapp-concierge__minimize" type="button" aria-label="Minimize WhatsApp concierge" data-whatsapp-minimize>–</button>
   <button class="whatsapp-concierge__close" type="button" aria-label="Close WhatsApp concierge" data-whatsapp-close>×</button>
+  <button class="whatsapp-concierge__expand" type="button" aria-label="Expand WhatsApp concierge" data-whatsapp-expand>
+    Need help fast?
+  </button>
   <div class="whatsapp-concierge__content">
     <span class="whatsapp-concierge__badge">Need help fast?</span>
     <h4>Chat with our catering concierge</h4>

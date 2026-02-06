@@ -331,11 +331,41 @@ const initMenuCardFocus = () => {
   const menuTrack = document.querySelector("#menu .product-grid");
   if (!menuTrack) return;
 
-  const cards = Array.from(menuTrack.querySelectorAll(".product-card"));
+  const originalCards = Array.from(menuTrack.querySelectorAll(".product-card"));
+  const cards = [...originalCards];
   if (!cards.length) return;
 
   let ticking = false;
   const dotsContainer = document.querySelector("[data-menu-dots]");
+  let isLooping = false;
+  let cloneCount = 0;
+
+  const buildLoopClones = () => {
+    const visibleCards = getVisibleCards();
+    if (visibleCards.length < 3) return;
+
+    const computedStyle = getComputedStyle(menuTrack);
+    const gap = parseInt(computedStyle.gap || "24", 10);
+    const cardWidth = visibleCards[0].getBoundingClientRect().width + gap;
+    cloneCount = Math.min(3, visibleCards.length);
+
+    visibleCards.slice(0, cloneCount).forEach((card) => {
+      const clone = card.cloneNode(true);
+      clone.setAttribute("data-clone", "true");
+      menuTrack.appendChild(clone);
+      cards.push(clone);
+    });
+
+    visibleCards.slice(-cloneCount).forEach((card) => {
+      const clone = card.cloneNode(true);
+      clone.setAttribute("data-clone", "true");
+      menuTrack.insertBefore(clone, menuTrack.firstChild);
+      cards.unshift(clone);
+    });
+
+    const offset = cardWidth * cloneCount;
+    menuTrack.scrollLeft = offset;
+  };
 
   const getVisibleCards = () => cards.filter((card) => card.style.display !== "none");
 
@@ -349,6 +379,7 @@ const initMenuCardFocus = () => {
       dot.className = "menu-dot";
       dot.setAttribute("aria-label", `Go to menu item ${index + 1}`);
       dot.addEventListener("click", () => {
+        if (card.getAttribute("data-clone") === "true") return;
         card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
       });
       dotsContainer.appendChild(dot);
@@ -364,6 +395,7 @@ const initMenuCardFocus = () => {
 
     cards.forEach((card) => {
       if (card.style.display === "none") return;
+      if (card.getAttribute("data-clone") === "true") return;
       const rect = card.getBoundingClientRect();
       const cardCenter = rect.left + rect.width / 2;
       const distance = Math.abs(centerX - cardCenter);
@@ -390,6 +422,24 @@ const initMenuCardFocus = () => {
   const onScroll = () => {
     if (!ticking) {
       window.requestAnimationFrame(() => {
+        if (cloneCount && !isLooping) {
+          const computedStyle = getComputedStyle(menuTrack);
+          const gap = parseInt(computedStyle.gap || "24", 10);
+          const cardWidth = originalCards[0].getBoundingClientRect().width + gap;
+          const totalOriginal = cardWidth * originalCards.length;
+          const totalClones = cardWidth * cloneCount;
+          const scrollLeft = menuTrack.scrollLeft;
+
+          if (scrollLeft <= totalClones - cardWidth) {
+            isLooping = true;
+            menuTrack.scrollLeft = scrollLeft + totalOriginal;
+            isLooping = false;
+          } else if (scrollLeft >= totalClones + totalOriginal) {
+            isLooping = true;
+            menuTrack.scrollLeft = scrollLeft - totalOriginal;
+            isLooping = false;
+          }
+        }
         updateActiveCard();
         ticking = false;
       });
@@ -404,19 +454,24 @@ const initMenuCardFocus = () => {
   filterButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       setTimeout(() => {
+        menuTrack.querySelectorAll("[data-clone=\"true\"]").forEach((node) => node.remove());
+        cards.length = 0;
+        cards.push(...Array.from(menuTrack.querySelectorAll(".product-card")));
         buildDots();
+        buildLoopClones();
         updateActiveCard();
       }, 0);
     });
   });
 
   buildDots();
+  buildLoopClones();
   updateActiveCard();
 };
 
 const initBookingTabs = () => {
   const page = document.querySelector(".booking-page");
-  if (!page) return;
+  if (!page || page.classList.contains("booking-modern")) return;
 
   const buttons = page.querySelectorAll(".tab-btn");
   const contents = page.querySelectorAll(".tab-content");
@@ -440,7 +495,7 @@ const initBookingTabs = () => {
 
 const initBookingForms = () => {
   const page = document.querySelector(".booking-page");
-  if (!page) return;
+  if (!page || page.classList.contains("booking-modern")) return;
 
   const cateringForm = page.querySelector("#cateringForm");
   if (cateringForm) {
@@ -461,7 +516,7 @@ const initBookingForms = () => {
 
 const initBookingSmoothScroll = () => {
   const page = document.querySelector(".booking-page");
-  if (!page) return;
+  if (!page || page.classList.contains("booking-modern")) return;
 
   page.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", (e) => {
@@ -475,7 +530,7 @@ const initBookingSmoothScroll = () => {
 
 const initBookingOrderControls = () => {
   const page = document.querySelector(".booking-page");
-  if (!page) return;
+  if (!page || page.classList.contains("booking-modern")) return;
 
   const container = page.querySelector("[data-order-summary]");
   if (!container) return;
@@ -557,6 +612,38 @@ const initSmoothiesDeck = () => {
   updateActive();
 };
 
+const initSmoothiesButtons = () => {
+  const buttons = document.querySelectorAll(".smoothies-sticky .btn.btn-primary");
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest("[data-smoothie-card]");
+      if (!card) return;
+
+      const name = card.getAttribute("data-drink-name") || card.querySelector("h3")?.textContent?.trim();
+      const priceRaw = card.getAttribute("data-drink-price") || "0";
+      const price = Number.parseFloat(priceRaw) || 0;
+
+      if (!name) return;
+
+      const items = getStoredOrder();
+      const existing = items.find((item) => item.name === name && !item.notes);
+      if (existing) {
+        existing.qty += 1;
+      } else {
+        items.push({ name, price, qty: 1, notes: "" });
+      }
+
+      saveOrder(items);
+      updateOrderSummary();
+      button.textContent = "Added";
+      setTimeout(() => (button.textContent = "Add Drinks to My Order"), 1200);
+      window.location.href = `${window.location.origin}/booking/#checkout`;
+    });
+  });
+};
+
 const initFaqAccordion = () => {
   const items = Array.from(document.querySelectorAll(".faq-item"));
   if (!items.length) return;
@@ -613,11 +700,326 @@ const initCountUp = () => {
 const initWhatsappWidget = () => {
   const widget = document.querySelector("[data-whatsapp-widget]");
   const closeBtn = document.querySelector("[data-whatsapp-close]");
+  const minimizeBtn = document.querySelector("[data-whatsapp-minimize]");
+  const expandBtn = document.querySelector("[data-whatsapp-expand]");
   if (!widget || !closeBtn) return;
 
   closeBtn.addEventListener("click", () => {
     widget.style.display = "none";
   });
+
+  if (minimizeBtn && expandBtn) {
+    minimizeBtn.addEventListener("click", () => {
+      widget.classList.add("is-minimized");
+    });
+
+    expandBtn.addEventListener("click", () => {
+      widget.classList.remove("is-minimized");
+    });
+  }
+};
+
+const initBookingModern = () => {
+  const root = document.querySelector(".booking-modern");
+  if (!root) return;
+
+  const bookingStorageKey = "daCateringBookingModern";
+  let currentStep = 1;
+
+  const tabButtons = root.querySelectorAll(".tab-btn");
+  tabButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const targetTab = btn.dataset.tab;
+      tabButtons.forEach((b) => b.classList.remove("active"));
+      root.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
+      btn.classList.add("active");
+      const panel = root.querySelector(`[data-panel=\"${targetTab}\"]`);
+      if (panel) {
+        panel.classList.add("active");
+      }
+    });
+  });
+
+  const goToStep = (stepNumber) => {
+    currentStep = stepNumber;
+    root.querySelectorAll(".form-step").forEach((step) => step.classList.remove("active"));
+    const targetStep = root.querySelector(`[data-step-content=\"${stepNumber}\"]`);
+    if (targetStep) {
+      targetStep.classList.add("active");
+    }
+
+    const stepItems = root.querySelectorAll(".step-item");
+    stepItems.forEach((item, index) => {
+      const stepNum = index + 1;
+      item.classList.remove("active", "completed");
+      if (stepNum < stepNumber) {
+        item.classList.add("completed");
+      } else if (stepNum === stepNumber) {
+        item.classList.add("active");
+      }
+    });
+
+    const form = root.querySelector(".booking-form");
+    if (form) {
+      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    if (stepNumber === 4) {
+      updateBookingSummary();
+    }
+  };
+
+  const showFieldError = (input, message) => {
+    input.style.borderColor = "#ef4444";
+    const existingError = input.parentElement.querySelector(".field-error");
+    if (existingError) {
+      existingError.remove();
+    }
+    const errorDiv = document.createElement("div");
+    errorDiv.className = "field-error";
+    errorDiv.style.cssText = "color:#ef4444;font-size:0.85rem;margin-top:4px;";
+    errorDiv.textContent = message;
+    input.parentElement.appendChild(errorDiv);
+  };
+
+  const clearFieldError = (input) => {
+    input.style.borderColor = "";
+    const error = input.parentElement.querySelector(".field-error");
+    if (error) {
+      error.remove();
+    }
+  };
+
+  const isValidEmail = (email) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+  const isValidPhone = (phone) => {
+    const digits = phone.replace(/\\D/g, "");
+    return digits.length >= 10;
+  };
+
+  const validateCurrentStep = () => {
+    const currentStepEl = root.querySelector(".form-step.active");
+    if (!currentStepEl) return true;
+
+    let isValid = true;
+    const requiredInputs = currentStepEl.querySelectorAll("[required]");
+    requiredInputs.forEach((input) => {
+      if (!String(input.value || "").trim()) {
+        isValid = false;
+        showFieldError(input, "This field is required");
+      } else {
+        clearFieldError(input);
+      }
+    });
+
+    currentStepEl.querySelectorAll("input[type=\"email\"]").forEach((input) => {
+      if (input.value && !isValidEmail(input.value)) {
+        isValid = false;
+        showFieldError(input, "Please enter a valid email address");
+      }
+    });
+
+    currentStepEl.querySelectorAll("input[type=\"tel\"]").forEach((input) => {
+      if (input.value && !isValidPhone(input.value)) {
+        isValid = false;
+        showFieldError(input, "Please enter a valid phone number");
+      }
+    });
+
+    return isValid;
+  };
+
+  window.nextStep = (stepNumber) => {
+    if (validateCurrentStep()) {
+      goToStep(stepNumber);
+      saveFormProgress();
+    }
+  };
+
+  window.prevStep = (stepNumber) => {
+    goToStep(stepNumber);
+  };
+
+  const serviceRadios = root.querySelectorAll("input[name=\"service_type\"]");
+  const deliveryField = root.querySelector(".delivery-address");
+  serviceRadios.forEach((radio) => {
+    radio.addEventListener("change", () => {
+      if (!deliveryField) return;
+      if (radio.value === "delivery") {
+        deliveryField.style.display = "block";
+        const textarea = deliveryField.querySelector("textarea");
+        if (textarea) textarea.setAttribute("required", "required");
+      } else {
+        deliveryField.style.display = "none";
+        const textarea = deliveryField.querySelector("textarea");
+        if (textarea) textarea.removeAttribute("required");
+      }
+    });
+  });
+
+  const getInputValue = (labelText) => {
+    const labels = Array.from(root.querySelectorAll(".form-label"));
+    const label = labels.find((l) => l.textContent.includes(labelText));
+    if (!label) return "Not specified";
+    const input = label.parentElement.querySelector("input, textarea");
+    return input && input.value ? input.value : "Not specified";
+  };
+
+  const getSelectText = (labelText) => {
+    const labels = Array.from(root.querySelectorAll(".form-label"));
+    const label = labels.find((l) => l.textContent.includes(labelText));
+    if (!label) return "Not specified";
+    const select = label.parentElement.querySelector("select");
+    return select && select.selectedIndex > 0 ? select.options[select.selectedIndex].text : "Not specified";
+  };
+
+  const getRadioValue = (name) => {
+    const radio = root.querySelector(`input[name=\"${name}\"]:checked`);
+    if (!radio) return "Not specified";
+    const label = radio.closest(".radio-card")?.querySelector("strong");
+    return label ? label.textContent : radio.value;
+  };
+
+  const updateBookingSummary = () => {
+    const summaryContainer = root.querySelector(".booking-summary");
+    if (!summaryContainer) return;
+
+    const summaryHTML = `
+      <div class=\"summary-grid\" style=\"display:grid;gap:20px;\">
+        <div class=\"summary-section\">
+          <h4 style=\"color:var(--booking-primary);margin-bottom:12px;font-size:1rem;\">Event Details</h4>
+          <div style=\"display:grid;gap:8px;\">
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Event Type:</span><strong>${getSelectText("Event Type")}</strong></div>
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Guests:</span><strong>${getSelectText("Number of Guests")}</strong></div>
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Date:</span><strong>${getInputValue("Event Date")}</strong></div>
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Time:</span><strong>${getInputValue("Event Time")}</strong></div>
+          </div>
+        </div>
+        <div class=\"summary-section\">
+          <h4 style=\"color:var(--booking-primary);margin-bottom:12px;font-size:1rem;\">Contact Information</h4>
+          <div style=\"display:grid;gap:8px;\">
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Name:</span><strong>${getInputValue("Full Name")}</strong></div>
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Email:</span><strong>${getInputValue("Email Address")}</strong></div>
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Phone:</span><strong>${getInputValue("Phone Number")}</strong></div>
+          </div>
+        </div>
+        <div class=\"summary-section\">
+          <h4 style=\"color:var(--booking-primary);margin-bottom:12px;font-size:1rem;\">Service Details</h4>
+          <div style=\"display:grid;gap:8px;\">
+            <div style=\"display:flex;justify-content:space-between;\"><span style=\"color:var(--booking-muted);\">Service Type:</span><strong>${getRadioValue("service_type")}</strong></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    summaryContainer.innerHTML = summaryHTML;
+  };
+
+  const saveFormProgress = () => {
+    const form = root.querySelector("#cateringForm");
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const data = {};
+    for (const [key, value] of formData.entries()) {
+      if (data[key]) {
+        data[key] = Array.isArray(data[key]) ? [...data[key], value] : [data[key], value];
+      } else {
+        data[key] = value;
+      }
+    }
+
+    try {
+      localStorage.setItem(bookingStorageKey, JSON.stringify(data));
+    } catch {
+      return;
+    }
+  };
+
+  const loadFormProgress = () => {
+    try {
+      const saved = localStorage.getItem(bookingStorageKey);
+      if (!saved) return;
+      const data = JSON.parse(saved);
+      const form = root.querySelector("#cateringForm");
+      if (!form) return;
+
+      Object.keys(data).forEach((key) => {
+        const inputs = form.querySelectorAll(`[name=\"${key}\"]`);
+        inputs.forEach((input) => {
+          if (input.type === "checkbox") {
+            const values = Array.isArray(data[key]) ? data[key] : [data[key]];
+            input.checked = values.includes(input.value);
+          } else if (input.type === "radio") {
+            input.checked = input.value === data[key];
+          } else {
+            input.value = data[key];
+          }
+        });
+      });
+
+      const selectedService = form.querySelector("input[name=\"service_type\"]:checked");
+      if (selectedService && deliveryField) {
+        if (selectedService.value === "delivery") {
+          deliveryField.style.display = "block";
+          const textarea = deliveryField.querySelector("textarea");
+          if (textarea) textarea.setAttribute("required", "required");
+        }
+      }
+    } catch {
+      return;
+    }
+  };
+
+  window.sendWhatsApp = () => {
+    if (!validateCurrentStep()) return;
+    let message = "New Catering Booking Request%0A%0A";
+    message += `Event Type: ${encodeURIComponent(getSelectText("Event Type"))}%0A`;
+    message += `Guests: ${encodeURIComponent(getSelectText("Number of Guests"))}%0A`;
+    message += `Date: ${encodeURIComponent(getInputValue("Event Date"))}%0A`;
+    message += `Time: ${encodeURIComponent(getInputValue("Event Time"))}%0A%0A`;
+    message += `Name: ${encodeURIComponent(getInputValue("Full Name"))}%0A`;
+    message += `Email: ${encodeURIComponent(getInputValue("Email Address"))}%0A`;
+    message += `Phone: ${encodeURIComponent(getInputValue("Phone Number"))}%0A`;
+    message += `Service Type: ${encodeURIComponent(getRadioValue("service_type"))}`;
+
+    const phoneNumber = "14034782475";
+    window.open(`https://wa.me/${phoneNumber}?text=${message}`, "_blank");
+  };
+
+  const form = root.querySelector("#cateringForm");
+  if (form) {
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!validateCurrentStep()) return;
+      localStorage.removeItem(bookingStorageKey);
+      const wrapper = root.querySelector(".booking-form-wrapper");
+      if (wrapper) {
+        wrapper.innerHTML = `
+          <div style=\"text-align:center;padding:60px 40px;\">
+            <div style=\"width:80px;height:80px;border-radius:50%;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;\">
+              <svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#10b981\" stroke-width=\"2\">\n                <polyline points=\"20 6 9 17 4 12\"/>\n              </svg>
+            </div>
+            <h2 style=\"color:var(--booking-primary);font-size:2rem;margin-bottom:16px;\">Booking Request Submitted!</h2>
+            <p style=\"color:var(--booking-muted);font-size:1.1rem;max-width:500px;margin:0 auto 32px;\">Thank you for your booking request. We'll review your details and get back to you within 2 hours with a customized quote.</p>
+            <a href=\"/\" class=\"btn btn-primary\" style=\"margin-top:20px;\">Return to Homepage</a>
+          </div>
+        `;
+      }
+    });
+
+    form.addEventListener("change", saveFormProgress);
+  }
+
+  const checkoutForm = root.querySelector("#checkoutForm");
+  if (checkoutForm) {
+    checkoutForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      alert("Order placed successfully! Check your email for confirmation.");
+    });
+  }
+
+  loadFormProgress();
+  goToStep(currentStep);
 };
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -634,9 +1036,11 @@ document.addEventListener("DOMContentLoaded", () => {
   initBookingSmoothScroll();
   initBookingOrderControls();
   initSmoothiesDeck();
+  initSmoothiesButtons();
   initFaqAccordion();
   initCountUp();
   initWhatsappWidget();
+  initBookingModern();
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {
