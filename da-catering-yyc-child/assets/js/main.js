@@ -812,14 +812,16 @@ const initBookingModern = () => {
     });
 
     currentStepEl.querySelectorAll("input[type=\"email\"]").forEach((input) => {
-      if (input.value && !isValidEmail(input.value)) {
+      const emailValue = String(input.value || "").trim();
+      if (emailValue && !isValidEmail(emailValue)) {
         isValid = false;
         showFieldError(input, "Please enter a valid email address");
       }
     });
 
     currentStepEl.querySelectorAll("input[type=\"tel\"]").forEach((input) => {
-      if (input.value && !isValidPhone(input.value)) {
+      const phoneValue = String(input.value || "").trim();
+      if (phoneValue && !isValidPhone(phoneValue)) {
         isValid = false;
         showFieldError(input, "Please enter a valid phone number");
       }
