@@ -497,11 +497,32 @@ const initBookingForms = () => {
   const page = document.querySelector(".booking-page");
   if (!page || page.classList.contains("booking-modern")) return;
 
+  const showInlineFormMessage = (form, message, type = "success") => {
+    if (!form) return;
+    let messageEl = form.querySelector(".form-message");
+    if (!messageEl) {
+      messageEl = document.createElement("div");
+      messageEl.className = `form-message form-message--${type}`;
+      messageEl.setAttribute("role", "status");
+      messageEl.setAttribute("aria-live", "polite");
+      const actions = form.querySelector(".form-actions");
+      if (actions && actions.parentElement) {
+        actions.parentElement.appendChild(messageEl);
+      } else {
+        form.appendChild(messageEl);
+      }
+    } else {
+      messageEl.className = `form-message form-message--${type}`;
+    }
+    messageEl.textContent = message;
+    messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  };
+
   const cateringForm = page.querySelector("#cateringForm");
   if (cateringForm) {
     cateringForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Booking request submitted! We'll contact you within 2 hours.");
+      showInlineFormMessage(cateringForm, "Booking request submitted! We'll contact you within 2 hours.");
     });
   }
 
@@ -509,7 +530,7 @@ const initBookingForms = () => {
   if (checkoutForm) {
     checkoutForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Order placed successfully! Check your email for confirmation.");
+      showInlineFormMessage(checkoutForm, "Order placed successfully! Check your email for confirmation.");
     });
   }
 };
@@ -530,7 +551,7 @@ const initBookingSmoothScroll = () => {
 
 const initBookingOrderControls = () => {
   const page = document.querySelector(".booking-page");
-  if (!page || page.classList.contains("booking-modern")) return;
+  if (!page) return;
 
   const container = page.querySelector("[data-order-summary]");
   if (!container) return;
@@ -1016,7 +1037,21 @@ const initBookingModern = () => {
   if (checkoutForm) {
     checkoutForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Order placed successfully! Check your email for confirmation.");
+      let messageEl = checkoutForm.querySelector(".form-message");
+      if (!messageEl) {
+        messageEl = document.createElement("div");
+        messageEl.className = "form-message form-message--success";
+        messageEl.setAttribute("role", "status");
+        messageEl.setAttribute("aria-live", "polite");
+        const actions = checkoutForm.querySelector(".form-actions");
+        if (actions && actions.parentElement) {
+          actions.parentElement.appendChild(messageEl);
+        } else {
+          checkoutForm.appendChild(messageEl);
+        }
+      }
+      messageEl.textContent = "Order placed successfully! Check your email for confirmation.";
+      messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   }
 

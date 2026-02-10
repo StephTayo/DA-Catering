@@ -2734,6 +2734,22 @@ body {
   flex-wrap: wrap;
 }
 
+.booking-modern .form-message,
+.booking-page .form-message {
+  margin-top: 16px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  border: 1px solid transparent;
+  background: rgba(16, 185, 129, 0.12);
+  color: #0f5132;
+}
+
+.booking-modern .form-message--success,
+.booking-page .form-message--success {
+  border-color: rgba(16, 185, 129, 0.4);
+}
+
 .booking-modern .btn {
   display: inline-flex;
   align-items: center;
