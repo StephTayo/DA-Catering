@@ -469,6 +469,39 @@ const initMenuCardFocus = () => {
   updateActiveCard();
 };
 
+const initReviewsAutoScroll = () => {
+  const track = document.querySelector("#reviews .testimonial-grid");
+  if (!track) return;
+
+  let paused = false;
+  const speed = 0.3;
+
+  const step = () => {
+    if (!paused) {
+      track.scrollLeft += speed;
+      if (track.scrollLeft >= track.scrollWidth - track.clientWidth - 1) {
+        track.scrollLeft = 0;
+      }
+    }
+    window.requestAnimationFrame(step);
+  };
+
+  const pause = () => {
+    paused = true;
+  };
+  const resume = () => {
+    paused = false;
+  };
+
+  track.addEventListener("pointerdown", pause);
+  track.addEventListener("pointerup", resume);
+  track.addEventListener("pointerleave", resume);
+  track.addEventListener("touchstart", pause, { passive: true });
+  track.addEventListener("touchend", resume, { passive: true });
+
+  step();
+};
+
 const initBookingTabs = () => {
   const page = document.querySelector(".booking-page");
   if (!page || page.classList.contains("booking-modern")) return;
@@ -1091,7 +1124,7 @@ const initNewsletterForm = () => {
     message.textContent = "Submitting...";
     message.style.color = "#555";
 
-    try {
+    const submitTo = async (url) => {
       const payload = new FormData();
       payload.append("action", "da_newsletter_subscribe");
       payload.append("nonce", daNewsletter.nonce);
@@ -1100,12 +1133,31 @@ const initNewsletterForm = () => {
         payload.append("company", honeypot.value || "");
       }
 
-      const response = await fetch(daNewsletter.ajaxUrl, {
+      const response = await fetch(url, {
         method: "POST",
         credentials: "same-origin",
         body: payload,
       });
-      const data = await response.json();
+      let data = null;
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("application/json")) {
+        data = await response.json();
+      } else {
+        const text = await response.text();
+        data = { success: false, data: { message: text || "Unexpected response. Please refresh and try again." } };
+      }
+      return data;
+    };
+
+    try {
+      let data = await submitTo(daNewsletter.ajaxUrl);
+      if (!data || !data.success) {
+        const fallbackUrl = `${window.location.origin}/wp-admin/admin-ajax.php`;
+        if (daNewsletter.ajaxUrl !== fallbackUrl) {
+          data = await submitTo(fallbackUrl);
+        }
+      }
+
       if (data && data.success) {
         message.textContent = data.data && data.data.message ? data.data.message : "Thanks! You are subscribed.";
         message.style.color = "#16a34a";
@@ -1130,6 +1182,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCarousel();
   initDragScroll();
   initMenuCardFocus();
+  initReviewsAutoScroll();
   initOrderSummary();
   initDeliveryToggle();
   initBookingTabs();

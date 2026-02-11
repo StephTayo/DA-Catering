@@ -39,12 +39,32 @@ function da_catering_yyc_child_enqueue_scripts() {
         'da-catering-yyc-child-main',
         'daNewsletter',
         array(
-            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'ajaxUrl' => admin_url('admin-ajax.php', 'https'),
             'nonce' => wp_create_nonce('da_newsletter_subscribe'),
         )
     );
 }
 add_action('wp_enqueue_scripts', 'da_catering_yyc_child_enqueue_scripts', 20);
+
+// Performance: add preconnects and defer main script.
+add_filter('wp_resource_hints', function ($hints, $relation_type) {
+    if ($relation_type === 'preconnect') {
+        $hints[] = 'https://fonts.googleapis.com';
+        $hints[] = 'https://fonts.gstatic.com';
+        $hints[] = 'https://images.unsplash.com';
+        $hints[] = 'https://upload.wikimedia.org';
+    }
+    return $hints;
+}, 10, 2);
+
+add_filter('script_loader_tag', function ($tag, $handle) {
+    if ($handle === 'da-catering-yyc-child-main') {
+        return str_replace(' src', ' defer src', $tag);
+    }
+    return $tag;
+}, 10, 2);
+
+add_filter('wp_lazy_loading_enabled', '__return_true');
 
 function da_catering_yyc_child_allow_logo_uploads($mimes) {
     $mimes['svg'] = 'image/svg+xml';
@@ -295,7 +315,10 @@ function da_catering_yyc_child_send_confirmation_email($email, $token) {
 }
 
 function da_catering_yyc_child_handle_newsletter_subscribe() {
-    check_ajax_referer('da_newsletter_subscribe', 'nonce');
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'da_newsletter_subscribe')) {
+        wp_send_json_error(array('message' => 'Security check failed. Please refresh and try again.'), 403);
+    }
 
     $email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
     $honeypot = isset($_POST['company']) ? sanitize_text_field(wp_unslash($_POST['company'])) : '';

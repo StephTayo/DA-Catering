@@ -1,4 +1,4 @@
-﻿
+
 <section id="home" class="hero-iso">
   <div class="hero-iso__video" aria-hidden="true">
     <video autoplay muted loop playsinline preload="metadata" poster="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1400&q=80">
@@ -52,16 +52,16 @@
     <div class="hero-iso__media">
       <div class="hero-iso__image-grid">
         <div class="hero-iso__image-card">
-          <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=80" alt="African dish with colorful garnish" loading="eager" fetchpriority="high">
+          <img decoding="async" src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=900&q=80" alt="African dish with colorful garnish" loading="eager" fetchpriority="high">
         </div>
         <div class="hero-iso__image-card hero-iso__image-card--offset-top">
-          <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80" alt="Refreshing beverages and juices" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=900&q=80" alt="Refreshing beverages and juices" loading="lazy">
         </div>
         <div class="hero-iso__image-card hero-iso__image-card--offset-bottom">
-          <img src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=80" alt="Catering event buffet setup" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=1200&q=80" alt="Catering event buffet setup" loading="lazy">
         </div>
         <div class="hero-iso__image-card hero-iso__image-card--tall">
-          <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Colorful African food platter" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Colorful African food platter" loading="lazy">
         </div>
       </div>
 
@@ -82,19 +82,19 @@
     <p class="section-subtitle">Fast, simple, and built for mobile. Order African food in Calgary in three easy steps.</p>
     <div class="steps">
       <div class="step-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Ordering step preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Ordering step preview">
         <div class="step-number">1</div>
         <h3>Pick items + quantities</h3>
         <p>Browse the menu, choose your favorite dishes, and set portions that fit your appetite.</p>
       </div>
       <div class="step-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Delivery step preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Delivery step preview">
         <div class="step-number">2</div>
         <h3>Choose pickup or delivery</h3>
         <p>Select pickup or delivery and tell us your preferred time window in Calgary.</p>
       </div>
       <div class="step-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Confirmation step preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Confirmation step preview">
         <div class="step-number">3</div>
         <h3>Submit + confirm</h3>
         <p>Send your order and receive confirmation by WhatsApp, email, and SMS.</p>
@@ -128,7 +128,7 @@
       <button class="carousel-btn prev" type="button" aria-label="Scroll menu left" data-carousel-prev>&lsaquo;</button>
       <div class="product-grid" data-carousel-track data-drag-track>
       <article class="product-card" data-product data-name="Jollof Rice" data-price="18" data-category="rice">
-        <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80" alt="Authentic Nigerian Jollof rice with fried plantain and chicken - DA Catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80" alt="Authentic Nigerian Jollof rice with fried plantain and chicken - DA Catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Jollof Rice</h3>
           <p>Party-style West African rice simmered in tomato pepper sauce, served with grilled chicken.</p>
@@ -148,7 +148,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Fried Rice" data-price="17" data-category="rice">
-        <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="West African fried rice with mixed vegetables and protein - DA Catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="West African fried rice with mixed vegetables and protein - DA Catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Fried Rice</h3>
           <p>West African fried rice with mixed vegetables, beef strips, and fragrant spices.</p>
@@ -168,7 +168,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Egusi Soup & Pounded Yam" data-price="22" data-category="swallow">
-        <img src="https://images.unsplash.com/photo-1604909052868-94d5f80e9bfb?auto=format&fit=crop&w=1200&q=80" alt="West African Egusi soup with pounded yam - African food delivery YYC" loading="lazy">
+        <img decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/7/7f/EGUSI_SOUP_AND_POUNDED_YAM.JPG" alt="West African Egusi soup with pounded yam - African food delivery YYC" loading="lazy">
         <div class="product-body">
           <h3>Egusi Soup &amp; Pounded Yam</h3>
           <p>Melon seed soup with spinach and assorted proteins, paired with smooth pounded yam.</p>
@@ -188,7 +188,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Semovita & Efo Riro" data-price="21" data-category="swallow">
-        <img src="https://images.unsplash.com/photo-1608039829574-0afbe07f2005?auto=format&fit=crop&w=1200&q=80" alt="Semovita and Efo Riro vegetable soup - Nigerian catering Calgary" loading="lazy">
+        <img decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/8/8f/Semolina_and_efo_riro.jpg" alt="Semovita and Efo Riro vegetable soup - Nigerian catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Semovita &amp; Efo Riro</h3>
           <p>Leafy vegetable soup with peppers and palm oil, served with semovita swallow.</p>
@@ -208,7 +208,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Red Stew" data-price="19" data-category="stew">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Red stew with peppers and protein - African catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Red stew with peppers and protein - African catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Red Stew</h3>
           <p>Tomato-based stew with peppers and tender beef, perfect with rice or yam.</p>
@@ -228,7 +228,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Ayamase (Ofada Stew)" data-price="22" data-category="stew">
-        <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="Ofada rice with ayamase green pepper stew - Nigerian catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="Ofada rice with ayamase green pepper stew - Nigerian catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Ayamase / Ofada Stew</h3>
           <p>Designer green pepper stew with assorted meats, served with Ofada rice.</p>
@@ -248,7 +248,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Suya Skewers" data-price="16" data-category="protein chops">
-        <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="Suya skewers - grilled spicy beef - Nigerian catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=1200&q=80" alt="Suya skewers - grilled spicy beef - Nigerian catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Suya Skewers</h3>
           <p>Spicy grilled beef skewers coated in groundnut spice. A Calgary favorite.</p>
@@ -268,7 +268,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Dodo (Fried Plantain)" data-price="12" data-category="chops veg">
-        <img src="https://images.unsplash.com/photo-1608039829574-0afbe07f2005?auto=format&fit=crop&w=1200&q=80" alt="Dodo fried plantain - West African food YYC" loading="lazy">
+        <img decoding="async" src="https://upload.wikimedia.org/wikipedia/commons/1/10/Dodo_fried.jpg" alt="Dodo fried plantain - West African food YYC" loading="lazy">
         <div class="product-body">
           <h3>Dodo (Fried Plantain)</h3>
           <p>Sweet or savory plantain slices fried to golden perfection.</p>
@@ -288,7 +288,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Puff Puff" data-price="10" data-category="chops">
-        <img src="https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&w=1200&q=80" alt="Puff puff sweet fried dough balls - African catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1532635241-17e820acc59f?auto=format&fit=crop&w=1200&q=80" alt="Puff puff sweet fried dough balls - African catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Puff Puff</h3>
           <p>Soft and fluffy African dough balls with a gentle sweetness.</p>
@@ -308,7 +308,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Moi Moi" data-price="14" data-category="veg">
-        <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80" alt="Moi Moi steamed bean pudding - African food delivery YYC" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&w=1200&q=80" alt="Moi Moi steamed bean pudding - African food delivery YYC" loading="lazy">
         <div class="product-body">
           <h3>Moi Moi</h3>
           <p>Steamed bean pudding with peppers and onions. Great for vegetarian guests.</p>
@@ -328,7 +328,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Asun (Spicy Goat)" data-price="23" data-category="protein">
-        <img src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80" alt="Asun spicy grilled goat meat - African catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80" alt="Asun spicy grilled goat meat - African catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Asun (Spicy Goat)</h3>
           <p>Smoky grilled goat tossed in pepper sauce. A must-try street-style favorite.</p>
@@ -348,7 +348,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Okra Soup" data-price="19" data-category="swallow veg">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Okra soup with vegetables - African food delivery YYC" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Okra soup with vegetables - African food delivery YYC" loading="lazy">
         <div class="product-body">
           <h3>Okra Soup</h3>
           <p>Delicate okra draw soup with leafy greens and assorted proteins.</p>
@@ -368,7 +368,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Tropical Mango Smoothie" data-price="8" data-category="smoothie">
-        <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Fresh mango smoothie with tropical fruits - DA Catering YYC" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Fresh mango smoothie with tropical fruits - DA Catering YYC" loading="lazy">
         <div class="product-body">
           <h3>Tropical Mango Smoothie</h3>
           <p>Mango, banana, and coconut blended into a creamy refreshment.</p>
@@ -388,7 +388,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Orange Carrot Boost" data-price="7" data-category="juice">
-        <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Fresh orange carrot juice - African catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Fresh orange carrot juice - African catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Orange Carrot Boost</h3>
           <p>Orange, carrot, and turmeric for a bright, energizing juice.</p>
@@ -408,7 +408,7 @@
       </article>
 
       <article class="product-card" data-product data-name="Party Tray: Jollof + Suya + Dodo" data-price="150" data-category="tray">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Party tray with jollof rice, suya, and dodo - African catering Calgary" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Party tray with jollof rice, suya, and dodo - African catering Calgary" loading="lazy">
         <div class="product-body">
           <h3>Party Tray: Jollof + Suya + Dodo</h3>
           <p>Large-format tray for 8-12 guests with rice, grilled beef, and plantain.</p>
@@ -442,7 +442,7 @@
     </div>
     <div class="catering-grid">
       <div class="catering-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Small gathering catering preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Small gathering catering preview">
         <span class="catering-icon" aria-hidden="true">🥘</span>
         <h3>Small Gathering</h3>
         <p>Perfect for 5-10 people. Two rice dishes, one stew, grilled protein, and sides with sauces.</p>
@@ -451,7 +451,7 @@
         <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
       <div class="catering-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Family tray catering preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Family tray catering preview">
         <span class="catering-icon" aria-hidden="true">🍽️</span>
         <h3>Family Tray</h3>
         <p>Ideal for 10-20 people. Expanded menu with jollof, fried rice, soups, and assorted small chops.</p>
@@ -460,7 +460,7 @@
         <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
       </div>
       <div class="catering-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Event catering preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Event catering preview">
         <span class="catering-icon" aria-hidden="true">🎉</span>
         <h3>Event Catering</h3>
         <p>For 20-100+ people. Full-service options, custom menu, and staffing support for large events.</p>
@@ -479,7 +479,7 @@
       <button class="carousel-btn prev" type="button" aria-label="Scroll featured left" data-carousel-prev>&lsaquo;</button>
       <div class="featured-grid" data-carousel-track data-drag-track>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Rice dishes preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Rice dishes preview">
         <h3>Rice Dishes</h3>
         <ul>
           <li>Fried Rice (West African style)</li>
@@ -491,7 +491,7 @@
         </ul>
       </div>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Stews and sauces preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Stews and sauces preview">
         <h3>Stews &amp; Sauces</h3>
         <ul>
           <li>Red Stew</li>
@@ -501,7 +501,7 @@
         </ul>
       </div>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Soups and swallows preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Soups and swallows preview">
         <h3>Soups &amp; Swallows</h3>
         <ul>
           <li>Egusi Soup &amp; Pounded Yam</li>
@@ -519,7 +519,7 @@
         </ul>
       </div>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Sides and street food preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Sides and street food preview">
         <h3>Sides &amp; Street Food</h3>
         <ul>
           <li>Dodo (Fried Plantain)</li>
@@ -533,7 +533,7 @@
         </ul>
       </div>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Proteins and grilled preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Proteins and grilled preview">
         <h3>Proteins &amp; Grilled</h3>
         <ul>
           <li>Suya</li>
@@ -546,7 +546,7 @@
         </ul>
       </div>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Beans and pasta preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Beans and pasta preview">
         <h3>Beans, Porridges &amp; Pasta</h3>
         <ul>
           <li>Moi Moi</li>
@@ -560,7 +560,7 @@
         </ul>
       </div>
       <div class="featured-card">
-        <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Pepper soups preview">
+        <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Pepper soups preview">
         <h3>Pepper Soups</h3>
         <ul>
           <li>Pepper Soup - Goat</li>
@@ -588,7 +588,7 @@
 
       <div class="smoothies-deck" data-smoothies-deck>
         <article class="drink-card is-active" data-smoothie-card data-drink-name="Tropical Mango Smoothie" data-drink-price="8">
-          <img src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Tropical mango smoothie - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=1200&q=80" alt="Tropical mango smoothie - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Tropical Mango Smoothie</h3>
             <p>Mango, banana, and coconut.</p>
@@ -598,7 +598,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Pineapple Ginger Zing" data-drink-price="8">
-          <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Pineapple ginger smoothie - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Pineapple ginger smoothie - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Pineapple Ginger Zing</h3>
             <p>Pineapple, ginger, lime.</p>
@@ -608,7 +608,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Watermelon Cooler" data-drink-price="7">
-          <img src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Watermelon cooler drink - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1497534446932-c925b458314e?auto=format&fit=crop&w=1200&q=80" alt="Watermelon cooler drink - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Watermelon Cooler</h3>
             <p>Watermelon, mint, lime.</p>
@@ -618,7 +618,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Orange Carrot Boost" data-drink-price="7">
-          <img src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=1200&q=80" alt="Orange carrot boost juice - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1464965911861-746a04b4bca6?auto=format&fit=crop&w=1200&q=80" alt="Orange carrot boost juice - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Orange Carrot Boost</h3>
             <p>Orange, carrot, turmeric.</p>
@@ -628,7 +628,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Berry Blast" data-drink-price="8">
-          <img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80" alt="Berry blast smoothie - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?auto=format&fit=crop&w=1200&q=80" alt="Berry blast smoothie - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Berry Blast</h3>
             <p>Mixed berries, yogurt, honey.</p>
@@ -638,7 +638,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Zobo / Hibiscus Drink" data-drink-price="6">
-          <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Zobo hibiscus drink - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Zobo hibiscus drink - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Zobo / Hibiscus Drink</h3>
             <p>Traditional Nigerian hibiscus infusion.</p>
@@ -648,7 +648,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Kunu / Tigernut Drink" data-drink-price="6">
-          <img src="https://images.unsplash.com/photo-1507914372368-b2b085b925a1?auto=format&fit=crop&w=1200&q=80" alt="Kunu tigernut drink - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1507914372368-b2b085b925a1?auto=format&fit=crop&w=1200&q=80" alt="Kunu tigernut drink - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Kunu / Tigernut Drink</h3>
             <p>Creamy tigernut beverage with spice.</p>
@@ -658,7 +658,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Chapman" data-drink-price="6">
-          <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Chapman non-alcoholic cocktail - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80" alt="Chapman non-alcoholic cocktail - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Chapman</h3>
             <p>Nigerian non-alcoholic cocktail with citrus.</p>
@@ -668,7 +668,7 @@
           </div>
         </article>
         <article class="drink-card" data-smoothie-card data-drink-name="Sobolo" data-drink-price="6">
-          <img src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Sobolo Ghanaian hibiscus drink - DA Catering YYC" loading="lazy">
+          <img decoding="async" src="https://images.unsplash.com/photo-1502741224143-90386d7f8c82?auto=format&fit=crop&w=1200&q=80" alt="Sobolo Ghanaian hibiscus drink - DA Catering YYC" loading="lazy">
           <div class="drink-details">
             <h3>Sobolo</h3>
             <p>Ghanaian hibiscus drink with pineapple notes.</p>
@@ -689,25 +689,25 @@
       </div>
       <div class="event-types-grid">
         <div class="event-type-card">
-          <img class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Corporate lunches preview">
+          <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Corporate lunches preview">
           <span class="event-type-icon" aria-hidden="true">💼</span>
           <h3>Corporate Lunches</h3>
           <p>Executive lunches, office celebrations, and client meetings.</p>
         </div>
         <div class="event-type-card">
-          <img class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Birthdays and milestones preview">
+          <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1738669469338-801b4e9dbccf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Birthdays and milestones preview">
           <span class="event-type-icon" aria-hidden="true">🎉</span>
           <h3>Birthdays &amp; Milestones</h3>
           <p>Family-friendly spreads with crowd-pleasing favorites.</p>
         </div>
         <div class="event-type-card">
-          <img class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Wedding catering preview">
+          <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1769812344084-b45b638b1737?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Wedding catering preview">
           <span class="event-type-icon" aria-hidden="true">💍</span>
           <h3>Weddings</h3>
           <p>Elegant service, custom menus, and cultural favorites.</p>
         </div>
         <div class="event-type-card">
-          <img class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Community gatherings preview">
+          <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Community gatherings preview">
           <span class="event-type-icon" aria-hidden="true">🤝</span>
           <h3>Community Gatherings</h3>
           <p>Faith events, cultural festivals, and community dinners.</p>
@@ -722,7 +722,7 @@
     <h2 class="section-title">Food in Motion</h2>
     <p class="section-subtitle">A quick look at our fresh servings and vibrant plates.</p>
     <div class="video-frame">
-      <video controls playsinline preload="metadata" poster="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80">
+      <video controls playsinline preload="none" poster="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80">
         <source src="<?php echo esc_url(get_template_directory_uri() . '/assets/video/hero.mp4'); ?>" type="video/mp4">
       </video>
     </div>
@@ -738,19 +738,19 @@
     </div>
     <div class="gallery-grid">
       <div class="gallery-card gallery-card--large">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80" alt="Plated chef special for DA Catering YYC" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1400&q=80" alt="Plated chef special for DA Catering YYC" loading="lazy">
       </div>
       <div class="gallery-card">
-        <img src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Catering tray with fruits and bites" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1526318896980-cf78c088247c?auto=format&fit=crop&w=900&q=80" alt="Catering tray with fruits and bites" loading="lazy">
       </div>
       <div class="gallery-card">
-        <img src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=900&q=80" alt="Dessert table setup for events" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1528605248644-14dd04022da1?auto=format&fit=crop&w=900&q=80" alt="Dessert table setup for events" loading="lazy">
       </div>
       <div class="gallery-card">
-        <img src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=900&q=80" alt="Buffet spread for catering" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1481833761820-0509d3217039?auto=format&fit=crop&w=900&q=80" alt="Buffet spread for catering" loading="lazy">
       </div>
       <div class="gallery-card">
-        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Chef preparing fresh dishes" loading="lazy">
+        <img decoding="async" src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=900&q=80" alt="Chef preparing fresh dishes" loading="lazy">
       </div>
     </div>
   </div>
@@ -763,7 +763,7 @@
     <div class="testimonial-grid" data-drag-track>
       <div class="testimonial-card">
         <div class="testimonial-head">
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=140&q=80" alt="Smiling customer" loading="lazy">
+          <div class="testimonial-avatar" aria-hidden="true">NM</div>
           <div>
             <strong>Nadia M.</strong>
             <span>Corporate lunch • Downtown</span>
@@ -774,7 +774,7 @@
       </div>
       <div class="testimonial-card">
         <div class="testimonial-head">
-          <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=140&q=80" alt="Happy customer" loading="lazy">
+          <div class="testimonial-avatar" aria-hidden="true">KA</div>
           <div>
             <strong>Kola A.</strong>
             <span>Family dinner • Beltline</span>
@@ -785,7 +785,7 @@
       </div>
       <div class="testimonial-card">
         <div class="testimonial-head">
-          <img src="https://images.unsplash.com/photo-1544723795-3fb6469f5b39?auto=format&fit=crop&w=140&q=80" alt="Event planner" loading="lazy">
+          <div class="testimonial-avatar" aria-hidden="true">SR</div>
           <div>
             <strong>Stephanie R.</strong>
             <span>Graduation • Sage Hill</span>
@@ -796,7 +796,7 @@
       </div>
       <div class="testimonial-card">
         <div class="testimonial-head">
-          <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=140&q=80" alt="Customer testimonial" loading="lazy">
+          <div class="testimonial-avatar" aria-hidden="true">FL</div>
           <div>
             <strong>Fatima L.</strong>
             <span>Family celebration • Tuscany</span>
@@ -807,7 +807,7 @@
       </div>
       <div class="testimonial-card">
         <div class="testimonial-head">
-          <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=140&q=80" alt="Customer review" loading="lazy">
+          <div class="testimonial-avatar" aria-hidden="true">CP</div>
           <div>
             <strong>Chris P.</strong>
             <span>Birthday • University District</span>
@@ -942,3 +942,5 @@
     <a class="btn btn-primary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I%20need%20help%20with%20my%20order.%20My%20event%20date%20is%20____%20and%20guest%20count%20is%20____." target="_blank" rel="noopener">Message on WhatsApp</a>
   </div>
 </div>
+
+
