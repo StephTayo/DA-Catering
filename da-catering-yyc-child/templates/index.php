@@ -107,11 +107,6 @@
   <div class="container">
     <h2 class="section-title">Menu / Shop</h2>
     <p class="section-subtitle">What we have on our menu today.</p>
-    <div class="menu-quick-steps">
-      <span class="menu-quick-step">1. Pick dishes</span>
-      <span class="menu-quick-step">2. Choose delivery or pickup</span>
-      <span class="menu-quick-step">3. Confirm in 60 seconds</span>
-    </div>
     <div class="hero-actions" style="margin-bottom: 18px;">
       <a class="btn btn-primary" href="<?php echo esc_url(home_url('/shop')); ?>">Go to Shop &amp; Checkout</a>
       <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/cart')); ?>">View Cart</a>
@@ -443,7 +438,7 @@
     <div class="catering-header">
       <span class="catering-pill">Perfect for Any Event</span>
       <h2 class="section-title">Catering Packages</h2>
-      <p class="section-subtitle">From intimate gatherings to grand celebrations, we've got you covered with flexible, delicious options.</p>
+      <p class="section-subtitle">Tailored menus for small get-togethers, family celebrations, and full-scale events.</p>
     </div>
     <div class="catering-grid">
       <div class="catering-card">
