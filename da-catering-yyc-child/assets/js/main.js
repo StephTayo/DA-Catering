@@ -811,9 +811,9 @@ const initBookingModern = () => {
     }
   };
 
-  const isValidEmail = (email) => /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+  const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   const isValidPhone = (phone) => {
-    const digits = phone.replace(/\\D/g, "");
+    const digits = phone.replace(/\D/g, "");
     return digits.length >= 10;
   };
 
@@ -1059,6 +1059,70 @@ const initBookingModern = () => {
   goToStep(currentStep);
 };
 
+const initNewsletterForm = () => {
+  const form = document.querySelector(".newsletter");
+  if (!form || !window.daNewsletter) return;
+
+  const input = form.querySelector("input[type=\"email\"]");
+  const honeypot = form.querySelector("input[name=\"company\"]");
+  const button = form.querySelector("button[type=\"submit\"]");
+  if (!input || !button) return;
+
+  let message = form.querySelector(".newsletter-message");
+  if (!message) {
+    message = document.createElement("div");
+    message.className = "newsletter-message";
+    message.setAttribute("role", "status");
+    message.setAttribute("aria-live", "polite");
+    message.style.cssText = "margin-top:10px;font-size:0.9rem;";
+    form.appendChild(message);
+  }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const email = String(input.value || "").trim();
+    if (!email) {
+      message.textContent = "Please enter your email address.";
+      message.style.color = "#ef4444";
+      return;
+    }
+
+    button.disabled = true;
+    message.textContent = "Submitting...";
+    message.style.color = "#555";
+
+    try {
+      const payload = new FormData();
+      payload.append("action", "da_newsletter_subscribe");
+      payload.append("nonce", daNewsletter.nonce);
+      payload.append("email", email);
+      if (honeypot) {
+        payload.append("company", honeypot.value || "");
+      }
+
+      const response = await fetch(daNewsletter.ajaxUrl, {
+        method: "POST",
+        credentials: "same-origin",
+        body: payload,
+      });
+      const data = await response.json();
+      if (data && data.success) {
+        message.textContent = data.data && data.data.message ? data.data.message : "Thanks! You are subscribed.";
+        message.style.color = "#16a34a";
+        input.value = "";
+      } else {
+        message.textContent = data && data.data && data.data.message ? data.data.message : "Sorry, something went wrong.";
+        message.style.color = "#ef4444";
+      }
+    } catch (error) {
+      message.textContent = "Network error. Please try again.";
+      message.style.color = "#ef4444";
+    } finally {
+      button.disabled = false;
+    }
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   initMenuActions();
   initFilters();
@@ -1078,6 +1142,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initCountUp();
   initWhatsappWidget();
   initBookingModern();
+  initNewsletterForm();
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {
