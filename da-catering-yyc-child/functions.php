@@ -103,6 +103,93 @@ add_action('admin_init', function () {
     }
 });
 
+function da_catering_yyc_child_admin_media_fix($hook) {
+    if ($hook !== 'upload.php') {
+        return;
+    }
+    wp_enqueue_script(
+        'da-catering-yyc-child-admin-media-fix',
+        get_stylesheet_directory_uri() . '/assets/js/admin-media-fix.js',
+        array('jquery'),
+        wp_get_theme()->get('Version'),
+        true
+    );
+}
+add_action('admin_enqueue_scripts', 'da_catering_yyc_child_admin_media_fix');
+
+// Ensure Customizer media scripts are loaded (prevents blank media frame).
+function da_catering_yyc_child_customizer_media_support() {
+    wp_enqueue_media();
+    wp_enqueue_style('media-views');
+    wp_enqueue_script('media-views');
+    wp_enqueue_script('media-models');
+    wp_enqueue_script('media-editor');
+    wp_enqueue_script('wp-api-request');
+    wp_enqueue_script(
+        'da-catering-yyc-child-customizer-media-fix',
+        get_stylesheet_directory_uri() . '/assets/js/customizer-media-fix.js',
+        array('jquery'),
+        wp_get_theme()->get('Version'),
+        true
+    );
+    wp_localize_script(
+        'da-catering-yyc-child-customizer-media-fix',
+        'daMediaFix',
+        array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
+            'mediaNonce' => wp_create_nonce('media-form'),
+            'restNonce' => wp_create_nonce('wp_rest'),
+            'restUrl' => esc_url_raw(rest_url()),
+        )
+    );
+}
+add_action('customize_controls_enqueue_scripts', 'da_catering_yyc_child_customizer_media_support', 20);
+
+// Ensure media templates exist in Customizer controls footer.
+function da_catering_yyc_child_print_customizer_media_templates() {
+    if (function_exists('wp_print_media_templates')) {
+        wp_print_media_templates();
+    }
+}
+add_action('customize_controls_print_footer_scripts', 'da_catering_yyc_child_print_customizer_media_templates', 5);
+
+// Force custom logo output to use the theme asset (bypass broken media picker).
+function da_catering_yyc_child_force_custom_logo($html) {
+    $logo_url = get_stylesheet_directory_uri() . '/assets/img/DA Catering Logo.png';
+    $home_url = home_url('/');
+    $alt = 'DA Catering YYC logo';
+    return '<a href="' . esc_url($home_url) . '" class="custom-logo-link" rel="home" aria-current="page">' .
+        '<img src="' . esc_url($logo_url) . '" class="custom-logo" alt="' . esc_attr($alt) . '" decoding="async" />' .
+        '</a>';
+}
+add_filter('get_custom_logo', 'da_catering_yyc_child_force_custom_logo', 20);
+
+// Force site icon URLs to the theme assets so favicons update immediately.
+function da_catering_yyc_child_force_site_icon($url, $size, $blog_id) {
+    $base = get_stylesheet_directory_uri() . '/assets/img';
+    if ((int) $size === 32) {
+        return $base . '/favicon-32x32.png';
+    }
+    if ((int) $size === 180) {
+        return $base . '/apple-touch-icon.png';
+    }
+    if ((int) $size === 512) {
+        return $base . '/icon-512x512.png';
+    }
+    return $base . '/favicon-32x32.png';
+}
+add_filter('get_site_icon_url', 'da_catering_yyc_child_force_site_icon', 20, 3);
+
+// Force media modal to use admin-ajax settings (helps when REST is blocked in Customizer).
+add_filter('media_view_settings', function ($settings) {
+    if (is_admin() || is_customize_preview()) {
+        $settings['ajaxurl'] = admin_url('admin-ajax.php');
+        $settings['nonce'] = wp_create_nonce('media-form');
+        $settings['post'] = array('id' => 0);
+    }
+    return $settings;
+});
+
 function da_catering_yyc_child_redirect_shop() {
     if (is_admin() || wp_doing_ajax() || (defined('REST_REQUEST') && REST_REQUEST)) {
         return;

@@ -61,6 +61,25 @@ body {
   padding: 12px 0;
 }
 
+.header .logo img,
+.header .custom-logo {
+  width: 88px;
+  height: 88px;
+}
+
+/* Remove any visible gap between the navbar and hero */
+.header + .hero-iso {
+  margin-top: 0;
+}
+
+.hero-iso {
+  padding-top: 0;
+}
+
+.hero-iso__badge {
+  margin-top: 0;
+}
+
 .hero {
   padding: 0 0 90px;
 }
@@ -886,6 +905,8 @@ body {
   margin-bottom: 0;
   background: #243b34;
   box-shadow: none;
+  position: relative;
+  z-index: 5;
 }
 
 .header::after {
@@ -912,6 +933,51 @@ body {
   top: -32px;
   height: 32px;
   background: inherit;
+}
+
+/* Close seam by matching backgrounds and removing offsets */
+.header {
+  padding-bottom: 0;
+  border-bottom: 0;
+}
+
+.header-inner {
+  margin-bottom: 0;
+}
+
+.header + .hero-iso {
+  margin-top: 0;
+}
+
+.hero-iso {
+  background: #243b34;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.hero-iso__container {
+  margin-top: 0;
+  padding-top: 24px;
+}
+
+.hero-iso__badge {
+  margin-top: 12px;
+}
+
+.hero-iso__scrim {
+  top: -220px;
+}
+
+.header + .hero-iso {
+  margin-top: -28px;
+}
+
+.hero-iso::before {
+  display: none;
+}
+
+.hero-iso__scrim {
+  top: 0;
 }
 
 .header-inner {
@@ -3158,9 +3224,37 @@ body {
     flex-direction: column;
   }
 
-  .booking-modern .checkbox-label {
-    width: 100%;
-  }
+.booking-modern .checkbox-label {
+  width: 100%;
+}
+}
+
+/* Header: keep consistent across site and booking page */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+}
+
+.booking-page .header {
+  background: #243b34;
+  border-bottom: 0;
+}
+
+.booking-page .logo img,
+.booking-page .custom-logo {
+  display: inline-block;
+}
+
+.booking-page .logo-text {
+  display: inline-block;
+}
+
+/* Match homepage primary button styling on booking page */
+.booking-page .header .btn-primary {
+  border: 1px solid var(--color-accent);
+  background: var(--color-accent);
+  color: #fff;
 }
 
 /* Standardize card sizing to match "How Ordering Works" cards */

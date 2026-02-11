@@ -6,6 +6,26 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com">
+  <?php
+    $da_logo_path = get_stylesheet_directory() . '/assets/img/DA Catering Logo.png';
+    $da_logo_ver = file_exists($da_logo_path) ? filemtime($da_logo_path) : wp_get_theme()->get('Version');
+    $da_logo_url = get_stylesheet_directory_uri() . '/assets/img/DA Catering Logo.png?v=' . $da_logo_ver;
+
+    $da_favicon_32_path = get_stylesheet_directory() . '/assets/img/favicon-32x32.png';
+    $da_favicon_32_ver = file_exists($da_favicon_32_path) ? filemtime($da_favicon_32_path) : wp_get_theme()->get('Version');
+    $da_favicon_32 = get_stylesheet_directory_uri() . '/assets/img/favicon-32x32.png?v=' . $da_favicon_32_ver;
+
+    $da_apple_touch_path = get_stylesheet_directory() . '/assets/img/apple-touch-icon.png';
+    $da_apple_touch_ver = file_exists($da_apple_touch_path) ? filemtime($da_apple_touch_path) : wp_get_theme()->get('Version');
+    $da_apple_touch = get_stylesheet_directory_uri() . '/assets/img/apple-touch-icon.png?v=' . $da_apple_touch_ver;
+
+    $da_icon_512_path = get_stylesheet_directory() . '/assets/img/icon-512x512.png';
+    $da_icon_512_ver = file_exists($da_icon_512_path) ? filemtime($da_icon_512_path) : wp_get_theme()->get('Version');
+    $da_icon_512 = get_stylesheet_directory_uri() . '/assets/img/icon-512x512.png?v=' . $da_icon_512_ver;
+  ?>
+  <link rel="icon" href="<?php echo esc_url($da_favicon_32); ?>" sizes="32x32">
+  <link rel="apple-touch-icon" href="<?php echo esc_url($da_apple_touch); ?>" sizes="180x180">
+  <link rel="icon" href="<?php echo esc_url($da_icon_512); ?>" sizes="512x512">
   <?php if (is_front_page()) : ?>
     <title>African Catering Calgary | DA Catering YYC | Authentic West African Food</title>
     <meta name="description" content="Order authentic African catering in Calgary. 100+ dishes including Jollof rice, Egusi soup, Suya, smoothies & more. Perfect for events, families & corporate lunches. Delivery available.">
@@ -17,7 +37,7 @@
         "name": "DA Catering YYC",
         "url": "<?php echo esc_url(home_url('/')); ?>",
         "telephone": "+1-403-478-2475",
-        "image": "<?php echo esc_url(get_template_directory_uri() . '/assets/img/da-catering-logo.jpeg'); ?>",
+        "image": "<?php echo esc_url($da_logo_url); ?>",
         "address": {
           "@type": "PostalAddress",
           "addressLocality": "Calgary",
@@ -45,7 +65,7 @@
       <?php if (has_custom_logo()) : ?>
         <?php the_custom_logo(); ?>
       <?php else : ?>
-        <img src="<?php echo esc_url(get_template_directory_uri() . '/assets/img/da-catering-logo.jpeg'); ?>" alt="DA Catering YYC logo">
+        <img src="<?php echo esc_url($da_logo_url); ?>" alt="DA Catering YYC logo">
       <?php endif; ?>
       <span class="logo-text">DA Catering YYC</span>
     </a>
