@@ -20,7 +20,7 @@
         Experience the rich taste of Africa with our bespoke catering services. From intimate gatherings to grand celebrations, we bring authentic cuisine to your table.
       </p>
       <div class="hero-iso__actions">
-        <a class="hero-iso__btn hero-iso__btn--primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">
+        <a class="hero-iso__btn hero-iso__btn--primary" href="<?php echo esc_url(home_url('/booking/')); ?>">
           Book Catering Now
           <span aria-hidden="true">→</span>
         </a>
@@ -448,7 +448,7 @@
         <p>Perfect for 5-10 people. Two rice dishes, one stew, grilled protein, and sides with sauces.</p>
         <span class="catering-label">Starting at</span>
         <strong>$150</strong>
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/')); ?>">Book Now</a>
       </div>
       <div class="catering-card">
         <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1729875750386-a27f8d4e58ce?fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Family tray catering preview">
@@ -457,7 +457,7 @@
         <p>Ideal for 10-20 people. Expanded menu with jollof, fried rice, soups, and assorted small chops.</p>
         <span class="catering-label">Starting at</span>
         <strong>$300</strong>
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/')); ?>">Book Now</a>
       </div>
       <div class="catering-card">
         <img decoding="async" loading="lazy" class="card-placeholder" src="https://images.unsplash.com/photo-1767096088534-a000c3501c3a?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000" alt="Event catering preview">
@@ -466,7 +466,7 @@
         <p>For 20-100+ people. Full-service options, custom menu, and staffing support for large events.</p>
         <span class="catering-label">Starting at</span>
         <strong>$500+</strong>
-        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/#booking')); ?>">Book Now</a>
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/booking/')); ?>">Book Now</a>
       </div>
     </div>
   </div>

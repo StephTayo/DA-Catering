@@ -455,6 +455,10 @@
                       <input type="tel" class="form-input" name="order_phone" placeholder="(403) 000-0000" required />
                     </div>
                   </div>
+                  <div class="form-group" data-promo-price-wrap style="display:none;">
+                    <label class="form-label">Promo Package</label>
+                    <input type="text" class="form-input" data-promo-price readonly />
+                  </div>
                 </div>
 
                 <div class="form-section">

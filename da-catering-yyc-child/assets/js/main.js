@@ -129,6 +129,35 @@ const updateOrderSummary = () => {
   }
 };
 
+const applyPromoFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  const priceRaw = params.get("promo_price");
+  if (!priceRaw) return;
+
+  const price = Number.parseFloat(priceRaw);
+  if (Number.isNaN(price)) return;
+
+  const name = params.get("promo_name") || "Promo Package";
+  const items = getStoredOrder();
+  const existing = items.find((item) => item.name === name && !item.notes);
+  if (existing) {
+    existing.qty = 1;
+    existing.price = price;
+  } else {
+    items.unshift({ name, price, qty: 1, notes: "" });
+  }
+  saveOrder(items);
+
+  const priceField = document.querySelector("[data-promo-price]");
+  if (priceField) {
+    priceField.value = `${name} — ${formatCurrency(price)}`;
+    const wrap = document.querySelector("[data-promo-price-wrap]");
+    if (wrap) {
+      wrap.style.display = "block";
+    }
+  }
+};
+
 const initMenuActions = () => {
   const cards = document.querySelectorAll("[data-product]");
   if (!cards.length) return;
@@ -781,20 +810,35 @@ const initBookingModern = () => {
   let currentStep = 1;
 
   const tabButtons = root.querySelectorAll(".tab-btn");
+  const activateTab = (targetTab, shouldScroll = true) => {
+    tabButtons.forEach((b) => b.classList.remove("active"));
+    root.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
+    const activeBtn = root.querySelector(`.tab-btn[data-tab=\"${targetTab}\"]`);
+    if (activeBtn) {
+      activeBtn.classList.add("active");
+    }
+    const panel = root.querySelector(`[data-panel=\"${targetTab}\"]`);
+    if (panel) {
+      panel.classList.add("active");
+      if (shouldScroll) {
+        panel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
+
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const targetTab = btn.dataset.tab;
-      tabButtons.forEach((b) => b.classList.remove("active"));
-      root.querySelectorAll(".tab-panel").forEach((panel) => panel.classList.remove("active"));
-      btn.classList.add("active");
-      const panel = root.querySelector(`[data-panel=\"${targetTab}\"]`);
-      if (panel) {
-        panel.classList.add("active");
-      }
+      activateTab(targetTab);
     });
   });
 
-  const goToStep = (stepNumber) => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("quick_order") === "1" || params.get("promo_price")) {
+    activateTab("quick-order", false);
+  }
+
+  const goToStep = (stepNumber, shouldScroll = true) => {
     currentStep = stepNumber;
     root.querySelectorAll(".form-step").forEach((step) => step.classList.remove("active"));
     const targetStep = root.querySelector(`[data-step-content=\"${stepNumber}\"]`);
@@ -813,9 +857,11 @@ const initBookingModern = () => {
       }
     });
 
-    const form = root.querySelector(".booking-form");
-    if (form) {
-      form.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (shouldScroll) {
+      const form = root.querySelector(".booking-form");
+      if (form) {
+        form.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     if (stepNumber === 4) {
@@ -886,13 +932,13 @@ const initBookingModern = () => {
 
   window.nextStep = (stepNumber) => {
     if (validateCurrentStep()) {
-      goToStep(stepNumber);
+      goToStep(stepNumber, true);
       saveFormProgress();
     }
   };
 
   window.prevStep = (stepNumber) => {
-    goToStep(stepNumber);
+    goToStep(stepNumber, true);
   };
 
   const serviceRadios = root.querySelectorAll("input[name=\"service_type\"]");
@@ -1068,7 +1114,7 @@ const initBookingModern = () => {
 
   const checkoutForm = root.querySelector("#checkoutForm");
   if (checkoutForm) {
-    checkoutForm.addEventListener("submit", (e) => {
+    checkoutForm.addEventListener("submit", async (e) => {
       e.preventDefault();
       let messageEl = checkoutForm.querySelector(".form-message");
       if (!messageEl) {
@@ -1083,13 +1129,55 @@ const initBookingModern = () => {
           checkoutForm.appendChild(messageEl);
         }
       }
-      messageEl.textContent = "Order placed successfully! Check your email for confirmation.";
+      const items = getStoredOrder();
+      if (!items.length) {
+        messageEl.className = "form-message form-message--error";
+        messageEl.textContent = "Your order is empty. Please add items first.";
+        messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        return;
+      }
+
+      if (!window.daOrder) {
+        messageEl.className = "form-message form-message--error";
+        messageEl.textContent = "Order service is unavailable. Please try again.";
+        return;
+      }
+
+      messageEl.className = "form-message form-message--success";
+      messageEl.textContent = "Submitting order...";
+
+      const formData = new FormData(checkoutForm);
+      formData.append("action", "da_order_submit");
+      formData.append("nonce", daOrder.nonce);
+      formData.append("items", JSON.stringify(items));
+
+      try {
+        const response = await fetch(daOrder.ajaxUrl, {
+          method: "POST",
+          credentials: "same-origin",
+          body: formData,
+        });
+        const data = await response.json();
+        if (data && data.success) {
+          messageEl.className = "form-message form-message--success";
+          messageEl.textContent = "Order placed successfully! Check your email for confirmation.";
+          localStorage.removeItem(orderKey);
+          updateOrderSummary();
+          checkoutForm.reset();
+        } else {
+          messageEl.className = "form-message form-message--error";
+          messageEl.textContent = data && data.data && data.data.message ? data.data.message : "Sorry, something went wrong.";
+        }
+      } catch (error) {
+        messageEl.className = "form-message form-message--error";
+        messageEl.textContent = "Network error. Please try again.";
+      }
       messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
     });
   }
 
   loadFormProgress();
-  goToStep(currentStep);
+  goToStep(currentStep, false);
 };
 
 const initNewsletterForm = () => {
@@ -1175,7 +1263,34 @@ const initNewsletterForm = () => {
   });
 };
 
+const initPromoModal = () => {
+  const modal = document.querySelector("[data-promo-modal]");
+  if (!modal) return;
+
+  const promoId = modal.getAttribute("data-promo-id") || "promo";
+  const key = `daPromoDismissed_${promoId}`;
+  const dismissedAt = Number(localStorage.getItem(key) || 0);
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (dismissedAt && Date.now() - dismissedAt < dayMs) return;
+
+  const close = () => {
+    modal.classList.remove("is-visible");
+    document.body.classList.remove("promo-modal-open");
+    localStorage.setItem(key, String(Date.now()));
+  };
+
+  modal.querySelectorAll("[data-promo-close]").forEach((btn) => {
+    btn.addEventListener("click", close);
+  });
+
+  window.requestAnimationFrame(() => {
+    modal.classList.add("is-visible");
+    document.body.classList.add("promo-modal-open");
+  });
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+  applyPromoFromUrl();
   initMenuActions();
   initFilters();
   initMobileMenu();
@@ -1196,6 +1311,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initWhatsappWidget();
   initBookingModern();
   initNewsletterForm();
+  initPromoModal();
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {
