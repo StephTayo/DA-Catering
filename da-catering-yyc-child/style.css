@@ -1,11 +1,11 @@
-﻿/*
+/*
 Theme Name: DA Catering YYC Child
 Theme URI: https://example.com/da-catering-yyc-child
 Author: DA Catering YYC
 Author URI: https://example.com
 Description: Child theme for DA Catering YYC.
 Template: da-catering-yyc
-Version: 1.1.1
+Version: 1.1.2
 Text Domain: da-catering-yyc-child
 */
 
@@ -1622,7 +1622,7 @@ body {
 }
 
 .faq-item[open] summary::after {
-  content: "–";
+  content: "�";
 }
 
 .faq-item p {
@@ -2744,7 +2744,7 @@ body {
   background: rgba(31, 61, 52, 0.02);
 }
 
-.booking-modern .checkbox-label input[type=\"checkbox\"] {
+.booking-modern .checkbox-label input[type="checkbox"] {
   display: none;
 }
 
@@ -2757,12 +2757,12 @@ body {
   transition: var(--booking-transition);
 }
 
-.booking-modern .checkbox-label input[type=\"checkbox\"]:checked + .checkbox-custom {
+.booking-modern .checkbox-label input[type="checkbox"]:checked + .checkbox-custom {
   background: var(--booking-primary);
   border-color: var(--booking-primary);
 }
 
-.booking-modern .checkbox-label input[type=\"checkbox\"]:checked + .checkbox-custom::after {
+.booking-modern .checkbox-label input[type="checkbox"]:checked + .checkbox-custom::after {
   content: \"\";
   position: absolute;
   left: 50%;
@@ -2786,7 +2786,7 @@ body {
   cursor: pointer;
 }
 
-.booking-modern .radio-card input[type=\"radio\"] {
+.booking-modern .radio-card input[type="radio"] {
   display: none;
 }
 
@@ -2806,7 +2806,7 @@ body {
   background: rgba(31, 61, 52, 0.02);
 }
 
-.booking-modern .radio-card input[type=\"radio\"]:checked + .radio-card__content {
+.booking-modern .radio-card input[type="radio"]:checked + .radio-card__content {
   border-color: var(--booking-primary);
   background: rgba(31, 61, 52, 0.05);
 }
@@ -2830,8 +2830,9 @@ body {
 
 .booking-modern .radio-check {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 50%;
+  right: 24px;
+  transform: translateY(-50%);
   width: 24px;
   height: 24px;
   border: 2px solid var(--booking-border);
@@ -2839,12 +2840,12 @@ body {
   transition: var(--booking-transition);
 }
 
-.booking-modern .radio-card input[type=\"radio\"]:checked ~ .radio-check {
+.booking-modern .radio-card input[type="radio"]:checked ~ .radio-check {
   border-color: var(--booking-primary);
   background: var(--booking-primary);
 }
 
-.booking-modern .radio-card input[type=\"radio\"]:checked ~ .radio-check::after {
+.booking-modern .radio-card input[type="radio"]:checked ~ .radio-check::after {
   content: \"\";
   position: absolute;
   left: 50%;
@@ -3229,6 +3230,13 @@ body {
 }
 }
 
+/* Force radio check to center-right (override any earlier rules) */
+.booking-modern .radio-card .radio-check {
+  top: 50% !important;
+  right: 24px !important;
+  transform: translateY(-50%) !important;
+}
+
 /* Header: keep consistent across site and booking page */
 .header {
   position: sticky;
@@ -3275,3 +3283,5 @@ body {
   max-width: 360px;
   padding: 24px;
 }
+
+
