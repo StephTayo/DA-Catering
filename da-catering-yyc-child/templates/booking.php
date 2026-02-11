@@ -43,6 +43,10 @@
         <div class="booking-grid">
           <div class="booking-form-wrapper">
             <form class="booking-form" id="cateringForm">
+              <div class="honeypot" aria-hidden="true">
+                <label>Company</label>
+                <input type="text" name="booking_company" tabindex="-1" autocomplete="off" />
+              </div>
               <div class="form-steps">
                 <div class="step-item active" data-step="1">
                   <div class="step-circle">
@@ -435,6 +439,10 @@
           <div class="booking-grid">
             <div class="booking-form-wrapper">
               <form class="booking-form" id="checkoutForm">
+                <div class="honeypot" aria-hidden="true">
+                  <label>Company</label>
+                  <input type="text" name="order_company" tabindex="-1" autocomplete="off" />
+                </div>
                 <div class="form-section">
                   <div class="section-header">
                     <span class="section-icon"></span>

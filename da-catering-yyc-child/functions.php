@@ -51,6 +51,14 @@ function da_catering_yyc_child_enqueue_scripts() {
             'nonce' => wp_create_nonce('da_order_submit'),
         )
     );
+    wp_localize_script(
+        'da-catering-yyc-child-main',
+        'daBooking',
+        array(
+            'ajaxUrl' => admin_url('admin-ajax.php', 'https'),
+            'nonce' => wp_create_nonce('da_booking_submit'),
+        )
+    );
 }
 add_action('wp_enqueue_scripts', 'da_catering_yyc_child_enqueue_scripts', 20);
 add_action('after_setup_theme', function () {
@@ -233,7 +241,7 @@ function da_catering_yyc_child_redirect_shop() {
     $request_path = trim((string) parse_url($_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH), '/');
 
     if (is_page('shop') || $request_path === 'shop') {
-        wp_safe_redirect(home_url('/booking/#checkout'), 301);
+        wp_safe_redirect(home_url('/booking/?quick_order=1'), 301);
         exit;
     }
 }
@@ -302,13 +310,23 @@ function da_catering_yyc_child_generate_newsletter_token() {
     return bin2hex(random_bytes(16));
 }
 
+function da_catering_yyc_child_get_logo_url() {
+    $logo_id = get_theme_mod('custom_logo');
+    if ($logo_id) {
+        $logo_url = wp_get_attachment_image_url($logo_id, 'full');
+        if ($logo_url) {
+            return $logo_url;
+        }
+    }
+    return get_stylesheet_directory_uri() . '/assets/img/DA Catering Logo.png';
+}
+
 function da_catering_yyc_child_send_confirmation_email($email, $token) {
     $confirm_url = home_url('/?da_newsletter_confirm=' . urlencode($token));
     $unsub_url = home_url('/?da_newsletter_unsub=' . urlencode($token));
     $subject = 'Confirm your newsletter subscription';
     $brand = 'DA Catering YYC';
-    $logo_id = get_theme_mod('custom_logo');
-    $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
+    $logo_url = da_catering_yyc_child_get_logo_url();
     $message = '
       <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
         <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
@@ -757,46 +775,39 @@ add_action('admin_enqueue_scripts', function ($hook) {
         return;
     }
     wp_enqueue_media();
-});
+    wp_enqueue_script('media-editor');
+    $inline = <<<JS
+document.addEventListener('DOMContentLoaded', function () {
+  const button = document.querySelector('[data-promo-poster-upload]');
+  const input = document.querySelector('input[name="da_promo_poster"]');
+  const preview = document.querySelector('[data-promo-poster-preview]');
+  if (!button || !input || !window.wp || !wp.media) return;
 
-add_action('admin_footer', function () {
-    $screen = get_current_screen();
-    if (!$screen || $screen->post_type !== 'da_promo') {
-        return;
+  let frame = null;
+  button.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (frame) {
+      frame.open();
+      return;
     }
-    ?>
-    <script>
-      (function () {
-        const button = document.querySelector('[data-promo-poster-upload]');
-        const input = document.querySelector('input[name="da_promo_poster"]');
-        const preview = document.querySelector('[data-promo-poster-preview]');
-        if (!button || !input || !window.wp || !wp.media) return;
-
-        let frame = null;
-        button.addEventListener('click', function (e) {
-          e.preventDefault();
-          if (frame) {
-            frame.open();
-            return;
-          }
-          frame = wp.media({
-            title: 'Select Promo Poster',
-            button: { text: 'Use this poster' },
-            multiple: false
-          });
-          frame.on('select', function () {
-            const attachment = frame.state().get('selection').first().toJSON();
-            if (!attachment || !attachment.url) return;
-            input.value = attachment.url;
-            if (preview) {
-              preview.innerHTML = '<img src="' + attachment.url + '" alt="" style="max-width:100%;height:auto;border:1px solid rgba(31,61,52,0.12);border-radius:10px;" />';
-            }
-          });
-          frame.open();
-        });
-      })();
-    </script>
-    <?php
+    frame = wp.media({
+      title: 'Select Promo Poster',
+      button: { text: 'Use this poster' },
+      multiple: false
+    });
+    frame.on('select', function () {
+      const attachment = frame.state().get('selection').first().toJSON();
+      if (!attachment || !attachment.url) return;
+      input.value = attachment.url;
+      if (preview) {
+        preview.innerHTML = '<img src="' + attachment.url + '" alt="" style="max-width:100%;height:auto;border:1px solid rgba(31,61,52,0.12);border-radius:10px;" />';
+      }
+    });
+    frame.open();
+  });
+});
+JS;
+    wp_add_inline_script('media-editor', $inline);
 });
 
 // Set default email sender address/name.
@@ -807,6 +818,82 @@ add_filter('wp_mail_from', function ($from) {
 add_filter('wp_mail_from_name', function ($name) {
     return 'DA Catering YYC';
 });
+
+// Optional SMTP configuration via wp-config.php constants.
+add_action('phpmailer_init', function ($phpmailer) {
+    if (!defined('DA_SMTP_HOST')) {
+        return;
+    }
+    $phpmailer->isSMTP();
+    $phpmailer->Host = DA_SMTP_HOST;
+    $phpmailer->SMTPAuth = defined('DA_SMTP_USER');
+    if (defined('DA_SMTP_USER')) {
+        $phpmailer->Username = DA_SMTP_USER;
+    }
+    if (defined('DA_SMTP_PASS')) {
+        $phpmailer->Password = DA_SMTP_PASS;
+    }
+    if (defined('DA_SMTP_PORT')) {
+        $phpmailer->Port = (int) DA_SMTP_PORT;
+    }
+    if (defined('DA_SMTP_SECURE')) {
+        $phpmailer->SMTPSecure = DA_SMTP_SECURE;
+    }
+    $phpmailer->From = 'orders@dacatering.ca';
+    $phpmailer->FromName = 'DA Catering YYC';
+});
+
+function da_catering_yyc_child_get_menu_prices() {
+    $base = array(
+        'Jollof Rice' => 18,
+        'Fried Rice' => 17,
+        'Egusi Soup & Pounded Yam' => 22,
+        'Semovita & Efo Riro' => 21,
+        'Red Stew' => 19,
+        'Ayamase (Ofada Stew)' => 22,
+        'Suya Skewers' => 16,
+        'Dodo (Fried Plantain)' => 12,
+        'Puff Puff' => 10,
+        'Moi Moi' => 14,
+        'Asun (Spicy Goat)' => 23,
+        'Okra Soup' => 19,
+        'Tropical Mango Smoothie' => 8,
+        'Orange Carrot Boost' => 7,
+        'Party Tray: Jollof + Suya + Dodo' => 150,
+        'Pineapple Ginger Zing' => 8,
+        'Watermelon Cooler' => 7,
+        'Berry Blast' => 8,
+        'Zobo / Hibiscus Drink' => 6,
+        'Kunu / Tigernut Drink' => 6,
+        'Chapman' => 6,
+        'Sobolo' => 6,
+    );
+    $json = get_option('da_menu_prices_json', '');
+    if ($json) {
+        $decoded = json_decode($json, true);
+        if (is_array($decoded)) {
+            foreach ($decoded as $name => $price) {
+                if (!is_string($name) || $name === '') {
+                    continue;
+                }
+                if (!is_numeric($price)) {
+                    continue;
+                }
+                $base[$name] = (float) $price;
+            }
+        }
+    }
+    return $base;
+}
+
+function da_catering_yyc_child_rate_limit($key, $limit = 10, $window = HOUR_IN_SECONDS) {
+    $count = (int) get_transient($key);
+    if ($count >= $limit) {
+        return false;
+    }
+    set_transient($key, $count + 1, $window);
+    return true;
+}
 
 // Orders: store quick orders and email customer/admin with receipt action.
 function da_catering_yyc_child_register_order_cpt() {
@@ -824,6 +911,90 @@ function da_catering_yyc_child_register_order_cpt() {
     ));
 }
 add_action('init', 'da_catering_yyc_child_register_order_cpt');
+
+add_action('admin_menu', function () {
+    add_submenu_page(
+        'edit.php?post_type=da_order',
+        'Menu Prices',
+        'Menu Prices',
+        'manage_options',
+        'da-menu-prices',
+        'da_catering_yyc_child_render_menu_prices_page'
+    );
+});
+
+function da_catering_yyc_child_render_menu_prices_page() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    if (isset($_POST['da_menu_prices_nonce']) && wp_verify_nonce($_POST['da_menu_prices_nonce'], 'da_menu_prices_save')) {
+        $raw = wp_unslash($_POST['da_menu_prices_json'] ?? '');
+        $trimmed = trim($raw);
+        $decoded = $trimmed ? json_decode($trimmed, true) : array();
+        if ($trimmed && !is_array($decoded)) {
+            echo '<div class="notice notice-error"><p>Invalid JSON. Please fix the format.</p></div>';
+        } else {
+            update_option('da_menu_prices_json', $trimmed);
+            echo '<div class="notice notice-success"><p>Menu prices updated.</p></div>';
+        }
+    }
+    $current = get_option('da_menu_prices_json', '');
+    ?>
+    <div class="wrap">
+        <h1>Menu Prices</h1>
+        <p>Provide a JSON object of item name to price. Example:</p>
+        <pre style="background:#f6f7f7;padding:12px;border-radius:6px;">{"Jollof Rice":18,"Fried Rice":17}</pre>
+        <form method="post">
+            <?php wp_nonce_field('da_menu_prices_save', 'da_menu_prices_nonce'); ?>
+            <textarea name="da_menu_prices_json" rows="12" style="width:100%;max-width:900px;"><?php echo esc_textarea($current); ?></textarea>
+            <p><button class="button button-primary" type="submit">Save Prices</button></p>
+        </form>
+    </div>
+    <?php
+}
+
+add_filter('manage_da_order_posts_columns', function ($columns) {
+    $columns['order_status'] = 'Status';
+    $columns['order_total'] = 'Subtotal';
+    $columns['order_email'] = 'Customer Email';
+    $columns['order_phone'] = 'Phone';
+    $columns['order_paid'] = 'Paid';
+    return $columns;
+});
+
+add_action('manage_da_order_posts_custom_column', function ($column, $post_id) {
+    if ($column === 'order_status') {
+        $status = get_post_meta($post_id, '_da_order_status', true) ?: 'received';
+        echo esc_html(ucwords(str_replace('_', ' ', $status)));
+    }
+    if ($column === 'order_total') {
+        $subtotal = (float) get_post_meta($post_id, '_da_order_subtotal', true);
+        echo esc_html(da_catering_yyc_child_format_money($subtotal));
+    }
+    if ($column === 'order_email') {
+        $order = get_post_meta($post_id, '_da_order_data', true);
+        echo esc_html(is_array($order) ? ($order['order_email'] ?? '') : '');
+    }
+    if ($column === 'order_phone') {
+        $order = get_post_meta($post_id, '_da_order_data', true);
+        echo esc_html(is_array($order) ? ($order['order_phone'] ?? '') : '');
+    }
+    if ($column === 'order_paid') {
+        $paid = (int) get_post_meta($post_id, '_da_order_paid', true);
+        echo $paid ? 'Yes' : 'No';
+    }
+}, 10, 2);
+
+add_action('admin_head', function () {
+    $screen = get_current_screen();
+    if (!$screen || $screen->post_type !== 'da_order') {
+        return;
+    }
+    echo '<style>
+      .column-order_status { width: 120px; }
+      .column-order_total { width: 120px; }
+    </style>';
+});
 
 function da_catering_yyc_child_format_money($amount) {
     return '$' . number_format((float) $amount, 2);
@@ -848,8 +1019,7 @@ function da_catering_yyc_child_build_items_table($items) {
 function da_catering_yyc_child_send_order_confirmation($order_id, $order, $items, $subtotal) {
     $email = $order['order_email'];
     $brand = 'DA Catering YYC';
-    $logo_id = get_theme_mod('custom_logo');
-    $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
+    $logo_url = da_catering_yyc_child_get_logo_url();
 
     $items_rows = da_catering_yyc_child_build_items_table($items);
     $subject = 'Your order was received';
@@ -863,7 +1033,8 @@ function da_catering_yyc_child_send_order_confirmation($order_id, $order, $items
         <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
           ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
           <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Thanks for your order!</h2>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We have received your order and will follow up shortly.</p>
+          <p style="margin:0 0 12px;color:#4a5650;">Order #'. esc_html($order_id) .'</p>
+          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We have received your order and will follow up shortly. You will receive status updates by email.</p>
           <table style="width:100%;border-collapse:collapse;margin-top:12px;">
             <thead>
               <tr>
@@ -890,6 +1061,10 @@ function da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items
     $receipt_url = add_query_arg('da_order_receipt', $receipt_token, home_url('/'));
     $paid_token = get_post_meta($order_id, '_da_order_paid_token', true);
     $paid_url = add_query_arg('da_order_paid', $paid_token, home_url('/'));
+    $status_token = get_post_meta($order_id, '_da_order_status_token', true);
+    $confirmed_url = add_query_arg(array('da_order_status' => $status_token, 'status' => 'confirmed'), home_url('/'));
+    $progress_url = add_query_arg(array('da_order_status' => $status_token, 'status' => 'in_progress'), home_url('/'));
+    $ready_url = add_query_arg(array('da_order_status' => $status_token, 'status' => 'ready'), home_url('/'));
 
     $items_rows = da_catering_yyc_child_build_items_table($items);
     $subject = 'New quick order received';
@@ -902,6 +1077,7 @@ function da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items
       <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
         <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
           <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">New Quick Order</h2>
+          <p style="margin:0 0 12px;color:#4a5650;">Order #'. esc_html($order_id) .'</p>
           <p style="margin:0 0 12px;color:#4a5650;">Customer: <strong>' . esc_html($order['order_name']) . '</strong></p>
           <p style="margin:0 0 12px;color:#4a5650;">Email: ' . esc_html($order['order_email']) . '</p>
           <p style="margin:0 0 12px;color:#4a5650;">Phone: ' . esc_html($order['order_phone']) . '</p>
@@ -928,6 +1104,11 @@ function da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items
           <p style="margin:12px 0 0;">
             <a href="' . esc_url($paid_url) . '" style="display:inline-block;padding:10px 16px;background:#1f3d34;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Mark as Paid</a>
           </p>
+          <p style="margin:18px 0 0;">
+            <a href="' . esc_url($confirmed_url) . '" style="display:inline-block;padding:10px 16px;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Confirm Order</a>
+            <a href="' . esc_url($progress_url) . '" style="display:inline-block;padding:10px 16px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">In Progress</a>
+            <a href="' . esc_url($ready_url) . '" style="display:inline-block;padding:10px 16px;background:#16a34a;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">Ready</a>
+          </p>
         </div>
       </div>
     ';
@@ -944,8 +1125,7 @@ function da_catering_yyc_child_send_order_receipt($order_id) {
     $subtotal = (float) get_post_meta($order_id, '_da_order_subtotal', true);
     $email = $order['order_email'];
     $brand = 'DA Catering YYC';
-    $logo_id = get_theme_mod('custom_logo');
-    $logo_url = $logo_id ? wp_get_attachment_image_url($logo_id, 'full') : '';
+    $logo_url = da_catering_yyc_child_get_logo_url();
     $items_rows = da_catering_yyc_child_build_items_table($items);
     $subject = 'Your receipt from DA Catering YYC';
     $headers = array(
@@ -958,6 +1138,7 @@ function da_catering_yyc_child_send_order_receipt($order_id) {
         <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
           ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
           <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Receipt</h2>
+          <p style="margin:0 0 12px;color:#4a5650;">Order #'. esc_html($order_id) .'</p>
           <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">Thank you for your payment. Here is your receipt.</p>
           <table style="width:100%;border-collapse:collapse;margin-top:12px;">
             <thead>
@@ -979,10 +1160,148 @@ function da_catering_yyc_child_send_order_receipt($order_id) {
     return wp_mail($email, $subject, $message, $headers);
 }
 
+function da_catering_yyc_child_send_order_status_email($order_id, $status) {
+    $order = get_post_meta($order_id, '_da_order_data', true);
+    if (!is_array($order)) {
+        return false;
+    }
+    $email = $order['order_email'];
+    $brand = 'DA Catering YYC';
+    $logo_url = da_catering_yyc_child_get_logo_url();
+    $status_map = array(
+        'confirmed' => 'Order confirmed',
+        'in_progress' => 'In progress',
+        'ready' => 'Ready for pickup/delivery',
+        'paid' => 'Payment received',
+    );
+    $status_label = $status_map[$status] ?? 'Order update';
+    $subject = $status_label . ' - DA Catering YYC';
+    $headers = array(
+        'Content-Type: text/html; charset=UTF-8',
+        'From: DA Catering YYC <orders@dacatering.ca>',
+    );
+    $message = '
+      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
+        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
+          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
+          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">' . esc_html($status_label) . '</h2>
+          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">Hi ' . esc_html($order['order_name']) . ', your order status is now: <strong>' . esc_html($status_label) . '</strong>.</p>
+        </div>
+        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
+      </div>
+    ';
+    return wp_mail($email, $subject, $message, $headers);
+}
+
+function da_catering_yyc_child_send_booking_confirmation($booking) {
+    $email = $booking['email'];
+    $brand = 'DA Catering YYC';
+    $logo_url = da_catering_yyc_child_get_logo_url();
+    $subject = 'Your catering booking request was received';
+    $headers = array(
+        'Content-Type: text/html; charset=UTF-8',
+        'From: DA Catering YYC <orders@dacatering.ca>',
+    );
+    $message = '
+      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
+        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
+          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
+          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Thanks for your booking request!</h2>
+          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We have received your catering request and will get back to you within 2 hours.</p>
+          <p style="margin:0 0 6px;color:#4a5650;"><strong>Event:</strong> ' . esc_html($booking['event_type']) . '</p>
+          <p style="margin:0 0 6px;color:#4a5650;"><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
+          <p style="margin:0 0 6px;color:#4a5650;"><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
+          <p style="margin:0 0 6px;color:#4a5650;"><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
+        </div>
+        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
+      </div>
+    ';
+    wp_mail($email, $subject, $message, $headers);
+}
+
+function da_catering_yyc_child_send_booking_admin_notice($booking) {
+    $subject = 'New catering booking request';
+    $headers = array(
+        'Content-Type: text/html; charset=UTF-8',
+        'From: DA Catering YYC <orders@dacatering.ca>',
+    );
+    $message = '
+      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
+        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
+          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">New Catering Booking</h2>
+          <p><strong>Name:</strong> ' . esc_html($booking['full_name']) . '</p>
+          <p><strong>Email:</strong> ' . esc_html($booking['email']) . '</p>
+          <p><strong>Phone:</strong> ' . esc_html($booking['phone']) . '</p>
+          <p><strong>Event Type:</strong> ' . esc_html($booking['event_type']) . '</p>
+          <p><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
+          <p><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
+          <p><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
+          <p><strong>Budget:</strong> ' . esc_html($booking['budget_range']) . '</p>
+          <p><strong>Service Type:</strong> ' . esc_html($booking['service_type']) . '</p>
+          <p><strong>Address:</strong> ' . esc_html($booking['delivery_address']) . '</p>
+          <p><strong>Delivery Instructions:</strong> ' . esc_html($booking['delivery_instructions']) . '</p>
+          <p><strong>Dietary Restrictions:</strong> ' . esc_html($booking['dietary_restrictions']) . '</p>
+          <p><strong>Special Requests:</strong> ' . esc_html($booking['special_requests']) . '</p>
+        </div>
+      </div>
+    ';
+    wp_mail('orders@dacatering.ca', $subject, $message, $headers);
+}
+
+function da_catering_yyc_child_handle_booking_submit() {
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'da_booking_submit')) {
+        wp_send_json_error(array('message' => 'Security check failed. Please refresh and try again.'), 403);
+    }
+
+    $honeypot = isset($_POST['booking_company']) ? sanitize_text_field(wp_unslash($_POST['booking_company'])) : '';
+    if ($honeypot !== '') {
+        wp_send_json_success(array('message' => 'Booking request submitted.'));
+    }
+
+    $booking = array(
+        'full_name' => sanitize_text_field(wp_unslash($_POST['full_name'] ?? '')),
+        'email' => sanitize_email(wp_unslash($_POST['email'] ?? '')),
+        'phone' => sanitize_text_field(wp_unslash($_POST['phone'] ?? '')),
+        'event_type' => sanitize_text_field(wp_unslash($_POST['event_type'] ?? '')),
+        'guest_count' => sanitize_text_field(wp_unslash($_POST['guest_count'] ?? '')),
+        'event_date' => sanitize_text_field(wp_unslash($_POST['event_date'] ?? '')),
+        'event_time' => sanitize_text_field(wp_unslash($_POST['event_time'] ?? '')),
+        'budget_range' => sanitize_text_field(wp_unslash($_POST['budget_range'] ?? '')),
+        'service_type' => sanitize_text_field(wp_unslash($_POST['service_type'] ?? '')),
+        'delivery_address' => sanitize_textarea_field(wp_unslash($_POST['delivery_address'] ?? '')),
+        'delivery_instructions' => sanitize_textarea_field(wp_unslash($_POST['delivery_instructions'] ?? '')),
+        'dietary_restrictions' => sanitize_textarea_field(wp_unslash($_POST['dietary_restrictions'] ?? '')),
+        'special_requests' => sanitize_textarea_field(wp_unslash($_POST['special_requests'] ?? '')),
+    );
+
+    if (!$booking['full_name'] || !$booking['email'] || !$booking['phone']) {
+        wp_send_json_error(array('message' => 'Please complete all required fields.'));
+    }
+
+    $rate_key = 'da_booking_rl_' . md5(strtolower($booking['email'] ?: 'unknown'));
+    if (!da_catering_yyc_child_rate_limit($rate_key, 5, HOUR_IN_SECONDS)) {
+        wp_send_json_error(array('message' => 'Too many attempts. Please try again later.'));
+    }
+
+    da_catering_yyc_child_send_booking_confirmation($booking);
+    da_catering_yyc_child_send_booking_admin_notice($booking);
+
+    delete_transient($rate_key);
+    wp_send_json_success(array('message' => 'Booking request submitted.'));
+}
+add_action('wp_ajax_da_booking_submit', 'da_catering_yyc_child_handle_booking_submit');
+add_action('wp_ajax_nopriv_da_booking_submit', 'da_catering_yyc_child_handle_booking_submit');
+
 function da_catering_yyc_child_handle_order_submit() {
     $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
     if (!$nonce || !wp_verify_nonce($nonce, 'da_order_submit')) {
         wp_send_json_error(array('message' => 'Security check failed. Please refresh and try again.'), 403);
+    }
+
+    $honeypot = isset($_POST['order_company']) ? sanitize_text_field(wp_unslash($_POST['order_company'])) : '';
+    if ($honeypot !== '') {
+        wp_send_json_success(array('message' => 'Order received.'));
     }
 
     $order = array(
@@ -999,17 +1318,58 @@ function da_catering_yyc_child_handle_order_submit() {
         wp_send_json_error(array('message' => 'Please complete all required fields.'));
     }
 
+    $rate_key = 'da_order_rl_' . md5(strtolower($order['order_email'] ?: 'unknown'));
+    if (!da_catering_yyc_child_rate_limit($rate_key, 10, HOUR_IN_SECONDS)) {
+        wp_send_json_error(array('message' => 'Too many attempts. Please try again later.'));
+    }
+
     $items_json = wp_unslash($_POST['items'] ?? '');
     $items = json_decode($items_json, true);
     if (!is_array($items) || empty($items)) {
         wp_send_json_error(array('message' => 'Your order is empty. Please add items.'));
     }
 
+    $promo_meta_raw = wp_unslash($_POST['promo_meta'] ?? '');
+    $promo_meta = $promo_meta_raw ? json_decode($promo_meta_raw, true) : null;
+    $promo_allowed = array();
+    if (is_array($promo_meta) && !empty($promo_meta['id'])) {
+        $promo_id = (int) $promo_meta['id'];
+        $promo_title = get_the_title($promo_id);
+        $promo_price = get_post_meta($promo_id, '_da_promo_price', true);
+        if ($promo_title && $promo_price !== '') {
+            $promo_allowed[$promo_title] = (float) $promo_price;
+        }
+    }
+
+    $price_list = da_catering_yyc_child_get_menu_prices();
+    $validated_items = array();
+
     $subtotal = 0;
     foreach ($items as $item) {
+        $name = isset($item['name']) ? sanitize_text_field($item['name']) : '';
         $qty = (int) ($item['qty'] ?? 1);
-        $price = (float) ($item['price'] ?? 0);
+        if ($qty < 1) {
+            $qty = 1;
+        }
+        if (!$name) {
+            continue;
+        }
+
+        if (isset($promo_allowed[$name])) {
+            $price = (float) $promo_allowed[$name];
+        } elseif (isset($price_list[$name])) {
+            $price = (float) $price_list[$name];
+        } else {
+            wp_send_json_error(array('message' => 'One or more items are unavailable. Please refresh the menu and try again.'));
+        }
+
         $subtotal += $qty * $price;
+        $validated_items[] = array(
+            'name' => $name,
+            'qty' => $qty,
+            'price' => $price,
+            'notes' => isset($item['notes']) ? sanitize_text_field($item['notes']) : '',
+        );
     }
 
     $order_title = 'Order - ' . $order['order_name'] . ' - ' . current_time('Y-m-d H:i');
@@ -1026,16 +1386,20 @@ function da_catering_yyc_child_handle_order_submit() {
     $token = bin2hex(random_bytes(16));
     $paid_token = bin2hex(random_bytes(16));
     update_post_meta($order_id, '_da_order_data', $order);
-    update_post_meta($order_id, '_da_order_items', $items);
+    update_post_meta($order_id, '_da_order_items', $validated_items);
     update_post_meta($order_id, '_da_order_subtotal', $subtotal);
     update_post_meta($order_id, '_da_order_receipt_token', $token);
     update_post_meta($order_id, '_da_order_receipt_sent', 0);
     update_post_meta($order_id, '_da_order_paid_token', $paid_token);
     update_post_meta($order_id, '_da_order_paid', 0);
+    $status_token = bin2hex(random_bytes(16));
+    update_post_meta($order_id, '_da_order_status', 'received');
+    update_post_meta($order_id, '_da_order_status_token', $status_token);
 
-    da_catering_yyc_child_send_order_confirmation($order_id, $order, $items, $subtotal);
-    da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items, $subtotal);
+    da_catering_yyc_child_send_order_confirmation($order_id, $order, $validated_items, $subtotal);
+    da_catering_yyc_child_send_order_admin_notice($order_id, $order, $validated_items, $subtotal);
 
+    delete_transient($rate_key);
     wp_send_json_success(array('message' => 'Order received.'));
 }
 add_action('wp_ajax_da_order_submit', 'da_catering_yyc_child_handle_order_submit');
@@ -1100,6 +1464,38 @@ function da_catering_yyc_child_handle_order_paid() {
 
     update_post_meta($order_id, '_da_order_paid', 1);
     update_post_meta($order_id, '_da_order_paid_at', current_time('mysql'));
+    da_catering_yyc_child_send_order_status_email($order_id, 'paid');
     wp_die('Order marked as paid.', 'Order Status');
 }
 add_action('template_redirect', 'da_catering_yyc_child_handle_order_paid');
+
+function da_catering_yyc_child_handle_order_status() {
+    $token = isset($_GET['da_order_status']) ? sanitize_text_field(wp_unslash($_GET['da_order_status'])) : '';
+    $status = isset($_GET['status']) ? sanitize_text_field(wp_unslash($_GET['status'])) : '';
+    if (!$token || !$status) {
+        return;
+    }
+    $allowed = array('confirmed', 'in_progress', 'ready');
+    if (!in_array($status, $allowed, true)) {
+        wp_die('Invalid status.', 'Order Status', array('response' => 400));
+    }
+
+    $query = new WP_Query(array(
+        'post_type' => 'da_order',
+        'post_status' => 'publish',
+        'meta_key' => '_da_order_status_token',
+        'meta_value' => $token,
+        'posts_per_page' => 1,
+    ));
+
+    if (!$query->have_posts()) {
+        wp_die('Invalid or expired link.', 'Order Status', array('response' => 404));
+    }
+
+    $order_id = $query->posts[0]->ID;
+    update_post_meta($order_id, '_da_order_status', $status);
+    update_post_meta($order_id, '_da_order_status_updated_at', current_time('mysql'));
+    da_catering_yyc_child_send_order_status_email($order_id, $status);
+    wp_die('Order status updated.', 'Order Status');
+}
+add_action('template_redirect', 'da_catering_yyc_child_handle_order_status');

@@ -137,6 +137,7 @@ const applyPromoFromUrl = () => {
   const price = Number.parseFloat(priceRaw);
   if (Number.isNaN(price)) return;
 
+  const promoId = params.get("promo");
   const name = params.get("promo_name") || "Promo Package";
   const items = getStoredOrder();
   const existing = items.find((item) => item.name === name && !item.notes);
@@ -147,6 +148,9 @@ const applyPromoFromUrl = () => {
     items.unshift({ name, price, qty: 1, notes: "" });
   }
   saveOrder(items);
+  if (promoId) {
+    localStorage.setItem("daPromoMeta", JSON.stringify({ id: promoId, name, price }));
+  }
 
   const priceField = document.querySelector("[data-promo-price]");
   if (priceField) {
@@ -201,7 +205,7 @@ const initMenuActions = () => {
         saveOrder(items);
         addBtn.textContent = "Added";
         setTimeout(() => (addBtn.textContent = "Add to Order"), 1200);
-        window.location.href = `${window.location.origin}/booking/#checkout`;
+        window.location.href = `${window.location.origin}/booking/?quick_order=1`;
       });
     }
   });
@@ -584,7 +588,7 @@ const initBookingForms = () => {
   if (cateringForm) {
     cateringForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      showInlineFormMessage(cateringForm, "Booking request submitted! We'll contact you within 2 hours.");
+      submitCateringBooking(cateringForm);
     });
   }
 
@@ -592,7 +596,7 @@ const initBookingForms = () => {
   if (checkoutForm) {
     checkoutForm.addEventListener("submit", (e) => {
       e.preventDefault();
-      showInlineFormMessage(checkoutForm, "Order placed successfully! Check your email for confirmation.");
+      submitQuickOrder(checkoutForm);
     });
   }
 };
@@ -722,7 +726,7 @@ const initSmoothiesButtons = () => {
       updateOrderSummary();
       button.textContent = "Added";
       setTimeout(() => (button.textContent = "Add Drinks to My Order"), 1200);
-      window.location.href = `${window.location.origin}/booking/#checkout`;
+      window.location.href = `${window.location.origin}/booking/?quick_order=1`;
     });
   });
 };
@@ -799,6 +803,153 @@ const initWhatsappWidget = () => {
     expandBtn.addEventListener("click", () => {
       widget.classList.remove("is-minimized");
     });
+  }
+};
+
+const submitQuickOrder = async (checkoutForm) => {
+  if (!checkoutForm) return;
+  let messageEl = checkoutForm.querySelector(".form-message");
+  if (!messageEl) {
+    messageEl = document.createElement("div");
+    messageEl.className = "form-message form-message--success";
+    messageEl.setAttribute("role", "status");
+    messageEl.setAttribute("aria-live", "polite");
+    const actions = checkoutForm.querySelector(".form-actions");
+    if (actions && actions.parentElement) {
+      actions.parentElement.appendChild(messageEl);
+    } else {
+      checkoutForm.appendChild(messageEl);
+    }
+  }
+
+  const requiredInputs = checkoutForm.querySelectorAll("[required]");
+  let hasError = false;
+  requiredInputs.forEach((input) => {
+    const value = String(input.value || "").trim();
+    if (!value) {
+      hasError = true;
+      input.classList.add("field-error-input");
+    } else {
+      input.classList.remove("field-error-input");
+    }
+  });
+
+  if (hasError) {
+    messageEl.className = "form-message form-message--error";
+    messageEl.textContent = "Please complete all required fields.";
+    messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+
+  const items = getStoredOrder();
+  if (!items.length) {
+    messageEl.className = "form-message form-message--error";
+    messageEl.textContent = "Your order is empty. Please add items first.";
+    messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    return;
+  }
+
+  if (!window.daOrder) {
+    messageEl.className = "form-message form-message--error";
+    messageEl.textContent = "Order service is unavailable. Please try again.";
+    return;
+  }
+
+  messageEl.className = "form-message form-message--success";
+  messageEl.textContent = "Submitting order...";
+
+  const formData = new FormData(checkoutForm);
+  formData.append("action", "da_order_submit");
+  formData.append("nonce", daOrder.nonce);
+  formData.append("items", JSON.stringify(items));
+  const promoMetaRaw = localStorage.getItem("daPromoMeta");
+  if (promoMetaRaw) {
+    formData.append("promo_meta", promoMetaRaw);
+  }
+
+  try {
+    const response = await fetch(daOrder.ajaxUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      body: formData,
+    });
+    const data = await response.json();
+    if (data && data.success) {
+      messageEl.className = "form-message form-message--success";
+      messageEl.textContent = "Order placed successfully! Check your email for confirmation.";
+      localStorage.removeItem(orderKey);
+      updateOrderSummary();
+      checkoutForm.reset();
+      trackEvent("order_submit", { value: items.reduce((sum, item) => sum + item.qty * item.price, 0) });
+    } else {
+      messageEl.className = "form-message form-message--error";
+      messageEl.textContent = data && data.data && data.data.message ? data.data.message : "Sorry, something went wrong.";
+    }
+  } catch (error) {
+    messageEl.className = "form-message form-message--error";
+    messageEl.textContent = "Network error. Please try again.";
+  }
+  messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+};
+
+const submitCateringBooking = async (form) => {
+  if (!form) return;
+  let messageEl = form.querySelector(".form-message");
+  if (!messageEl) {
+    messageEl = document.createElement("div");
+    messageEl.className = "form-message form-message--success";
+    messageEl.setAttribute("role", "status");
+    messageEl.setAttribute("aria-live", "polite");
+    const actions = form.querySelector(".form-actions");
+    if (actions && actions.parentElement) {
+      actions.parentElement.appendChild(messageEl);
+    } else {
+      form.appendChild(messageEl);
+    }
+  }
+
+  if (!window.daBooking) {
+    messageEl.className = "form-message form-message--error";
+    messageEl.textContent = "Booking service is unavailable. Please try again.";
+    return;
+  }
+
+  messageEl.className = "form-message form-message--success";
+  messageEl.textContent = "Submitting booking...";
+
+  const formData = new FormData(form);
+  formData.append("action", "da_booking_submit");
+  formData.append("nonce", daBooking.nonce);
+
+  try {
+    const response = await fetch(daBooking.ajaxUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      body: formData,
+    });
+    const data = await response.json();
+    if (data && data.success) {
+      messageEl.className = "form-message form-message--success";
+      messageEl.textContent = "Booking request submitted! Check your email for confirmation.";
+      form.reset();
+      trackEvent("booking_submit", {});
+    } else {
+      messageEl.className = "form-message form-message--error";
+      messageEl.textContent = data && data.data && data.data.message ? data.data.message : "Sorry, something went wrong.";
+    }
+  } catch (error) {
+    messageEl.className = "form-message form-message--error";
+    messageEl.textContent = "Network error. Please try again.";
+  }
+  messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+};
+
+const trackEvent = (name, params) => {
+  if (window.gtag) {
+    window.gtag("event", name, params || {});
+  }
+  if (window.dataLayer) {
+    window.dataLayer.push({ event: name, ...(params || {}) });
   }
 };
 
@@ -1094,90 +1245,9 @@ const initBookingModern = () => {
       e.preventDefault();
       if (!validateCurrentStep()) return;
       localStorage.removeItem(bookingStorageKey);
-      const wrapper = root.querySelector(".booking-form-wrapper");
-      if (wrapper) {
-        wrapper.innerHTML = `
-          <div style=\"text-align:center;padding:60px 40px;\">
-            <div style=\"width:80px;height:80px;border-radius:50%;background:rgba(16,185,129,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;\">
-              <svg width=\"40\" height=\"40\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#10b981\" stroke-width=\"2\">\n                <polyline points=\"20 6 9 17 4 12\"/>\n              </svg>
-            </div>
-            <h2 style=\"color:var(--booking-primary);font-size:2rem;margin-bottom:16px;\">Booking Request Submitted!</h2>
-            <p style=\"color:var(--booking-muted);font-size:1.1rem;max-width:500px;margin:0 auto 32px;\">Thank you for your booking request. We'll review your details and get back to you within 2 hours with a customized quote.</p>
-            <a href=\"/\" class=\"btn btn-primary\" style=\"margin-top:20px;\">Return to Homepage</a>
-          </div>
-        `;
-      }
-    });
-
-    form.addEventListener("change", saveFormProgress);
-  }
-
-  const checkoutForm = root.querySelector("#checkoutForm");
-  if (checkoutForm) {
-    checkoutForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      let messageEl = checkoutForm.querySelector(".form-message");
-      if (!messageEl) {
-        messageEl = document.createElement("div");
-        messageEl.className = "form-message form-message--success";
-        messageEl.setAttribute("role", "status");
-        messageEl.setAttribute("aria-live", "polite");
-        const actions = checkoutForm.querySelector(".form-actions");
-        if (actions && actions.parentElement) {
-          actions.parentElement.appendChild(messageEl);
-        } else {
-          checkoutForm.appendChild(messageEl);
-        }
-      }
-      const items = getStoredOrder();
-      if (!items.length) {
-        messageEl.className = "form-message form-message--error";
-        messageEl.textContent = "Your order is empty. Please add items first.";
-        messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
-        return;
-      }
-
-      if (!window.daOrder) {
-        messageEl.className = "form-message form-message--error";
-        messageEl.textContent = "Order service is unavailable. Please try again.";
-        return;
-      }
-
-      messageEl.className = "form-message form-message--success";
-      messageEl.textContent = "Submitting order...";
-
-      const formData = new FormData(checkoutForm);
-      formData.append("action", "da_order_submit");
-      formData.append("nonce", daOrder.nonce);
-      formData.append("items", JSON.stringify(items));
-
-      try {
-        const response = await fetch(daOrder.ajaxUrl, {
-          method: "POST",
-          credentials: "same-origin",
-          body: formData,
-        });
-        const data = await response.json();
-        if (data && data.success) {
-          messageEl.className = "form-message form-message--success";
-          messageEl.textContent = "Order placed successfully! Check your email for confirmation.";
-          localStorage.removeItem(orderKey);
-          updateOrderSummary();
-          checkoutForm.reset();
-        } else {
-          messageEl.className = "form-message form-message--error";
-          messageEl.textContent = data && data.data && data.data.message ? data.data.message : "Sorry, something went wrong.";
-        }
-      } catch (error) {
-        messageEl.className = "form-message form-message--error";
-        messageEl.textContent = "Network error. Please try again.";
-      }
-      messageEl.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      submitCateringBooking(form);
     });
   }
-
-  loadFormProgress();
-  goToStep(currentStep, false);
 };
 
 const initNewsletterForm = () => {
@@ -1262,7 +1332,6 @@ const initNewsletterForm = () => {
     }
   });
 };
-
 const initPromoModal = () => {
   const modal = document.querySelector("[data-promo-modal]");
   if (!modal) return;
@@ -1290,6 +1359,14 @@ const initPromoModal = () => {
 };
 
 document.addEventListener("DOMContentLoaded", () => {
+  document.addEventListener("submit", (event) => {
+    const form = event.target;
+    if (form && form.id === "checkoutForm") {
+      event.preventDefault();
+      submitQuickOrder(form);
+    }
+  }, true);
+
   applyPromoFromUrl();
   initMenuActions();
   initFilters();
@@ -1321,3 +1398,5 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
+
+
