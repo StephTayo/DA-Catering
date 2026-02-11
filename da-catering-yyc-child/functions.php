@@ -64,6 +64,9 @@ add_filter('wp_check_filetype_and_ext', 'da_catering_yyc_child_fix_svg_display',
 
 // Avoid media upload errors from generating oversized image variants.
 add_filter('intermediate_image_sizes_advanced', function ($sizes) {
+    if (is_admin() || (defined('DOING_AJAX') && DOING_AJAX)) {
+        return $sizes;
+    }
     foreach ($sizes as $name => $data) {
         $width = isset($data['width']) ? (int) $data['width'] : 0;
         $height = isset($data['height']) ? (int) $data['height'] : 0;
@@ -75,15 +78,26 @@ add_filter('intermediate_image_sizes_advanced', function ($sizes) {
 }, 10, 1);
 
 // Prevent large image downscaling which can fail on some hosts.
-add_filter('big_image_size_threshold', '__return_false');
+add_filter('big_image_size_threshold', function ($threshold) {
+    if (is_admin() || (defined('DOING_AJAX') && DOING_AJAX)) {
+        return $threshold;
+    }
+    return false;
+});
 
 // Disable all intermediate sizes to avoid server-side resize failures.
 add_filter('intermediate_image_sizes_advanced', function ($sizes) {
+    if (is_admin() || (defined('DOING_AJAX') && DOING_AJAX)) {
+        return $sizes;
+    }
     return array();
 }, 99, 1);
 
 // Prevent PHP warnings/notices from breaking async media upload responses.
 add_action('admin_init', function () {
+    // In admin, remove any front-end image size filters that can break uploads.
+    remove_all_filters('intermediate_image_sizes_advanced');
+    remove_all_filters('big_image_size_threshold');
     if (defined('DOING_AJAX') && DOING_AJAX) {
         @ini_set('display_errors', '0');
     }
@@ -134,6 +148,15 @@ function da_catering_yyc_child_force_booking_template($template) {
 add_filter('template_include', 'da_catering_yyc_child_force_booking_template');
 
 function da_catering_yyc_child_register_newsletter_table() {
+    if (defined('DOING_AJAX') && DOING_AJAX) {
+        return;
+    }
+
+    $option_key = 'da_newsletter_table_created';
+    if (get_option($option_key)) {
+        return;
+    }
+
     global $wpdb;
     $table = $wpdb->prefix . 'da_newsletter';
     $charset_collate = $wpdb->get_charset_collate();
@@ -153,6 +176,7 @@ function da_catering_yyc_child_register_newsletter_table() {
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql);
+    update_option($option_key, 1);
 }
 add_action('init', 'da_catering_yyc_child_register_newsletter_table');
 

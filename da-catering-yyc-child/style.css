@@ -542,7 +542,7 @@ body {
 
 .hero-iso__scrim {
   position: absolute;
-  inset: 0;
+  inset: -80px 0 0 0;
   background: rgba(255, 245, 237, 0.82);
   z-index: 2;
 }
@@ -885,17 +885,11 @@ body {
 .header {
   margin-bottom: 0;
   background: #243b34;
+  box-shadow: none;
 }
 
 .header::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -18px;
-  height: 22px;
-  background: #243b34;
-  pointer-events: none;
+  content: none;
 }
 
 .header + .hero {
@@ -1726,7 +1720,7 @@ body {
   border-radius: 2px;
   left: 50%;
   transform: translateX(-50%);
-  transition: transform 0.35s ease, opacity 0.35s ease, top 0.35s ease;
+  transition: transform 0.5s ease, opacity 0.5s ease, top 0.5s ease;
 }
 
 .mobile-toggle span::before,
@@ -1764,13 +1758,13 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='%231f3d34'><g transform='translate(24 24) rotate(45) translate(-24 -24)'><rect x='23' y='6' width='2.6' height='30' rx='1.3'/><circle cx='24' cy='40' r='3'/><rect x='20' y='8' width='2' height='10' rx='1'/><rect x='23' y='8' width='2' height='10' rx='1'/><rect x='26' y='8' width='2' height='10' rx='1'/></g><g transform='translate(24 24) rotate(-45) translate(-24 -24)'><rect x='23' y='6' width='2.6' height='28' rx='1.3'/><circle cx='24' cy='8' r='5'/></g></svg>");
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48' fill='%231f3d34'><g transform='translate(24 24) rotate(45) translate(-24 -24)'><rect x='23' y='4' width='2.6' height='36' rx='1.3'/><rect x='20' y='6' width='2' height='12' rx='1'/><rect x='23' y='6' width='2' height='12' rx='1'/><rect x='26' y='6' width='2' height='12' rx='1'/></g><g transform='translate(24 24) rotate(-45) translate(-24 -24)'><rect x='23' y='6' width='2.6' height='32' rx='1.3'/><circle cx='24' cy='6' r='5'/></g></svg>");
   background-repeat: no-repeat;
   background-position: center;
   background-size: 62px 62px;
   opacity: 0;
   transform: scale(0.92);
-  transition: opacity 0.35s ease, transform 0.35s ease;
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 .mobile-toggle.active::before {
@@ -1834,38 +1828,35 @@ body {
 .sticky-media-stack {
   position: relative;
   display: block;
-  background: #f5f4ef;
+  background: transparent;
 }
 
 .smoothies-to-video {
   position: relative;
-  background: #f5f4ef;
+  background-color: #f5f4ef;
   overflow: hidden;
 }
 
+
+
+
 .smoothies-bg {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 60%;
-  background-image: url("assets/img/smoothies-family.jpeg");
-  background-size: cover;
-  background-position: 70% center;
-  background-repeat: no-repeat;
-  opacity: 0.38;
-  z-index: 0;
-  pointer-events: none;
+  display: none;
 }
 
 .smoothies-to-video > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .smoothies-sticky {
   display: block;
-  background: #f5f4ef;
+  background: transparent;
+  background-image: url("assets/img/smoothies-family.jpeg");
+  background-size: 48% auto;
+  background-position: right center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .smoothies-content {
@@ -2026,6 +2017,18 @@ body {
     max-width: 360px;
     margin: 0 -30px;
   }
+
+  .smoothies-to-video {
+    background-attachment: scroll;
+  }
+
+  .smoothies-sticky {
+    background-attachment: scroll;
+    background-size: 68% auto;
+    background-position: right center;
+  }
+
+
 }
 
 @media (max-width: 640px) {
@@ -2049,6 +2052,10 @@ body {
 
   .smoothies-content {
     padding: 70px 24px;
+  }
+
+  .smoothies-sticky {
+    background-image: none;
   }
 
   .event-types {
