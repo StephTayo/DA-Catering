@@ -162,6 +162,26 @@ const applyPromoFromUrl = () => {
   }
 };
 
+const applyCateringPackageFromUrl = () => {
+  const params = new URLSearchParams(window.location.search);
+  const packageName = params.get("package");
+  const packagePrice = params.get("package_price");
+  const packageLabel = params.get("package_label");
+  if (!packageName || !packagePrice) return;
+
+  const wrap = document.querySelector("[data-package-wrap]");
+  const display = document.querySelector("[data-package-display]");
+  const nameInput = document.querySelector("[data-package-name]");
+  const priceInput = document.querySelector("[data-package-price]");
+  if (wrap && display && nameInput && priceInput) {
+    const label = packageLabel ? decodeURIComponent(packageLabel) : `Starting at $${packagePrice}`;
+    display.value = `${decodeURIComponent(packageName)} — ${label}`;
+    nameInput.value = decodeURIComponent(packageName);
+    priceInput.value = packagePrice;
+    wrap.style.display = "block";
+  }
+};
+
 const initMenuActions = () => {
   const cards = document.querySelectorAll("[data-product]");
   if (!cards.length) return;
@@ -1368,6 +1388,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }, true);
 
   applyPromoFromUrl();
+  applyCateringPackageFromUrl();
   initMenuActions();
   initFilters();
   initMobileMenu();

@@ -3483,3 +3483,48 @@ body.promo-modal-open {
     max-height: 320px;
   }
 }
+
+@media (max-width: 520px) {
+  .promo-modal__dialog {
+    width: 94vw;
+    max-height: 92vh;
+  }
+
+  .promo-modal__content {
+    padding: 20px;
+  }
+
+  .promo-modal__media {
+    max-height: 240px;
+  }
+
+  .promo-modal__content {
+    overflow-y: auto;
+  }
+}
+
+.footer {
+  position: relative;
+}
+
+.footer .footer-logo {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+}
+
+.footer .footer-logo img {
+  width: 80px;
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 720px) {
+  .footer .footer-logo {
+    position: static;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+

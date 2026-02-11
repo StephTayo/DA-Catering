@@ -95,6 +95,12 @@
                     <span class="section-icon"></span>
                     <h3 class="section-title">Event Details</h3>
                   </div>
+                  <div class="form-group" data-package-wrap style="display:none;">
+                    <label class="form-label">Selected Package</label>
+                    <input type="text" class="form-input" data-package-display readonly />
+                    <input type="hidden" name="package_name" data-package-name />
+                    <input type="hidden" name="package_price" data-package-price />
+                  </div>
 
                   <div class="form-grid grid-2">
                     <div class="form-group">

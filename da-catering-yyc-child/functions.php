@@ -306,6 +306,100 @@ function da_catering_yyc_child_register_newsletter_table() {
 }
 add_action('init', 'da_catering_yyc_child_register_newsletter_table');
 
+function da_catering_yyc_child_register_broadcasts_table() {
+    if (defined('DOING_AJAX') && DOING_AJAX) {
+        return;
+    }
+
+    $version_key = 'da_broadcast_table_version';
+    $current_version = (int) get_option($version_key, 0);
+    $target_version = 2;
+
+    global $wpdb;
+    $table = $wpdb->prefix . 'da_broadcasts';
+    $charset_collate = $wpdb->get_charset_collate();
+    $sql = "CREATE TABLE {$table} (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        subject VARCHAR(190) NOT NULL,
+        title VARCHAR(190) NOT NULL,
+        body LONGTEXT NOT NULL,
+        poster_url TEXT NULL,
+        status VARCHAR(20) NOT NULL DEFAULT 'draft',
+        scheduled_at DATETIME NULL,
+        created_at DATETIME NOT NULL,
+        sent_at DATETIME NULL,
+        total_recipients INT NOT NULL DEFAULT 0,
+        sent_count INT NOT NULL DEFAULT 0,
+        send_mode VARCHAR(20) NOT NULL DEFAULT 'once',
+        batch_size INT NOT NULL DEFAULT 100,
+        last_offset INT NOT NULL DEFAULT 0,
+        PRIMARY KEY  (id)
+    ) {$charset_collate};";
+
+    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    dbDelta($sql);
+
+    $log_table = $wpdb->prefix . 'da_broadcast_logs';
+    $log_sql = "CREATE TABLE {$log_table} (
+        id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+        broadcast_id BIGINT UNSIGNED NOT NULL,
+        email VARCHAR(190) NOT NULL,
+        status VARCHAR(20) NOT NULL,
+        error TEXT NULL,
+        sent_at DATETIME NULL,
+        PRIMARY KEY  (id),
+        KEY broadcast_email (broadcast_id, email)
+    ) {$charset_collate};";
+    dbDelta($log_sql);
+
+    update_option($version_key, $target_version);
+}
+add_action('init', 'da_catering_yyc_child_register_broadcasts_table');
+
+function da_catering_yyc_child_get_or_create_subscriber($email) {
+    if (!$email || !is_email($email)) {
+        return;
+    }
+    global $wpdb;
+    $table = $wpdb->prefix . 'da_newsletter';
+    $existing = $wpdb->get_row($wpdb->prepare("SELECT id, status, token, unsubscribed_at FROM {$table} WHERE email = %s", $email));
+    if ($existing) {
+        if (!empty($existing->unsubscribed_at) || $existing->status === 'unsubscribed') {
+            return;
+        }
+        if ($existing->status === 'confirmed') {
+            return;
+        }
+        $token = da_catering_yyc_child_generate_newsletter_token();
+        $wpdb->update(
+            $table,
+            array(
+                'status' => 'confirmed',
+                'token' => $token,
+                'unsubscribed_at' => null,
+            ),
+            array('id' => $existing->id),
+            array('%s', '%s', '%s'),
+            array('%d')
+        );
+        return;
+    }
+
+    $token = da_catering_yyc_child_generate_newsletter_token();
+    $wpdb->insert(
+        $table,
+        array(
+            'email' => $email,
+            'created_at' => current_time('mysql'),
+            'status' => 'confirmed',
+            'token' => $token,
+            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
+            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+        ),
+        array('%s', '%s', '%s', '%s', '%s', '%s')
+    );
+}
+
 function da_catering_yyc_child_generate_newsletter_token() {
     return bin2hex(random_bytes(16));
 }
@@ -592,6 +686,388 @@ function da_catering_yyc_child_register_promo_cpt() {
         'publicly_queryable' => false,
     ));
 }
+
+add_action('admin_menu', function () {
+    add_menu_page(
+        'Broadcasts',
+        'Broadcasts',
+        'manage_options',
+        'da-broadcasts',
+        'da_catering_yyc_child_render_broadcasts_admin',
+        'dashicons-megaphone',
+        62
+    );
+});
+
+function da_catering_yyc_child_render_broadcasts_admin() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    global $wpdb;
+    $table = $wpdb->prefix . 'da_broadcasts';
+    $now = current_time('mysql');
+
+    if (isset($_GET['da_broadcast_preview']) && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'da_broadcast_preview')) {
+        $preview_id = (int) $_GET['da_broadcast_preview'];
+        da_catering_yyc_child_render_broadcast_preview($preview_id);
+        exit;
+    }
+
+    if (isset($_GET['da_broadcast_export']) && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'da_broadcast_export')) {
+        $export_id = (int) $_GET['da_broadcast_export'];
+        da_catering_yyc_child_export_broadcast_csv($export_id);
+        exit;
+    }
+
+    if (isset($_POST['da_broadcast_nonce']) && wp_verify_nonce($_POST['da_broadcast_nonce'], 'da_broadcast_save')) {
+        $subject = sanitize_text_field(wp_unslash($_POST['subject'] ?? ''));
+        $title = sanitize_text_field(wp_unslash($_POST['title'] ?? ''));
+        $body = wp_kses_post(wp_unslash($_POST['body'] ?? ''));
+        $poster_url = esc_url_raw(wp_unslash($_POST['poster_url'] ?? ''));
+        $send_mode = sanitize_text_field(wp_unslash($_POST['send_mode'] ?? 'once'));
+        $batch_size = (int) (wp_unslash($_POST['batch_size'] ?? 100));
+        $send_now = isset($_POST['send_now']) ? 1 : 0;
+        $scheduled_at = sanitize_text_field(wp_unslash($_POST['scheduled_at'] ?? ''));
+
+        if ($subject && $title && $body) {
+            $wpdb->insert(
+                $table,
+                array(
+                    'subject' => $subject,
+                    'title' => $title,
+                    'body' => $body,
+                    'poster_url' => $poster_url,
+                    'status' => $send_now ? 'queued' : 'scheduled',
+                    'scheduled_at' => $send_now ? $now : $scheduled_at,
+                    'created_at' => $now,
+                    'send_mode' => in_array($send_mode, array('once', 'batch'), true) ? $send_mode : 'once',
+                    'batch_size' => $batch_size > 0 ? $batch_size : 100,
+                ),
+                array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%d')
+            );
+            $id = (int) $wpdb->insert_id;
+            if ($send_now) {
+                wp_schedule_single_event(time() + 5, 'da_broadcast_send_event', array($id));
+            } else {
+                $ts = strtotime($scheduled_at);
+                if ($ts) {
+                    wp_schedule_single_event($ts, 'da_broadcast_send_event', array($id));
+                }
+            }
+            echo '<div class="notice notice-success"><p>Broadcast saved.</p></div>';
+        } else {
+            echo '<div class="notice notice-error"><p>Please fill subject, title, and body.</p></div>';
+        }
+    }
+
+    $rows = $wpdb->get_results("SELECT * FROM {$table} ORDER BY created_at DESC LIMIT 50");
+    ?>
+    <div class="wrap">
+        <h1>Broadcasts</h1>
+        <form method="post">
+            <?php wp_nonce_field('da_broadcast_save', 'da_broadcast_nonce'); ?>
+            <table class="form-table">
+                <tr>
+                    <th><label>Subject</label></th>
+                    <td><input type="text" name="subject" style="width:100%;max-width:700px;" required></td>
+                </tr>
+                <tr>
+                    <th><label>Title</label></th>
+                    <td><input type="text" name="title" style="width:100%;max-width:700px;" required></td>
+                </tr>
+                <tr>
+                    <th><label>Poster URL</label></th>
+                    <td>
+                        <input type="text" name="poster_url" style="width:100%;max-width:700px;" id="da-broadcast-poster">
+                        <button type="button" class="button" id="da-broadcast-poster-btn" style="margin-top:8px;">Select/Upload Poster</button>
+                        <div id="da-broadcast-poster-preview" style="margin-top:10px;max-width:320px;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label>Body</label></th>
+                    <td><?php wp_editor('', 'da_broadcast_body', array('textarea_name' => 'body', 'media_buttons' => true)); ?></td>
+                </tr>
+                <tr>
+                    <th><label>Schedule</label></th>
+                    <td>
+                        <input type="datetime-local" name="scheduled_at">
+                        <label style="margin-left:12px;"><input type="checkbox" name="send_now" value="1"> Send immediately</label>
+                    </td>
+                </tr>
+                <tr>
+                    <th><label>Send Mode</label></th>
+                    <td>
+                        <label><input type="radio" name="send_mode" value="once" checked> Send once (all at once)</label>
+                        <label style="margin-left:16px;"><input type="radio" name="send_mode" value="batch"> Send in batches</label>
+                        <input type="number" name="batch_size" value="100" min="10" max="1000" style="margin-left:12px;width:120px;" />
+                        <span style="color:#666;">per batch</span>
+                    </td>
+                </tr>
+            </table>
+            <p><button class="button button-primary" type="submit">Save Broadcast</button></p>
+        </form>
+
+        <h2>Recent Broadcasts</h2>
+        <table class="widefat striped">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th>Scheduled</th>
+                    <th>Sent</th>
+                    <th>Recipients</th>
+                    <th>Sent Count</th>
+                    <th>Mode</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($rows) : foreach ($rows as $row) : ?>
+                    <tr>
+                        <td><?php echo esc_html($row->subject); ?></td>
+                        <td><?php echo esc_html($row->status); ?></td>
+                        <td><?php echo esc_html($row->scheduled_at); ?></td>
+                        <td><?php echo esc_html($row->sent_at); ?></td>
+                        <td><?php echo esc_html($row->total_recipients); ?></td>
+                        <td><?php echo esc_html($row->sent_count); ?></td>
+                        <td><?php echo esc_html($row->send_mode ?? 'once'); ?></td>
+                        <td>
+                            <?php
+                            $preview_url = wp_nonce_url(admin_url('admin.php?page=da-broadcasts&da_broadcast_preview=' . (int) $row->id), 'da_broadcast_preview');
+                            $export_url = wp_nonce_url(admin_url('admin.php?page=da-broadcasts&da_broadcast_export=' . (int) $row->id), 'da_broadcast_export');
+                            ?>
+                            <a href="<?php echo esc_url($preview_url); ?>" target="_blank">Preview</a>
+                            &nbsp;|&nbsp;
+                            <a href="<?php echo esc_url($export_url); ?>">Export CSV</a>
+                        </td>
+                    </tr>
+                <?php endforeach; else : ?>
+                    <tr><td colspan="8">No broadcasts yet.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
+
+add_action('da_broadcast_send_event', 'da_catering_yyc_child_process_broadcast', 10, 1);
+
+add_action('wp_mail_failed', function ($wp_error) {
+    $GLOBALS['da_last_mail_error'] = $wp_error instanceof WP_Error ? $wp_error->get_error_message() : 'Unknown error';
+});
+
+function da_catering_yyc_child_render_broadcast_preview($broadcast_id) {
+    global $wpdb;
+    $table = $wpdb->prefix . 'da_broadcasts';
+    $broadcast = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$table} WHERE id = %d", $broadcast_id));
+    if (!$broadcast) {
+        wp_die('Broadcast not found.');
+    }
+    $logo_url = da_catering_yyc_child_get_logo_url();
+    $brand = 'DA Catering YYC';
+    $message = '
+      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
+        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
+          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
+          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">' . esc_html($broadcast->title) . '</h2>
+          ' . ($broadcast->poster_url ? '<div style="margin:0 0 16px;"><img src="' . esc_url($broadcast->poster_url) . '" alt="" style="max-width:100%;height:auto;border-radius:12px;" /></div>' : '') . '
+          <div style="color:#4a5650;line-height:1.6;">' . wp_kses_post($broadcast->body) . '</div>
+        </div>
+      </div>
+    ';
+    echo $message;
+}
+
+function da_catering_yyc_child_export_broadcast_csv($broadcast_id) {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    global $wpdb;
+    $log_table = $wpdb->prefix . 'da_broadcast_logs';
+    $rows = $wpdb->get_results(
+        $wpdb->prepare("SELECT email, status, sent_at, error FROM {$log_table} WHERE broadcast_id = %d ORDER BY email ASC", $broadcast_id),
+        ARRAY_A
+    );
+
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=da-broadcast-' . $broadcast_id . '-log.csv');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, array('Email', 'Status', 'Sent At', 'Error'));
+    foreach ($rows as $row) {
+        fputcsv($output, $row);
+    }
+    fclose($output);
+    exit;
+}
+
+function da_catering_yyc_child_process_broadcast($broadcast_id) {
+    global $wpdb;
+    $b_table = $wpdb->prefix . 'da_broadcasts';
+    $n_table = $wpdb->prefix . 'da_newsletter';
+    $log_table = $wpdb->prefix . 'da_broadcast_logs';
+    $broadcast = $wpdb->get_row($wpdb->prepare("SELECT * FROM {$b_table} WHERE id = %d", $broadcast_id));
+    if (!$broadcast || $broadcast->status === 'sent') {
+        return;
+    }
+
+    $send_mode = $broadcast->send_mode ?: 'once';
+    $batch_size = (int) ($broadcast->batch_size ?: 100);
+    $offset = (int) ($broadcast->last_offset ?: 0);
+
+    $subscribers = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT email, token FROM {$n_table} WHERE status = 'confirmed' AND (unsubscribed_at IS NULL) LIMIT %d OFFSET %d",
+            $send_mode === 'batch' ? $batch_size : 1000000,
+            $send_mode === 'batch' ? $offset : 0
+        )
+    );
+    $total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$n_table} WHERE status = 'confirmed' AND (unsubscribed_at IS NULL)");
+    if ($total === 0 || !$subscribers) {
+        $wpdb->update($b_table, array('status' => 'sent', 'sent_at' => current_time('mysql')), array('id' => $broadcast_id), array('%s', '%s'), array('%d'));
+        return;
+    }
+
+    $logo_url = da_catering_yyc_child_get_logo_url();
+    $brand = 'DA Catering YYC';
+    $sent_count = 0;
+
+    $emails = array_map(function ($s) {
+        return $s->email;
+    }, $subscribers);
+    $existing = array();
+    if ($emails) {
+        $placeholders = implode(',', array_fill(0, count($emails), '%s'));
+        $existing_rows = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT email FROM {$log_table} WHERE broadcast_id = %d AND email IN ({$placeholders})",
+                array_merge(array($broadcast_id), $emails)
+            )
+        );
+        foreach ($existing_rows as $row) {
+            $existing[$row->email] = true;
+        }
+    }
+    foreach ($subscribers as $subscriber) {
+        if (isset($existing[$subscriber->email])) {
+            continue;
+        }
+        $unsub_url = home_url('/?da_newsletter_unsub=' . urlencode($subscriber->token));
+        $headers = array(
+            'Content-Type: text/html; charset=UTF-8',
+            'From: DA Catering YYC <orders@dacatering.ca>',
+        );
+        $message = '
+          <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
+            <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
+              ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
+              <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">' . esc_html($broadcast->title) . '</h2>
+              ' . ($broadcast->poster_url ? '<div style="margin:0 0 16px;"><img src="' . esc_url($broadcast->poster_url) . '" alt="" style="max-width:100%;height:auto;border-radius:12px;" /></div>' : '') . '
+              <div style="color:#4a5650;line-height:1.6;">' . wp_kses_post($broadcast->body) . '</div>
+              <p style="margin-top:20px;font-size:12px;color:#6b7280;">Unsubscribe: <a href="' . esc_url($unsub_url) . '" style="color:#6b7280;">' . esc_html($unsub_url) . '</a></p>
+            </div>
+            <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
+          </div>
+        ';
+        $GLOBALS['da_last_mail_error'] = '';
+        if (wp_mail($subscriber->email, $broadcast->subject, $message, $headers)) {
+            $sent_count++;
+            $wpdb->insert(
+                $log_table,
+                array(
+                    'broadcast_id' => $broadcast_id,
+                    'email' => $subscriber->email,
+                    'status' => 'sent',
+                    'sent_at' => current_time('mysql'),
+                ),
+                array('%d', '%s', '%s', '%s')
+            );
+        } else {
+            $wpdb->insert(
+                $log_table,
+                array(
+                    'broadcast_id' => $broadcast_id,
+                    'email' => $subscriber->email,
+                    'status' => 'failed',
+                    'error' => substr((string) ($GLOBALS['da_last_mail_error'] ?? 'Failed to send'), 0, 1000),
+                    'sent_at' => current_time('mysql'),
+                ),
+                array('%d', '%s', '%s', '%s', '%s')
+            );
+        }
+    }
+
+    $new_sent = (int) $broadcast->sent_count + $sent_count;
+    $new_offset = $send_mode === 'batch' ? $offset + count($subscribers) : $total;
+    $all_done = $new_offset >= $total;
+
+    $wpdb->update(
+        $b_table,
+        array(
+            'status' => $all_done ? 'sent' : 'queued',
+            'sent_at' => $all_done ? current_time('mysql') : null,
+            'total_recipients' => $total,
+            'sent_count' => $new_sent,
+            'last_offset' => $new_offset,
+        ),
+        array('id' => $broadcast_id),
+        array('%s', '%s', '%d', '%d', '%d'),
+        array('%d')
+    );
+
+    if (!$all_done && $send_mode === 'batch') {
+        wp_schedule_single_event(time() + 120, 'da_broadcast_send_event', array($broadcast_id));
+    }
+}
+
+add_filter('cron_schedules', function ($schedules) {
+    if (!isset($schedules['da_broadcast_batch'])) {
+        $schedules['da_broadcast_batch'] = array(
+            'interval' => 120,
+            'display' => 'Broadcast batch (2 minutes)',
+        );
+    }
+    return $schedules;
+});
+
+add_action('admin_enqueue_scripts', function ($hook) {
+    if ($hook !== 'toplevel_page_da-broadcasts') {
+        return;
+    }
+    wp_enqueue_media();
+    wp_enqueue_script('media-editor');
+    $inline = <<<JS
+document.addEventListener('DOMContentLoaded', function () {
+  const btn = document.getElementById('da-broadcast-poster-btn');
+  const input = document.getElementById('da-broadcast-poster');
+  const preview = document.getElementById('da-broadcast-poster-preview');
+  if (!btn || !input || !window.wp || !wp.media) return;
+
+  let frame = null;
+  btn.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (frame) {
+      frame.open();
+      return;
+    }
+    frame = wp.media({
+      title: 'Select Poster',
+      button: { text: 'Use this poster' },
+      multiple: false
+    });
+    frame.on('select', function () {
+      const attachment = frame.state().get('selection').first().toJSON();
+      if (!attachment || !attachment.url) return;
+      input.value = attachment.url;
+      if (preview) {
+        preview.innerHTML = '<img src="' + attachment.url + '" alt="" style="max-width:100%;height:auto;border:1px solid rgba(31,61,52,0.12);border-radius:10px;" />';
+      }
+    });
+    frame.open();
+  });
+});
+JS;
+    wp_add_inline_script('media-editor', $inline);
+});
 add_action('init', 'da_catering_yyc_child_register_promo_cpt');
 
 add_action('init', function () {
@@ -996,6 +1472,121 @@ add_action('admin_head', function () {
     </style>';
 });
 
+add_action('admin_menu', function () {
+    add_submenu_page(
+        'edit.php?post_type=da_order',
+        'Reports',
+        'Reports',
+        'manage_options',
+        'da-order-reports',
+        'da_catering_yyc_child_render_order_reports'
+    );
+});
+
+function da_catering_yyc_child_get_order_totals($year = null) {
+    global $wpdb;
+    $year = $year ? (int) $year : (int) current_time('Y');
+    $table_posts = $wpdb->posts;
+    $table_meta = $wpdb->postmeta;
+
+    $results = $wpdb->get_results(
+        $wpdb->prepare(
+            "SELECT MONTH(p.post_date) AS month, COUNT(*) AS orders, SUM(CAST(m.meta_value AS DECIMAL(12,2))) AS total
+             FROM {$table_posts} p
+             INNER JOIN {$table_meta} m ON p.ID = m.post_id AND m.meta_key = '_da_order_subtotal'
+             WHERE p.post_type = 'da_order'
+               AND p.post_status = 'publish'
+               AND YEAR(p.post_date) = %d
+             GROUP BY MONTH(p.post_date)
+             ORDER BY MONTH(p.post_date)",
+            $year
+        )
+    );
+
+    $by_month = array_fill(1, 12, array('orders' => 0, 'total' => 0));
+    foreach ($results as $row) {
+        $month = (int) $row->month;
+        $by_month[$month] = array(
+            'orders' => (int) $row->orders,
+            'total' => (float) $row->total,
+        );
+    }
+    return $by_month;
+}
+
+function da_catering_yyc_child_render_order_reports() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    $year = isset($_GET['year']) ? (int) $_GET['year'] : (int) current_time('Y');
+    $totals = da_catering_yyc_child_get_order_totals($year);
+
+    $year_total = 0;
+    $year_orders = 0;
+    foreach ($totals as $month => $data) {
+        $year_total += $data['total'];
+        $year_orders += $data['orders'];
+    }
+    $avg = $year_orders ? ($year_total / $year_orders) : 0;
+    ?>
+    <div class="wrap">
+        <h1>Order Reports</h1>
+        <form method="get" style="margin:12px 0;">
+            <input type="hidden" name="post_type" value="da_order" />
+            <input type="hidden" name="page" value="da-order-reports" />
+            <label>Year:</label>
+            <input type="number" name="year" value="<?php echo esc_attr($year); ?>" min="2020" max="<?php echo esc_attr(current_time('Y')); ?>" />
+            <button class="button">Filter</button>
+        </form>
+        <div style="margin:12px 0;">
+            <strong>Total (<?php echo esc_html($year); ?>):</strong> <?php echo esc_html(da_catering_yyc_child_format_money($year_total)); ?>
+            &nbsp; | &nbsp;
+            <strong>Orders:</strong> <?php echo esc_html($year_orders); ?>
+            &nbsp; | &nbsp;
+            <strong>Avg Order:</strong> <?php echo esc_html(da_catering_yyc_child_format_money($avg)); ?>
+        </div>
+        <table class="widefat striped">
+            <thead>
+                <tr>
+                    <th>Month</th>
+                    <th>Orders</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($totals as $month => $data) : ?>
+                    <tr>
+                        <td><?php echo esc_html(date('F', mktime(0, 0, 0, $month, 1))); ?></td>
+                        <td><?php echo esc_html($data['orders']); ?></td>
+                        <td><?php echo esc_html(da_catering_yyc_child_format_money($data['total'])); ?></td>
+                    </tr>
+                <?php endforeach; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
+
+add_action('wp_dashboard_setup', function () {
+    wp_add_dashboard_widget('da_orders_summary', 'DA Orders Summary', 'da_catering_yyc_child_render_orders_dashboard_widget');
+});
+
+function da_catering_yyc_child_render_orders_dashboard_widget() {
+    $month = (int) current_time('n');
+    $year = (int) current_time('Y');
+    $totals = da_catering_yyc_child_get_order_totals($year);
+    $month_total = $totals[$month]['total'] ?? 0;
+    $month_orders = $totals[$month]['orders'] ?? 0;
+
+    $year_total = 0;
+    foreach ($totals as $data) {
+        $year_total += $data['total'];
+    }
+    echo '<p><strong>This month:</strong> ' . esc_html(da_catering_yyc_child_format_money($month_total)) . ' (' . esc_html($month_orders) . ' orders)</p>';
+    echo '<p><strong>This year:</strong> ' . esc_html(da_catering_yyc_child_format_money($year_total)) . '</p>';
+    echo '<p><a href=\"' . esc_url(admin_url('edit.php?post_type=da_order&page=da-order-reports')) . '\">View reports</a></p>';
+}
+
 function da_catering_yyc_child_format_money($amount) {
     return '$' . number_format((float) $amount, 2);
 }
@@ -1209,6 +1800,7 @@ function da_catering_yyc_child_send_booking_confirmation($booking) {
           <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Thanks for your booking request!</h2>
           <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We have received your catering request and will get back to you within 2 hours.</p>
           <p style="margin:0 0 6px;color:#4a5650;"><strong>Event:</strong> ' . esc_html($booking['event_type']) . '</p>
+          ' . (!empty($booking['package_name']) ? '<p style="margin:0 0 6px;color:#4a5650;"><strong>Package:</strong> ' . esc_html($booking['package_name']) . ' (Starting at $' . esc_html($booking['package_price']) . ')</p>' : '') . '
           <p style="margin:0 0 6px;color:#4a5650;"><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
           <p style="margin:0 0 6px;color:#4a5650;"><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
           <p style="margin:0 0 6px;color:#4a5650;"><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
@@ -1238,6 +1830,8 @@ function da_catering_yyc_child_send_booking_admin_notice($booking) {
           <p><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
           <p><strong>Budget:</strong> ' . esc_html($booking['budget_range']) . '</p>
           <p><strong>Service Type:</strong> ' . esc_html($booking['service_type']) . '</p>
+          <p><strong>Package:</strong> ' . esc_html($booking['package_name']) . '</p>
+          <p><strong>Package Price:</strong> $' . esc_html($booking['package_price']) . '</p>
           <p><strong>Address:</strong> ' . esc_html($booking['delivery_address']) . '</p>
           <p><strong>Delivery Instructions:</strong> ' . esc_html($booking['delivery_instructions']) . '</p>
           <p><strong>Dietary Restrictions:</strong> ' . esc_html($booking['dietary_restrictions']) . '</p>
@@ -1273,6 +1867,8 @@ function da_catering_yyc_child_handle_booking_submit() {
         'delivery_instructions' => sanitize_textarea_field(wp_unslash($_POST['delivery_instructions'] ?? '')),
         'dietary_restrictions' => sanitize_textarea_field(wp_unslash($_POST['dietary_restrictions'] ?? '')),
         'special_requests' => sanitize_textarea_field(wp_unslash($_POST['special_requests'] ?? '')),
+        'package_name' => sanitize_text_field(wp_unslash($_POST['package_name'] ?? '')),
+        'package_price' => sanitize_text_field(wp_unslash($_POST['package_price'] ?? '')),
     );
 
     if (!$booking['full_name'] || !$booking['email'] || !$booking['phone']) {
@@ -1286,6 +1882,7 @@ function da_catering_yyc_child_handle_booking_submit() {
 
     da_catering_yyc_child_send_booking_confirmation($booking);
     da_catering_yyc_child_send_booking_admin_notice($booking);
+    da_catering_yyc_child_get_or_create_subscriber($booking['email']);
 
     delete_transient($rate_key);
     wp_send_json_success(array('message' => 'Booking request submitted.'));
@@ -1398,6 +1995,7 @@ function da_catering_yyc_child_handle_order_submit() {
 
     da_catering_yyc_child_send_order_confirmation($order_id, $order, $validated_items, $subtotal);
     da_catering_yyc_child_send_order_admin_notice($order_id, $order, $validated_items, $subtotal);
+    da_catering_yyc_child_get_or_create_subscriber($order['order_email']);
 
     delete_transient($rate_key);
     wp_send_json_success(array('message' => 'Order received.'));

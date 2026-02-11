@@ -1,5 +1,8 @@
 <footer class="footer" id="contact">
   <div class="container">
+    <div class="footer-logo">
+      <?php echo get_custom_logo(); ?>
+    </div>
     <div class="contact-grid">
       <div>
         <h3>Contact</h3>
