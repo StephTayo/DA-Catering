@@ -415,27 +415,155 @@ function da_catering_yyc_child_get_logo_url() {
     return get_stylesheet_directory_uri() . '/assets/img/DA Catering Logo.png';
 }
 
+function da_catering_yyc_child_get_brand_palette() {
+    return array(
+        'primary' => '#1f3d34',
+        'primary_strong' => '#173028',
+        'accent' => '#B8F527',
+        'accent_strong' => '#8BC727',
+        'dark' => '#1a1a1a',
+        'gray' => '#2d2d2d',
+        'white' => '#ffffff',
+    );
+}
+
+function da_catering_yyc_child_build_email_shell($title, $body_html, $options = array()) {
+    $opts = wp_parse_args(
+        $options,
+        array(
+            'unsub_url' => '',
+            'include_cta' => true,
+            'brand' => 'DA Catering YYC',
+        )
+    );
+    $colors = da_catering_yyc_child_get_brand_palette();
+    $logo_url = da_catering_yyc_child_get_logo_url();
+    $phone = '+1 587 966 5757';
+    $phone_link = 'tel:+15879665757';
+    $whatsapp_link = 'https://wa.me/15879665757';
+    $email_link = 'mailto:orders@dacatering.ca';
+
+    $header_bg = 'background:linear-gradient(135deg,' . $colors['dark'] . ',' . $colors['gray'] . ');';
+    $cta_bg = 'background:linear-gradient(' . $colors['gray'] . ',' . $colors['dark'] . ');';
+    $button_bg = 'background:linear-gradient(' . $colors['accent'] . ',' . $colors['accent_strong'] . ');';
+
+    $cta_block = '';
+    if ($opts['include_cta']) {
+        $cta_block = '
+          <tr>
+            <td align="center" style="padding:20px;' . $cta_bg . '">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td align="center" style="padding-bottom:12px;">
+                    <a href="' . esc_url($phone_link) . '" class="cta-button" style="display:inline-block;padding:14px 26px;border-radius:999px;' . $button_bg . 'color:#1a1a1a;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.5px;">ORDER NOW</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center" style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:14px;">
+                    <span class="cta-stack" style="display:inline-block;margin:0 10px;">
+                      Phone: <a href="' . esc_url($phone_link) . '" style="color:' . $colors['accent'] . ';text-decoration:none;">' . esc_html($phone) . '</a>
+                    </span>
+                    <span class="cta-stack" style="display:inline-block;margin:0 10px;">
+                      Email: <a href="' . esc_url($email_link) . '" style="color:' . $colors['accent'] . ';text-decoration:none;">orders@dacatering.ca</a>
+                    </span>
+                    <span class="cta-stack" style="display:inline-block;margin:0 10px;">
+                      WhatsApp: <a href="' . esc_url($whatsapp_link) . '" style="color:' . $colors['accent'] . ';text-decoration:none;">Chat now</a>
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>';
+    }
+
+    $unsub_row = '';
+    if (!empty($opts['unsub_url'])) {
+        $unsub_row = '
+                <tr>
+                  <td align="center" style="font-family:Arial,Helvetica,sans-serif;color:#999999;font-size:12px;padding-top:6px;">
+                    <a href="' . esc_url($opts['unsub_url']) . '" style="color:#999999;text-decoration:none;">Unsubscribe</a>
+                  </td>
+                </tr>';
+    }
+
+    return '
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style type="text/css">
+    @media only screen and (max-width: 620px) {
+      .container { width: 100% !important; }
+      .full-width { width: 100% !important; height: auto !important; }
+      .padding { padding: 12px !important; }
+      .cta-button { display: block !important; width: 100% !important; }
+      .cta-stack { display: block !important; padding: 8px 0 !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#ffffff;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;">
+    <tr>
+      <td align="center" style="padding:0;margin:0;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container" style="width:600px;max-width:600px;margin:0 auto;background:#ffffff;">
+          <tr>
+            <td align="center" style="padding:18px 20px;' . $header_bg . '">
+              ' . ($logo_url ? '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr($opts['brand']) . ' Logo" style="display:block;border:0;outline:none;text-decoration:none;height:90px;max-width:180px;width:auto;margin:0 auto;">' : '') . '
+            </td>
+          </tr>
+          <tr>
+            <td align="center" class="padding" style="padding:16px 20px;background:#ffffff;">
+              <h2 style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:22px;color:' . $colors['primary'] . ';">' . esc_html($title) . '</h2>
+              <div style="font-family:Arial,Helvetica,sans-serif;color:#4a5650;line-height:1.6;">' . $body_html . '</div>
+            </td>
+          </tr>
+          ' . $cta_block . '
+          <tr>
+            <td align="center" style="padding:18px;background:' . $colors['dark'] . ';">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
+                <tr>
+                  <td align="center" style="font-family:Arial,Helvetica,sans-serif;color:#999999;font-size:12px;">
+                    <a href="' . esc_url(home_url('/')) . '" style="color:#999999;text-decoration:none;">Website</a>
+                    &nbsp;|&nbsp;
+                    <a href="https://www.instagram.com" style="color:#999999;text-decoration:none;">Instagram</a>
+                    &nbsp;|&nbsp;
+                    <a href="https://www.facebook.com" style="color:#999999;text-decoration:none;">Facebook</a>
+                  </td>
+                </tr>
+                ' . $unsub_row . '
+                <tr>
+                  <td align="center" style="font-family:Arial,Helvetica,sans-serif;color:#999999;font-size:12px;padding-top:6px;">
+                    &copy; ' . date('Y') . ' ' . esc_html($opts['brand']) . '. All rights reserved.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>';
+}
+
 function da_catering_yyc_child_send_confirmation_email($email, $token) {
     $confirm_url = home_url('/?da_newsletter_confirm=' . urlencode($token));
     $unsub_url = home_url('/?da_newsletter_unsub=' . urlencode($token));
     $subject = 'Confirm your newsletter subscription';
-    $brand = 'DA Catering YYC';
-    $logo_url = da_catering_yyc_child_get_logo_url();
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:560px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Welcome to DA Catering YYC — Home of Quality Meals!</h2>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We’re excited to have you. Click the button below to confirm your email and stay updated on our delicious deals and exclusive promos.</p>
-          <p style="margin:24px 0;">
-            <a href="' . esc_url($confirm_url) . '" style="display:inline-block;padding:12px 20px;background:#d46a1f;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Confirm subscription</a>
-          </p>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">If you did not request this, you can ignore this email.</p>
-          <p style="margin:0;color:#6b7280;font-size:12px;">Unsubscribe anytime: <a href="' . esc_url($unsub_url) . '" style="color:#6b7280;">' . esc_html($unsub_url) . '</a></p>
-        </div>
-        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
-      </div>
+    $body = '
+      <p style="margin:0 0 16px;">We’re excited to have you. Click the button below to confirm your email and stay updated on our delicious deals and exclusive promos.</p>
+      <p style="margin:24px 0;">
+        <a href="' . esc_url($confirm_url) . '" style="display:inline-block;padding:12px 20px;background:#d46a1f;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Confirm subscription</a>
+      </p>
+      <p style="margin:0 0 16px;">If you did not request this, you can ignore this email.</p>
     ';
+    $message = da_catering_yyc_child_build_email_shell(
+        'Welcome to DA Catering YYC — Home of Quality Meals!',
+        $body,
+        array('unsub_url' => $unsub_url)
+    );
     $headers = array('Content-Type: text/html; charset=UTF-8');
     wp_mail($email, $subject, $message, $headers);
 }
@@ -697,6 +825,14 @@ add_action('admin_menu', function () {
         'dashicons-megaphone',
         62
     );
+    add_submenu_page(
+        'da-broadcasts',
+        'All Emails',
+        'All Emails',
+        'manage_options',
+        'da-broadcast-emails',
+        'da_catering_yyc_child_render_broadcast_emails_admin'
+    );
 });
 
 function da_catering_yyc_child_render_broadcasts_admin() {
@@ -718,6 +854,10 @@ function da_catering_yyc_child_render_broadcasts_admin() {
         da_catering_yyc_child_export_broadcast_csv($export_id);
         exit;
     }
+    if (isset($_GET['da_broadcast_recipients_export']) && wp_verify_nonce($_GET['_wpnonce'] ?? '', 'da_broadcast_recipients_export')) {
+        da_catering_yyc_child_export_broadcast_recipients_csv();
+        exit;
+    }
 
     if (isset($_POST['da_broadcast_nonce']) && wp_verify_nonce($_POST['da_broadcast_nonce'], 'da_broadcast_save')) {
         $subject = sanitize_text_field(wp_unslash($_POST['subject'] ?? ''));
@@ -726,10 +866,13 @@ function da_catering_yyc_child_render_broadcasts_admin() {
         $poster_url = esc_url_raw(wp_unslash($_POST['poster_url'] ?? ''));
         $send_mode = sanitize_text_field(wp_unslash($_POST['send_mode'] ?? 'once'));
         $batch_size = (int) (wp_unslash($_POST['batch_size'] ?? 100));
-        $send_now = isset($_POST['send_now']) ? 1 : 0;
+        $action = sanitize_text_field(wp_unslash($_POST['da_broadcast_action'] ?? 'save'));
+        $send_now = $action === 'send' ? 1 : 0;
         $scheduled_at = sanitize_text_field(wp_unslash($_POST['scheduled_at'] ?? ''));
 
         if ($subject && $title && $body) {
+            $status = $send_now ? 'queued' : ($scheduled_at ? 'scheduled' : 'draft');
+            $scheduled_value = $send_now ? $now : ($scheduled_at ?: '');
             $wpdb->insert(
                 $table,
                 array(
@@ -737,8 +880,8 @@ function da_catering_yyc_child_render_broadcasts_admin() {
                     'title' => $title,
                     'body' => $body,
                     'poster_url' => $poster_url,
-                    'status' => $send_now ? 'queued' : 'scheduled',
-                    'scheduled_at' => $send_now ? $now : $scheduled_at,
+                    'status' => $status,
+                    'scheduled_at' => $scheduled_value,
                     'created_at' => $now,
                     'send_mode' => in_array($send_mode, array('once', 'batch'), true) ? $send_mode : 'once',
                     'batch_size' => $batch_size > 0 ? $batch_size : 100,
@@ -754,16 +897,49 @@ function da_catering_yyc_child_render_broadcasts_admin() {
                     wp_schedule_single_event($ts, 'da_broadcast_send_event', array($id));
                 }
             }
-            echo '<div class="notice notice-success"><p>Broadcast saved.</p></div>';
+            echo '<div class="notice notice-success"><p>' . ($send_now ? 'Broadcast queued for sending.' : 'Broadcast saved.') . '</p></div>';
         } else {
             echo '<div class="notice notice-error"><p>Please fill subject, title, and body.</p></div>';
         }
     }
 
     $rows = $wpdb->get_results("SELECT * FROM {$table} ORDER BY created_at DESC LIMIT 50");
+    $newsletter_table = $wpdb->prefix . 'da_newsletter';
+    $recipient_total = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$newsletter_table} WHERE status = 'confirmed' AND (unsubscribed_at IS NULL)");
+    $recipient_preview = $wpdb->get_results("SELECT email, source, subscribed_at FROM {$newsletter_table} WHERE status = 'confirmed' AND (unsubscribed_at IS NULL) ORDER BY subscribed_at DESC LIMIT 25");
     ?>
     <div class="wrap">
         <h1>Broadcasts</h1>
+        <div style="background:#fff;border:1px solid #ccd0d4;border-radius:8px;padding:16px;margin:12px 0;">
+            <h2 style="margin-top:0;">Recipients</h2>
+            <p>Total confirmed recipients: <strong><?php echo esc_html($recipient_total); ?></strong></p>
+            <?php
+            $recipients_export_url = wp_nonce_url(admin_url('admin.php?page=da-broadcasts&da_broadcast_recipients_export=1'), 'da_broadcast_recipients_export');
+            ?>
+            <p><a class="button" href="<?php echo esc_url($recipients_export_url); ?>">Export Recipients CSV</a></p>
+            <?php if ($recipient_preview) : ?>
+                <table class="widefat striped" style="max-width:720px;">
+                    <thead>
+                        <tr>
+                            <th>Email (latest 25)</th>
+                            <th>Source</th>
+                            <th>Subscribed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($recipient_preview as $recipient) : ?>
+                            <tr>
+                                <td><?php echo esc_html($recipient->email); ?></td>
+                                <td><?php echo esc_html($recipient->source); ?></td>
+                                <td><?php echo esc_html($recipient->subscribed_at); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php else : ?>
+                <p>No confirmed recipients yet.</p>
+            <?php endif; ?>
+        </div>
         <form method="post">
             <?php wp_nonce_field('da_broadcast_save', 'da_broadcast_nonce'); ?>
             <table class="form-table">
@@ -791,7 +967,7 @@ function da_catering_yyc_child_render_broadcasts_admin() {
                     <th><label>Schedule</label></th>
                     <td>
                         <input type="datetime-local" name="scheduled_at">
-                        <label style="margin-left:12px;"><input type="checkbox" name="send_now" value="1"> Send immediately</label>
+                        <span style="margin-left:12px;color:#666;">Leave blank to save as draft.</span>
                     </td>
                 </tr>
                 <tr>
@@ -804,7 +980,10 @@ function da_catering_yyc_child_render_broadcasts_admin() {
                     </td>
                 </tr>
             </table>
-            <p><button class="button button-primary" type="submit">Save Broadcast</button></p>
+            <p>
+                <button class="button" type="submit" name="da_broadcast_action" value="save">Save Broadcast</button>
+                <button class="button button-primary" type="submit" name="da_broadcast_action" value="send">Send Broadcast</button>
+            </p>
         </form>
 
         <h2>Recent Broadcasts</h2>
@@ -863,19 +1042,99 @@ function da_catering_yyc_child_render_broadcast_preview($broadcast_id) {
     if (!$broadcast) {
         wp_die('Broadcast not found.');
     }
-    $logo_url = da_catering_yyc_child_get_logo_url();
     $brand = 'DA Catering YYC';
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">' . esc_html($broadcast->title) . '</h2>
-          ' . ($broadcast->poster_url ? '<div style="margin:0 0 16px;"><img src="' . esc_url($broadcast->poster_url) . '" alt="" style="max-width:100%;height:auto;border-radius:12px;" /></div>' : '') . '
-          <div style="color:#4a5650;line-height:1.6;">' . wp_kses_post($broadcast->body) . '</div>
-        </div>
-      </div>
-    ';
-    echo $message;
+    $unsub_url = home_url('/?da_newsletter_unsub=preview');
+    echo da_catering_yyc_child_build_broadcast_email($broadcast, $unsub_url, $brand);
+}
+
+function da_catering_yyc_child_build_broadcast_email($broadcast, $unsub_url, $brand) {
+    $phone_link = 'tel:+15879665757';
+    $poster = '';
+    if (!empty($broadcast->poster_url)) {
+        $poster = '
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="border:1px solid #e0e0e0;border-radius:8px;background:#fafafa;margin-bottom:16px;">
+            <tr>
+              <td align="center" style="padding:0;">
+                <a href="' . esc_url($phone_link) . '" style="text-decoration:none;">
+                  <img src="' . esc_url($broadcast->poster_url) . '" alt="DA Catering Promotional Flyer" style="display:block;border:0;outline:none;text-decoration:none;width:100%;max-width:600px;height:auto;border-radius:8px;">
+                </a>
+              </td>
+            </tr>
+          </table>';
+    }
+    $body = $poster . wp_kses_post($broadcast->body);
+    return da_catering_yyc_child_build_email_shell($broadcast->title, $body, array('unsub_url' => $unsub_url, 'brand' => $brand));
+}
+
+function da_catering_yyc_child_render_broadcast_emails_admin() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    global $wpdb;
+    $table = $wpdb->prefix . 'da_newsletter';
+    $rows = $wpdb->get_results(
+        "SELECT email, source, status, subscribed_at, unsubscribed_at FROM {$table} ORDER BY subscribed_at DESC LIMIT 5000"
+    );
+    ?>
+    <div class="wrap">
+        <h1>All Emails</h1>
+        <p>This list shows the latest 5,000 emails collected from subscriptions, orders, and bookings.</p>
+        <p>
+            <?php
+            $export_url = wp_nonce_url(admin_url('admin.php?page=da-broadcasts&da_broadcast_recipients_export=1'), 'da_broadcast_recipients_export');
+            ?>
+            <a class="button button-primary" href="<?php echo esc_url($export_url); ?>">Export Recipients CSV</a>
+        </p>
+        <table class="widefat striped">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Source</th>
+                    <th>Status</th>
+                    <th>Subscribed</th>
+                    <th>Unsubscribed</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php if ($rows) : foreach ($rows as $row) : ?>
+                    <tr>
+                        <td><?php echo esc_html($row->email); ?></td>
+                        <td><?php echo esc_html($row->source); ?></td>
+                        <td><?php echo esc_html($row->status); ?></td>
+                        <td><?php echo esc_html($row->subscribed_at); ?></td>
+                        <td><?php echo esc_html($row->unsubscribed_at); ?></td>
+                    </tr>
+                <?php endforeach; else : ?>
+                    <tr><td colspan="5">No emails yet.</td></tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
+    <?php
+}
+
+function da_catering_yyc_child_export_broadcast_recipients_csv() {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    global $wpdb;
+    $table = $wpdb->prefix . 'da_newsletter';
+    $rows = $wpdb->get_results(
+        "SELECT email, source, subscribed_at FROM {$table} WHERE status = 'confirmed' AND (unsubscribed_at IS NULL) ORDER BY subscribed_at DESC",
+        ARRAY_A
+    );
+
+    header('Content-Type: text/csv; charset=utf-8');
+    header('Content-Disposition: attachment; filename=da-broadcast-recipients.csv');
+    $output = fopen('php://output', 'w');
+    fputcsv($output, array('Email', 'Source', 'Subscribed At'));
+    if ($rows) {
+        foreach ($rows as $row) {
+            fputcsv($output, array($row['email'], $row['source'], $row['subscribed_at']));
+        }
+    }
+    fclose($output);
+    exit;
 }
 
 function da_catering_yyc_child_export_broadcast_csv($broadcast_id) {
@@ -927,7 +1186,6 @@ function da_catering_yyc_child_process_broadcast($broadcast_id) {
         return;
     }
 
-    $logo_url = da_catering_yyc_child_get_logo_url();
     $brand = 'DA Catering YYC';
     $sent_count = 0;
 
@@ -956,18 +1214,7 @@ function da_catering_yyc_child_process_broadcast($broadcast_id) {
             'Content-Type: text/html; charset=UTF-8',
             'From: DA Catering YYC <orders@dacatering.ca>',
         );
-        $message = '
-          <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-            <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-              ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-              <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">' . esc_html($broadcast->title) . '</h2>
-              ' . ($broadcast->poster_url ? '<div style="margin:0 0 16px;"><img src="' . esc_url($broadcast->poster_url) . '" alt="" style="max-width:100%;height:auto;border-radius:12px;" /></div>' : '') . '
-              <div style="color:#4a5650;line-height:1.6;">' . wp_kses_post($broadcast->body) . '</div>
-              <p style="margin-top:20px;font-size:12px;color:#6b7280;">Unsubscribe: <a href="' . esc_url($unsub_url) . '" style="color:#6b7280;">' . esc_html($unsub_url) . '</a></p>
-            </div>
-            <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
-          </div>
-        ';
+        $message = da_catering_yyc_child_build_broadcast_email($broadcast, $unsub_url, $brand);
         $GLOBALS['da_last_mail_error'] = '';
         if (wp_mail($subscriber->email, $broadcast->subject, $message, $headers)) {
             $sent_count++;
@@ -1609,8 +1856,6 @@ function da_catering_yyc_child_build_items_table($items) {
 
 function da_catering_yyc_child_send_order_confirmation($order_id, $order, $items, $subtotal) {
     $email = $order['order_email'];
-    $brand = 'DA Catering YYC';
-    $logo_url = da_catering_yyc_child_get_logo_url();
 
     $items_rows = da_catering_yyc_child_build_items_table($items);
     $subject = 'Your order was received';
@@ -1619,35 +1864,28 @@ function da_catering_yyc_child_send_order_confirmation($order_id, $order, $items
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
 
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Thanks for your order!</h2>
-          <p style="margin:0 0 12px;color:#4a5650;">Order #'. esc_html($order_id) .'</p>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We have received your order and will follow up shortly. You will receive status updates by email.</p>
-          <table style="width:100%;border-collapse:collapse;margin-top:12px;">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding-bottom:8px;border-bottom:2px solid #eee;">Item</th>
-                <th style="text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;">Qty</th>
-                <th style="text-align:right;padding-bottom:8px;border-bottom:2px solid #eee;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ' . $items_rows . '
-            </tbody>
-          </table>
-          <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
-        </div>
-        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
-      </div>
+    $body = '
+      <p style="margin:0 0 12px;">Order #' . esc_html($order_id) . '</p>
+      <p style="margin:0 0 16px;line-height:1.6;">We have received your order and will follow up shortly. You will receive status updates by email.</p>
+      <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding-bottom:8px;border-bottom:2px solid #eee;">Item</th>
+            <th style="text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;">Qty</th>
+            <th style="text-align:right;padding-bottom:8px;border-bottom:2px solid #eee;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ' . $items_rows . '
+        </tbody>
+      </table>
+      <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
     ';
+    $message = da_catering_yyc_child_build_email_shell('Thanks for your order!', $body);
     wp_mail($email, $subject, $message, $headers);
 }
 
 function da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items, $subtotal) {
-    $brand = 'DA Catering YYC';
     $receipt_token = get_post_meta($order_id, '_da_order_receipt_token', true);
     $receipt_url = add_query_arg('da_order_receipt', $receipt_token, home_url('/'));
     $paid_token = get_post_meta($order_id, '_da_order_paid_token', true);
@@ -1664,45 +1902,41 @@ function da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
 
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">New Quick Order</h2>
-          <p style="margin:0 0 12px;color:#4a5650;">Order #'. esc_html($order_id) .'</p>
-          <p style="margin:0 0 12px;color:#4a5650;">Customer: <strong>' . esc_html($order['order_name']) . '</strong></p>
-          <p style="margin:0 0 12px;color:#4a5650;">Email: ' . esc_html($order['order_email']) . '</p>
-          <p style="margin:0 0 12px;color:#4a5650;">Phone: ' . esc_html($order['order_phone']) . '</p>
-          <p style="margin:0 0 12px;color:#4a5650;">Fulfillment: ' . esc_html($order['fulfillment']) . '</p>
-          <p style="margin:0 0 12px;color:#4a5650;">Preferred time: ' . esc_html($order['order_time']) . '</p>
-          ' . (!empty($order['delivery_address']) ? '<p style="margin:0 0 12px;color:#4a5650;">Delivery address: ' . esc_html($order['delivery_address']) . '</p>' : '') . '
-          ' . (!empty($order['order_notes']) ? '<p style="margin:0 0 12px;color:#4a5650;">Notes: ' . esc_html($order['order_notes']) . '</p>' : '') . '
-          <table style="width:100%;border-collapse:collapse;margin-top:12px;">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding-bottom:8px;border-bottom:2px solid #eee;">Item</th>
-                <th style="text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;">Qty</th>
-                <th style="text-align:right;padding-bottom:8px;border-bottom:2px solid #eee;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ' . $items_rows . '
-            </tbody>
-          </table>
-          <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
-          <p style="margin:18px 0 0;">
-            <a href="' . esc_url($receipt_url) . '" style="display:inline-block;padding:12px 18px;background:#d46a1f;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Send Receipt to Customer</a>
-          </p>
-          <p style="margin:12px 0 0;">
-            <a href="' . esc_url($paid_url) . '" style="display:inline-block;padding:10px 16px;background:#1f3d34;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Mark as Paid</a>
-          </p>
-          <p style="margin:18px 0 0;">
-            <a href="' . esc_url($confirmed_url) . '" style="display:inline-block;padding:10px 16px;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Confirm Order</a>
-            <a href="' . esc_url($progress_url) . '" style="display:inline-block;padding:10px 16px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">In Progress</a>
-            <a href="' . esc_url($ready_url) . '" style="display:inline-block;padding:10px 16px;background:#16a34a;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">Ready</a>
-          </p>
-        </div>
-      </div>
+    $body = '
+      <p style="margin:0 0 12px;">Order #' . esc_html($order_id) . '</p>
+      <p style="margin:0 0 12px;">Customer: <strong>' . esc_html($order['order_name']) . '</strong></p>
+      <p style="margin:0 0 12px;">Email: ' . esc_html($order['order_email']) . '</p>
+      <p style="margin:0 0 12px;">Phone: ' . esc_html($order['order_phone']) . '</p>
+      <p style="margin:0 0 12px;">Fulfillment: ' . esc_html($order['fulfillment']) . '</p>
+      <p style="margin:0 0 12px;">Preferred time: ' . esc_html($order['order_time']) . '</p>
+      ' . (!empty($order['delivery_address']) ? '<p style="margin:0 0 12px;">Delivery address: ' . esc_html($order['delivery_address']) . '</p>' : '') . '
+      ' . (!empty($order['order_notes']) ? '<p style="margin:0 0 12px;">Notes: ' . esc_html($order['order_notes']) . '</p>' : '') . '
+      <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding-bottom:8px;border-bottom:2px solid #eee;">Item</th>
+            <th style="text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;">Qty</th>
+            <th style="text-align:right;padding-bottom:8px;border-bottom:2px solid #eee;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ' . $items_rows . '
+        </tbody>
+      </table>
+      <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
+      <p style="margin:18px 0 0;">
+        <a href="' . esc_url($receipt_url) . '" style="display:inline-block;padding:12px 18px;background:#d46a1f;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Send Receipt to Customer</a>
+      </p>
+      <p style="margin:12px 0 0;">
+        <a href="' . esc_url($paid_url) . '" style="display:inline-block;padding:10px 16px;background:#1f3d34;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Mark as Paid</a>
+      </p>
+      <p style="margin:18px 0 0;">
+        <a href="' . esc_url($confirmed_url) . '" style="display:inline-block;padding:10px 16px;background:#2563eb;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;">Confirm Order</a>
+        <a href="' . esc_url($progress_url) . '" style="display:inline-block;padding:10px 16px;background:#0f766e;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">In Progress</a>
+        <a href="' . esc_url($ready_url) . '" style="display:inline-block;padding:10px 16px;background:#16a34a;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">Ready</a>
+      </p>
     ';
+    $message = da_catering_yyc_child_build_email_shell('New Quick Order', $body, array('include_cta' => false));
     wp_mail('orders@dacatering.ca', $subject, $message, $headers);
 }
 
@@ -1715,8 +1949,6 @@ function da_catering_yyc_child_send_order_receipt($order_id) {
 
     $subtotal = (float) get_post_meta($order_id, '_da_order_subtotal', true);
     $email = $order['order_email'];
-    $brand = 'DA Catering YYC';
-    $logo_url = da_catering_yyc_child_get_logo_url();
     $items_rows = da_catering_yyc_child_build_items_table($items);
     $subject = 'Your receipt from DA Catering YYC';
     $headers = array(
@@ -1724,30 +1956,24 @@ function da_catering_yyc_child_send_order_receipt($order_id) {
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
 
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Receipt</h2>
-          <p style="margin:0 0 12px;color:#4a5650;">Order #'. esc_html($order_id) .'</p>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">Thank you for your payment. Here is your receipt.</p>
-          <table style="width:100%;border-collapse:collapse;margin-top:12px;">
-            <thead>
-              <tr>
-                <th style="text-align:left;padding-bottom:8px;border-bottom:2px solid #eee;">Item</th>
-                <th style="text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;">Qty</th>
-                <th style="text-align:right;padding-bottom:8px;border-bottom:2px solid #eee;">Total</th>
-              </tr>
-            </thead>
-            <tbody>
-              ' . $items_rows . '
-            </tbody>
-          </table>
-          <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
-        </div>
-        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
-      </div>
+    $body = '
+      <p style="margin:0 0 12px;">Order #' . esc_html($order_id) . '</p>
+      <p style="margin:0 0 16px;">Thank you for your payment. Here is your receipt.</p>
+      <table style="width:100%;border-collapse:collapse;margin-top:12px;">
+        <thead>
+          <tr>
+            <th style="text-align:left;padding-bottom:8px;border-bottom:2px solid #eee;">Item</th>
+            <th style="text-align:center;padding-bottom:8px;border-bottom:2px solid #eee;">Qty</th>
+            <th style="text-align:right;padding-bottom:8px;border-bottom:2px solid #eee;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ' . $items_rows . '
+        </tbody>
+      </table>
+      <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
     ';
+    $message = da_catering_yyc_child_build_email_shell('Receipt', $body);
     return wp_mail($email, $subject, $message, $headers);
 }
 
@@ -1757,8 +1983,6 @@ function da_catering_yyc_child_send_order_status_email($order_id, $status) {
         return false;
     }
     $email = $order['order_email'];
-    $brand = 'DA Catering YYC';
-    $logo_url = da_catering_yyc_child_get_logo_url();
     $status_map = array(
         'confirmed' => 'Order confirmed',
         'in_progress' => 'In progress',
@@ -1771,43 +1995,27 @@ function da_catering_yyc_child_send_order_status_email($order_id, $status) {
         'Content-Type: text/html; charset=UTF-8',
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">' . esc_html($status_label) . '</h2>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">Hi ' . esc_html($order['order_name']) . ', your order status is now: <strong>' . esc_html($status_label) . '</strong>.</p>
-        </div>
-        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
-      </div>
-    ';
+    $body = '<p style="margin:0 0 16px;line-height:1.6;">Hi ' . esc_html($order['order_name']) . ', your order status is now: <strong>' . esc_html($status_label) . '</strong>.</p>';
+    $message = da_catering_yyc_child_build_email_shell($status_label, $body);
     return wp_mail($email, $subject, $message, $headers);
 }
 
 function da_catering_yyc_child_send_booking_confirmation($booking) {
     $email = $booking['email'];
-    $brand = 'DA Catering YYC';
-    $logo_url = da_catering_yyc_child_get_logo_url();
     $subject = 'Your catering booking request was received';
     $headers = array(
         'Content-Type: text/html; charset=UTF-8',
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          ' . ($logo_url ? '<div style="text-align:center;margin-bottom:18px;"><img src="' . esc_url($logo_url) . '" alt="' . esc_attr($brand) . '" style="max-width:160px;height:auto;" /></div>' : '') . '
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">Thanks for your booking request!</h2>
-          <p style="margin:0 0 16px;color:#4a5650;line-height:1.6;">We have received your catering request and will get back to you within 2 hours.</p>
-          <p style="margin:0 0 6px;color:#4a5650;"><strong>Event:</strong> ' . esc_html($booking['event_type']) . '</p>
-          ' . (!empty($booking['package_name']) ? '<p style="margin:0 0 6px;color:#4a5650;"><strong>Package:</strong> ' . esc_html($booking['package_name']) . ' (Starting at $' . esc_html($booking['package_price']) . ')</p>' : '') . '
-          <p style="margin:0 0 6px;color:#4a5650;"><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
-          <p style="margin:0 0 6px;color:#4a5650;"><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
-          <p style="margin:0 0 6px;color:#4a5650;"><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
-        </div>
-        <p style="text-align:center;margin:16px 0 0;color:#9aa3a0;font-size:12px;">&copy; ' . date('Y') . ' ' . esc_html($brand) . '</p>
-      </div>
+    $body = '
+      <p style="margin:0 0 16px;line-height:1.6;">We have received your catering request and will get back to you within 2 hours.</p>
+      <p style="margin:0 0 6px;"><strong>Event:</strong> ' . esc_html($booking['event_type']) . '</p>
+      ' . (!empty($booking['package_name']) ? '<p style="margin:0 0 6px;"><strong>Package:</strong> ' . esc_html($booking['package_name']) . ' (Starting at $' . esc_html($booking['package_price']) . ')</p>' : '') . '
+      <p style="margin:0 0 6px;"><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
+      <p style="margin:0 0 6px;"><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
+      <p style="margin:0 0 6px;"><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
     ';
+    $message = da_catering_yyc_child_build_email_shell('Thanks for your booking request!', $body);
     wp_mail($email, $subject, $message, $headers);
 }
 
@@ -1817,28 +2025,24 @@ function da_catering_yyc_child_send_booking_admin_notice($booking) {
         'Content-Type: text/html; charset=UTF-8',
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
-    $message = '
-      <div style="background:#f7f4ee;padding:24px 0;font-family:Arial, sans-serif;color:#1f3d34;">
-        <div style="max-width:640px;margin:0 auto;background:#ffffff;border-radius:16px;padding:28px;border:1px solid rgba(31,61,52,0.12);">
-          <h2 style="margin:0 0 12px;font-size:22px;color:#1f3d34;">New Catering Booking</h2>
-          <p><strong>Name:</strong> ' . esc_html($booking['full_name']) . '</p>
-          <p><strong>Email:</strong> ' . esc_html($booking['email']) . '</p>
-          <p><strong>Phone:</strong> ' . esc_html($booking['phone']) . '</p>
-          <p><strong>Event Type:</strong> ' . esc_html($booking['event_type']) . '</p>
-          <p><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
-          <p><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
-          <p><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
-          <p><strong>Budget:</strong> ' . esc_html($booking['budget_range']) . '</p>
-          <p><strong>Service Type:</strong> ' . esc_html($booking['service_type']) . '</p>
-          <p><strong>Package:</strong> ' . esc_html($booking['package_name']) . '</p>
-          <p><strong>Package Price:</strong> $' . esc_html($booking['package_price']) . '</p>
-          <p><strong>Address:</strong> ' . esc_html($booking['delivery_address']) . '</p>
-          <p><strong>Delivery Instructions:</strong> ' . esc_html($booking['delivery_instructions']) . '</p>
-          <p><strong>Dietary Restrictions:</strong> ' . esc_html($booking['dietary_restrictions']) . '</p>
-          <p><strong>Special Requests:</strong> ' . esc_html($booking['special_requests']) . '</p>
-        </div>
-      </div>
+    $body = '
+      <p><strong>Name:</strong> ' . esc_html($booking['full_name']) . '</p>
+      <p><strong>Email:</strong> ' . esc_html($booking['email']) . '</p>
+      <p><strong>Phone:</strong> ' . esc_html($booking['phone']) . '</p>
+      <p><strong>Event Type:</strong> ' . esc_html($booking['event_type']) . '</p>
+      <p><strong>Guests:</strong> ' . esc_html($booking['guest_count']) . '</p>
+      <p><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
+      <p><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
+      <p><strong>Budget:</strong> ' . esc_html($booking['budget_range']) . '</p>
+      <p><strong>Service Type:</strong> ' . esc_html($booking['service_type']) . '</p>
+      <p><strong>Package:</strong> ' . esc_html($booking['package_name']) . '</p>
+      <p><strong>Package Price:</strong> $' . esc_html($booking['package_price']) . '</p>
+      <p><strong>Address:</strong> ' . esc_html($booking['delivery_address']) . '</p>
+      <p><strong>Delivery Instructions:</strong> ' . esc_html($booking['delivery_instructions']) . '</p>
+      <p><strong>Dietary Restrictions:</strong> ' . esc_html($booking['dietary_restrictions']) . '</p>
+      <p><strong>Special Requests:</strong> ' . esc_html($booking['special_requests']) . '</p>
     ';
+    $message = da_catering_yyc_child_build_email_shell('New Catering Booking', $body, array('include_cta' => false));
     wp_mail('orders@dacatering.ca', $subject, $message, $headers);
 }
 

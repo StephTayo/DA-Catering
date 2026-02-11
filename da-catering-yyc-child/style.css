@@ -3514,8 +3514,9 @@ body.promo-modal-open {
 }
 
 .footer .footer-logo img {
-  width: 80px;
+  width: auto;
   height: auto;
+  max-width: none;
   display: block;
 }
 
