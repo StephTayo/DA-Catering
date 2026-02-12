@@ -455,18 +455,24 @@ function da_catering_yyc_child_get_logo_url() {
             return $logo_url;
         }
     }
-    return get_stylesheet_directory_uri() . '/assets/img/DA Catering Logo.png';
+    $fallback = get_stylesheet_directory_uri() . '/assets/img/DA Catering Logo.png';
+    if ($fallback) {
+        return $fallback;
+    }
+    return home_url('/wp-content/uploads/logo.png');
 }
 
 function da_catering_yyc_child_get_brand_palette() {
     return array(
         'primary' => '#1f3d34',
         'primary_strong' => '#173028',
-        'accent' => '#B8F527',
-        'accent_strong' => '#8BC727',
+        'accent' => '#d46a1f',
+        'accent_strong' => '#e38a3a',
+        'accent_soft' => '#c6a356',
         'dark' => '#1a1a1a',
         'gray' => '#2d2d2d',
         'white' => '#ffffff',
+        'muted' => 'rgba(26, 26, 26, 0.65)',
     );
 }
 
@@ -475,8 +481,11 @@ function da_catering_yyc_child_build_email_shell($title, $body_html, $options = 
         $options,
         array(
             'unsub_url' => '',
-            'include_cta' => true,
             'brand' => 'DA Catering YYC',
+            'hero_title' => 'Welcome to DA Catering YYC',
+            'hero_tagline' => 'Crafted. Fresh. Elevated.',
+            'footer_cta_label' => 'Place Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
         )
     );
     $colors = da_catering_yyc_child_get_brand_palette();
@@ -485,39 +494,6 @@ function da_catering_yyc_child_build_email_shell($title, $body_html, $options = 
     $phone_link = 'tel:+15879665757';
     $whatsapp_link = 'https://wa.me/15879665757';
     $email_link = 'mailto:orders@dacatering.ca';
-
-    $header_bg = 'background:linear-gradient(135deg,' . $colors['dark'] . ',' . $colors['gray'] . ');';
-    $cta_bg = 'background:linear-gradient(' . $colors['gray'] . ',' . $colors['dark'] . ');';
-    $button_bg = 'background:linear-gradient(' . $colors['accent'] . ',' . $colors['accent_strong'] . ');';
-
-    $cta_block = '';
-    if ($opts['include_cta']) {
-        $cta_block = '
-          <tr>
-            <td align="center" style="padding:20px;' . $cta_bg . '">
-              <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
-                <tr>
-                  <td align="center" style="padding-bottom:12px;">
-                    <a href="' . esc_url($phone_link) . '" class="cta-button" style="display:inline-block;padding:14px 26px;border-radius:999px;' . $button_bg . 'color:#1a1a1a;font-weight:bold;text-decoration:none;font-family:Arial,Helvetica,sans-serif;letter-spacing:0.5px;">ORDER NOW</a>
-                  </td>
-                </tr>
-                <tr>
-                  <td align="center" style="font-family:Arial,Helvetica,sans-serif;color:#ffffff;font-size:14px;">
-                    <span class="cta-stack" style="display:inline-block;margin:0 10px;">
-                      Phone: <a href="' . esc_url($phone_link) . '" style="color:' . $colors['accent'] . ';text-decoration:none;">' . esc_html($phone) . '</a>
-                    </span>
-                    <span class="cta-stack" style="display:inline-block;margin:0 10px;">
-                      Email: <a href="' . esc_url($email_link) . '" style="color:' . $colors['accent'] . ';text-decoration:none;">orders@dacatering.ca</a>
-                    </span>
-                    <span class="cta-stack" style="display:inline-block;margin:0 10px;">
-                      WhatsApp: <a href="' . esc_url($whatsapp_link) . '" style="color:' . $colors['accent'] . ';text-decoration:none;">Chat now</a>
-                    </span>
-                  </td>
-                </tr>
-              </table>
-            </td>
-          </tr>';
-    }
 
     $unsub_row = '';
     if (!empty($opts['unsub_url'])) {
@@ -546,24 +522,35 @@ function da_catering_yyc_child_build_email_shell($title, $body_html, $options = 
   </style>
 </head>
 <body style="margin:0;padding:0;background-color:#ffffff;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#ffffff;">
+  <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background:#f4f4f4;">
     <tr>
       <td align="center" style="padding:0;margin:0;">
-        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container" style="width:600px;max-width:600px;margin:0 auto;background:#ffffff;">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" class="container" style="width:600px;max-width:600px;margin:40px auto;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);">
           <tr>
-            <td align="center" style="padding:18px 20px;' . $header_bg . '">
-              ' . ($logo_url ? '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr($opts['brand']) . ' Logo" style="display:block;border:0;outline:none;text-decoration:none;height:90px;max-width:180px;width:auto;margin:0 auto;">' : '') . '
+            <td align="center" style="background:linear-gradient(135deg,' . $colors['primary_strong'] . ',' . $colors['primary'] . ');padding:70px 30px;color:#ffffff;">
+              ' . ($logo_url ? '<img src="' . esc_url($logo_url) . '" alt="' . esc_attr($opts['brand']) . '" style="display:block;border:0;outline:none;text-decoration:none;height:110px;width:auto;margin:0 auto 25px;">' : '') . '
+              <h1 style="margin:0;font-size:28px;letter-spacing:1px;font-weight:600;font-family:Arial,Helvetica,sans-serif;">' . esc_html($opts['hero_title']) . '</h1>
+              <p style="margin:12px 0 0;font-size:15px;color:' . $colors['accent_soft'] . ';letter-spacing:2px;font-family:Arial,Helvetica,sans-serif;">' . esc_html($opts['hero_tagline']) . '</p>
             </td>
           </tr>
           <tr>
-            <td align="center" class="padding" style="padding:16px 20px;background:#ffffff;">
-              <h2 style="margin:0 0 10px;font-family:Arial,Helvetica,sans-serif;font-size:22px;color:' . $colors['primary'] . ';">' . esc_html($title) . '</h2>
-              <div style="font-family:Arial,Helvetica,sans-serif;color:#4a5650;line-height:1.6;">' . $body_html . '</div>
+            <td align="center" class="padding" style="padding:50px 40px;text-align:center;background:#ffffff;">
+              <h2 style="color:' . $colors['primary'] . ';margin:0 0 20px 0;font-size:22px;font-weight:600;font-family:Arial,Helvetica,sans-serif;">' . esc_html($title) . '</h2>
+              <div style="color:' . $colors['muted'] . ';font-size:16px;line-height:1.6;font-family:Arial,Helvetica,sans-serif;">' . $body_html . '</div>
             </td>
           </tr>
-          ' . $cta_block . '
           <tr>
-            <td align="center" style="padding:18px;background:' . $colors['dark'] . ';">
+            <td align="center" style="height:1px;background:#eeeeee;"></td>
+          </tr>
+          <tr>
+            <td align="center" style="padding:40px 30px;background:#ffffff;">
+              <a href="' . esc_url($opts['footer_cta_url']) . '" style="background:' . $colors['primary'] . ';color:#ffffff;text-decoration:none;padding:14px 35px;border-radius:40px;font-size:14px;font-weight:600;display:inline-block;font-family:Arial,Helvetica,sans-serif;">' . esc_html($opts['footer_cta_label']) . '</a>
+              <p style="margin-top:30px;font-size:14px;color:' . $colors['dark'] . ';font-family:Arial,Helvetica,sans-serif;">
+                <strong>Phone:</strong> <span style="color:' . $colors['accent'] . ';">' . esc_html($phone) . '</span>
+              </p>
+              <p style="font-size:14px;color:' . $colors['dark'] . ';font-family:Arial,Helvetica,sans-serif;">
+                <strong>Email:</strong> <span style="color:' . $colors['accent'] . ';">orders@dacatering.ca</span>
+              </p>
               <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%">
                 <tr>
                   <td align="center" style="font-family:Arial,Helvetica,sans-serif;color:#999999;font-size:12px;">
@@ -605,7 +592,13 @@ function da_catering_yyc_child_send_confirmation_email($email, $token) {
     $message = da_catering_yyc_child_build_email_shell(
         'Welcome to DA Catering YYC — Home of Quality Meals!',
         $body,
-        array('unsub_url' => $unsub_url)
+        array(
+            'unsub_url' => $unsub_url,
+            'hero_title' => 'Welcome to DA Catering YYC',
+            'hero_tagline' => 'Crafted. Fresh. Elevated.',
+            'footer_cta_label' => 'Place Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
     );
     $headers = array('Content-Type: text/html; charset=UTF-8');
     wp_mail($email, $subject, $message, $headers);
@@ -1115,7 +1108,18 @@ function da_catering_yyc_child_build_broadcast_email($broadcast, $unsub_url, $br
           </table>';
     }
     $body = $poster . wp_kses_post($broadcast->body);
-    return da_catering_yyc_child_build_email_shell($broadcast->title, $body, array('unsub_url' => $unsub_url, 'brand' => $brand));
+    return da_catering_yyc_child_build_email_shell(
+        $broadcast->title,
+        $body,
+        array(
+            'unsub_url' => $unsub_url,
+            'brand' => $brand,
+            'hero_title' => 'DA Catering YYC Updates',
+            'hero_tagline' => 'Fresh menus. New offers.',
+            'footer_cta_label' => 'Place Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
 }
 
 function da_catering_yyc_child_render_broadcast_emails_admin() {
@@ -2154,7 +2158,16 @@ function da_catering_yyc_child_send_order_confirmation($order_id, $order, $items
       </table>
       <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
     ';
-    $message = da_catering_yyc_child_build_email_shell('Thanks for your order!', $body);
+    $message = da_catering_yyc_child_build_email_shell(
+        'Thanks for your order!',
+        $body,
+        array(
+            'hero_title' => 'Order Received',
+            'hero_tagline' => 'We are preparing your meal.',
+            'footer_cta_label' => 'Place Another Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
     wp_mail($email, $subject, $message, $headers);
 }
 
@@ -2209,7 +2222,16 @@ function da_catering_yyc_child_send_order_admin_notice($order_id, $order, $items
         <a href="' . esc_url($ready_url) . '" style="display:inline-block;padding:10px 16px;background:#16a34a;color:#ffffff;text-decoration:none;border-radius:999px;font-weight:600;margin-left:6px;">Ready</a>
       </p>
     ';
-    $message = da_catering_yyc_child_build_email_shell('New Quick Order', $body, array('include_cta' => false));
+    $message = da_catering_yyc_child_build_email_shell(
+        'New Quick Order',
+        $body,
+        array(
+            'hero_title' => 'New Quick Order',
+            'hero_tagline' => 'Customer order details',
+            'footer_cta_label' => 'Place Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
     wp_mail('orders@dacatering.ca', $subject, $message, $headers);
 }
 
@@ -2246,7 +2268,16 @@ function da_catering_yyc_child_send_order_receipt($order_id) {
       </table>
       <p style="margin:16px 0 0;text-align:right;font-weight:700;">Subtotal: ' . da_catering_yyc_child_format_money($subtotal) . '</p>
     ';
-    $message = da_catering_yyc_child_build_email_shell('Receipt', $body);
+    $message = da_catering_yyc_child_build_email_shell(
+        'Receipt',
+        $body,
+        array(
+            'hero_title' => 'Payment Receipt',
+            'hero_tagline' => 'Thank you for your payment.',
+            'footer_cta_label' => 'Place Another Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
     return wp_mail($email, $subject, $message, $headers);
 }
 
@@ -2269,7 +2300,16 @@ function da_catering_yyc_child_send_order_status_email($order_id, $status) {
         'From: DA Catering YYC <orders@dacatering.ca>',
     );
     $body = '<p style="margin:0 0 16px;line-height:1.6;">Hi ' . esc_html($order['order_name']) . ', your order status is now: <strong>' . esc_html($status_label) . '</strong>.</p>';
-    $message = da_catering_yyc_child_build_email_shell($status_label, $body);
+    $message = da_catering_yyc_child_build_email_shell(
+        $status_label,
+        $body,
+        array(
+            'hero_title' => 'Order Update',
+            'hero_tagline' => $status_label,
+            'footer_cta_label' => 'Place Another Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
     return wp_mail($email, $subject, $message, $headers);
 }
 
@@ -2288,7 +2328,16 @@ function da_catering_yyc_child_send_booking_confirmation($booking) {
       <p style="margin:0 0 6px;"><strong>Date:</strong> ' . esc_html($booking['event_date']) . '</p>
       <p style="margin:0 0 6px;"><strong>Time:</strong> ' . esc_html($booking['event_time']) . '</p>
     ';
-    $message = da_catering_yyc_child_build_email_shell('Thanks for your booking request!', $body);
+    $message = da_catering_yyc_child_build_email_shell(
+        'Thanks for your booking request!',
+        $body,
+        array(
+            'hero_title' => 'Booking Request Received',
+            'hero_tagline' => 'We will confirm within 2 hours.',
+            'footer_cta_label' => 'Place Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
     wp_mail($email, $subject, $message, $headers);
 }
 
@@ -2315,7 +2364,16 @@ function da_catering_yyc_child_send_booking_admin_notice($booking) {
       <p><strong>Dietary Restrictions:</strong> ' . esc_html($booking['dietary_restrictions']) . '</p>
       <p><strong>Special Requests:</strong> ' . esc_html($booking['special_requests']) . '</p>
     ';
-    $message = da_catering_yyc_child_build_email_shell('New Catering Booking', $body, array('include_cta' => false));
+    $message = da_catering_yyc_child_build_email_shell(
+        'New Catering Booking',
+        $body,
+        array(
+            'hero_title' => 'New Catering Booking',
+            'hero_tagline' => 'Review and follow up',
+            'footer_cta_label' => 'Place Order',
+            'footer_cta_url' => home_url('/booking/?quick_order=1'),
+        )
+    );
     wp_mail('orders@dacatering.ca', $subject, $message, $headers);
 }
 

@@ -14,8 +14,13 @@ const getStoredOrder = () => {
   }
 };
 
+const emitCartUpdate = (items) => {
+  document.dispatchEvent(new CustomEvent("da-cart-updated", { detail: { items } }));
+};
+
 const saveOrder = (items) => {
   localStorage.setItem(orderKey, JSON.stringify(items));
+  emitCartUpdate(items);
 };
 
 const saveCartToServer = async (items) => {
@@ -47,6 +52,19 @@ const updateQtyDisplay = (wrapper, qty) => {
   }
 };
 
+const addItemToOrder = ({ name, price, qty = 1, notes = "" }) => {
+  if (!name) return;
+  const items = getStoredOrder();
+  const existing = items.find((item) => item.name === name && item.notes === notes);
+  if (existing) {
+    existing.qty += qty;
+  } else {
+    items.push({ name, price, qty, notes });
+  }
+  saveOrder(items);
+  updateOrderSummary();
+};
+
 const buildWhatsAppMessage = (items, context) => {
   if (!items.length) {
     return context === "booking"
@@ -71,7 +89,7 @@ const renderBookingOrderSummary = (items, container) => {
 
   if (!items.length) {
     const menuLink = `${window.location.origin}/#menu`;
-    container.innerHTML = `<p class="booking-empty">Your order is empty. <a href="${menuLink}" class="booking-link">Browse our menu</a> to add items.</p>`;
+    container.innerHTML = `<p class="booking-empty">Your order is empty. <a href="#quick-add" class="booking-link">Quick add below</a> or <a href="${menuLink}" class="booking-link">browse our menu</a>.</p>`;
     return;
   }
 
@@ -210,6 +228,120 @@ const getBookingUrl = (token) => {
   const base = window.daSite && daSite.homeUrl ? String(daSite.homeUrl) : window.location.origin;
   const url = `${base.replace(/\/$/, "")}/booking/?quick_order=1`;
   return token ? `${url}&cart_token=${encodeURIComponent(token)}` : url;
+};
+
+const renderMiniCart = (items) => {
+  const cart = document.querySelector("[data-mini-cart]");
+  if (!cart) return;
+
+  const list = cart.querySelector("[data-mini-cart-items]");
+  const countEl = cart.querySelector("[data-mini-cart-count]");
+  const totalEl = cart.querySelector("[data-mini-cart-total]");
+  const checkoutBtn = cart.querySelector("[data-mini-cart-checkout]");
+
+  const totalCount = items.reduce((sum, item) => sum + (Number(item.qty) || 0), 0);
+  const subtotal = items.reduce((sum, item) => {
+    const price = Number(item.price) || 0;
+    const qty = Number(item.qty) || 1;
+    return sum + price * qty;
+  }, 0);
+
+  if (countEl) {
+    countEl.textContent = totalCount;
+  }
+  if (totalEl) {
+    totalEl.textContent = formatCurrency(subtotal);
+  }
+
+  if (!list) return;
+  list.innerHTML = "";
+
+  if (!items.length) {
+    list.innerHTML = "<p class=\"mini-cart__empty\">Your cart is empty. Add items from the menu to get started.</p>";
+    if (checkoutBtn) {
+      checkoutBtn.disabled = true;
+      checkoutBtn.classList.add("is-disabled");
+    }
+    return;
+  }
+
+  if (checkoutBtn) {
+    checkoutBtn.disabled = false;
+    checkoutBtn.classList.remove("is-disabled");
+  }
+
+  items.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "mini-cart__item";
+    row.innerHTML = `
+      <div class="mini-cart__item-info">
+        <span class="mini-cart__item-name">${item.name}</span>
+        <span class="mini-cart__item-meta">x${item.qty} • ${formatCurrency(Number(item.price || 0))}</span>
+      </div>
+      <button class="mini-cart__remove" type="button" data-mini-cart-remove="${index}">Remove</button>
+    `;
+    list.appendChild(row);
+  });
+};
+
+const initMiniCart = () => {
+  const cart = document.querySelector("[data-mini-cart]");
+  if (!cart) return;
+
+  const toggle = cart.querySelector(".mini-cart__toggle");
+  const panel = cart.querySelector(".mini-cart__panel");
+  const clearBtn = cart.querySelector("[data-mini-cart-clear]");
+  const checkoutBtn = cart.querySelector("[data-mini-cart-checkout]");
+
+  const setOpen = (isOpen) => {
+    cart.classList.toggle("is-open", isOpen);
+    if (toggle) {
+      toggle.setAttribute("aria-expanded", String(isOpen));
+    }
+    if (panel) {
+      panel.setAttribute("aria-hidden", String(!isOpen));
+    }
+  };
+
+  if (toggle) {
+    toggle.addEventListener("click", () => {
+      setOpen(!cart.classList.contains("is-open"));
+    });
+  }
+
+  cart.addEventListener("click", (event) => {
+    const removeBtn = event.target.closest("[data-mini-cart-remove]");
+    if (!removeBtn) return;
+    const index = Number(removeBtn.getAttribute("data-mini-cart-remove"));
+    if (Number.isNaN(index)) return;
+    const items = getStoredOrder();
+    items.splice(index, 1);
+    saveOrder(items);
+    updateOrderSummary();
+  });
+
+  if (clearBtn) {
+    clearBtn.addEventListener("click", () => {
+      localStorage.removeItem(orderKey);
+      emitCartUpdate([]);
+      updateOrderSummary();
+    });
+  }
+
+  if (checkoutBtn) {
+    checkoutBtn.addEventListener("click", async () => {
+      const items = getStoredOrder();
+      if (!items.length) return;
+      const token = await saveCartToServer(items);
+      window.location.href = getBookingUrl(token);
+    });
+  }
+
+  renderMiniCart(getStoredOrder());
+
+  document.addEventListener("da-cart-updated", (event) => {
+    renderMiniCart((event.detail && event.detail.items) || getStoredOrder());
+  });
 };
 
 const initMenuActions = () => {
@@ -399,6 +531,26 @@ const initCarousel = () => {
 
 const initOrderSummary = () => {
   updateOrderSummary();
+};
+
+const initQuickAdd = () => {
+  const buttons = document.querySelectorAll("[data-quick-add-item]");
+  if (!buttons.length) return;
+
+  buttons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const name = button.getAttribute("data-name");
+      const price = button.getAttribute("data-price") || "0";
+      addItemToOrder({ name, price, qty: 1, notes: "" });
+      button.classList.add("is-added");
+      button.querySelector(".quick-add__action")?.replaceChildren(document.createTextNode("Added"));
+      setTimeout(() => {
+        button.classList.remove("is-added");
+        const label = button.querySelector(".quick-add__action");
+        if (label) label.textContent = "Add";
+      }, 1200);
+    });
+  });
 };
 
 const initDragScroll = () => {
@@ -708,7 +860,7 @@ const initBookingSmoothScroll = () => {
 
 const initBookingOrderControls = () => {
   const page = document.querySelector(".booking-page");
-  if (!page) return;
+  if (!page || page.classList.contains("booking-modern")) return;
 
   const container = page.querySelector("[data-order-summary]");
   if (!container) return;
@@ -1106,6 +1258,12 @@ const initBookingModern = () => {
   const params = new URLSearchParams(window.location.search);
   if (params.get("quick_order") === "1" || params.get("promo_price")) {
     activateTab("quick-order", false);
+    window.setTimeout(() => {
+      const summary = root.querySelector("[data-order-summary]");
+      if (summary) {
+        summary.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }, 200);
   }
 
   const goToStep = (stepNumber, shouldScroll = true) => {
@@ -1592,6 +1750,8 @@ document.addEventListener("DOMContentLoaded", () => {
   initMenuCardFocus();
   initReviewsAutoScroll();
   initOrderSummary();
+  initMiniCart();
+  initQuickAdd();
   initDeliveryToggle();
   initBookingTabs();
   initBookingForms();

@@ -120,10 +120,12 @@
       <button class="filter-btn" data-filter="tray">Party Trays</button>
     </div>
 
-    <div class="hero-actions" style="margin-bottom: 18px;">
-      <a class="btn btn-primary" href="<?php echo esc_url(home_url('/shop')); ?>">Go to Shop &amp; Checkout</a>
-      <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/cart')); ?>">View Cart</a>
-    </div>
+    <?php if (class_exists('WooCommerce')) : ?>
+      <div class="hero-actions" style="margin-bottom: 18px;">
+        <a class="btn btn-primary" href="<?php echo esc_url(home_url('/shop')); ?>">Go to Shop &amp; Checkout</a>
+        <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/cart')); ?>">View Cart</a>
+      </div>
+    <?php endif; ?>
     <div class="menu-carousel" data-carousel>
       <button class="carousel-btn prev menu-carousel__side" type="button" aria-label="Scroll menu left" data-carousel-prev>&lsaquo;</button>
       <div class="product-grid" data-carousel-track data-drag-track>
@@ -927,10 +929,29 @@
     <div class="faq-aside">
       <h3>Got more questions?</h3>
       <p>Send us a quick note and we will respond fast.</p>
-      <a class="btn btn-secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I%20have%20a%20question%20about%20ordering.">Visit our FAQ</a>
+      <a class="btn btn-secondary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I%20have%20a%20question%20about%20ordering.">More FAQs</a>
     </div>
   </div>
 </section>
+
+<div class="mini-cart" data-mini-cart>
+  <button class="mini-cart__toggle" type="button" aria-expanded="false">
+    <span class="mini-cart__title">Your Order</span>
+    <span class="mini-cart__count" data-mini-cart-count>0</span>
+  </button>
+  <div class="mini-cart__panel" aria-hidden="true">
+    <div class="mini-cart__items" data-mini-cart-items>
+      <p class="mini-cart__empty">Your cart is empty. Add items from the menu to get started.</p>
+    </div>
+    <div class="mini-cart__footer">
+      <div class="mini-cart__total" data-mini-cart-total>$0.00</div>
+      <div class="mini-cart__actions">
+        <button class="btn btn-secondary" type="button" data-mini-cart-clear>Clear</button>
+        <button class="btn btn-primary" type="button" data-mini-cart-checkout>Checkout</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="whatsapp-concierge" data-whatsapp-widget>
   <button class="whatsapp-concierge__minimize" type="button" aria-label="Minimize WhatsApp concierge" data-whatsapp-minimize>–</button>

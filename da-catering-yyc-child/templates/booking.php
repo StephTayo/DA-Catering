@@ -602,6 +602,44 @@
                   </div>
                 </div>
               </div>
+              <div class="sidebar-card quick-add" id="quick-add" data-quick-add>
+                <div class="sidebar-header">
+                  <h3>Quick Add Favorites</h3>
+                  <p>Tap to add — no page switch.</p>
+                </div>
+                <div class="quick-add__grid">
+                  <button class="quick-add__item" type="button" data-quick-add-item data-name="Jollof Rice" data-price="18">
+                    <span class="quick-add__name">Jollof Rice</span>
+                    <span class="quick-add__meta">$18 · Rice</span>
+                    <span class="quick-add__action">Add</span>
+                  </button>
+                  <button class="quick-add__item" type="button" data-quick-add-item data-name="Fried Rice" data-price="17">
+                    <span class="quick-add__name">Fried Rice</span>
+                    <span class="quick-add__meta">$17 · Rice</span>
+                    <span class="quick-add__action">Add</span>
+                  </button>
+                  <button class="quick-add__item" type="button" data-quick-add-item data-name="Egusi Soup &amp; Pounded Yam" data-price="22">
+                    <span class="quick-add__name">Egusi Soup &amp; Pounded Yam</span>
+                    <span class="quick-add__meta">$22 · Soup</span>
+                    <span class="quick-add__action">Add</span>
+                  </button>
+                  <button class="quick-add__item" type="button" data-quick-add-item data-name="Suya Skewers" data-price="16">
+                    <span class="quick-add__name">Suya Skewers</span>
+                    <span class="quick-add__meta">$16 · Protein</span>
+                    <span class="quick-add__action">Add</span>
+                  </button>
+                  <button class="quick-add__item" type="button" data-quick-add-item data-name="Puff Puff" data-price="10">
+                    <span class="quick-add__name">Puff Puff</span>
+                    <span class="quick-add__meta">$10 · Small Chops</span>
+                    <span class="quick-add__action">Add</span>
+                  </button>
+                  <button class="quick-add__item" type="button" data-quick-add-item data-name="Tropical Mango Smoothie" data-price="8">
+                    <span class="quick-add__name">Tropical Mango Smoothie</span>
+                    <span class="quick-add__meta">$8 · Smoothie</span>
+                    <span class="quick-add__action">Add</span>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
