@@ -21,7 +21,7 @@ function da_catering_yyc_child_enqueue_styles() {
         'da-catering-yyc-child-style',
         get_stylesheet_uri(),
         array($parent_style),
-        wp_get_theme()->get('Version')
+        file_exists(get_stylesheet_directory() . '/style.css') ? filemtime(get_stylesheet_directory() . '/style.css') : wp_get_theme()->get('Version')
     );
 }
 add_action('wp_enqueue_scripts', 'da_catering_yyc_child_enqueue_styles');
@@ -57,6 +57,29 @@ function da_catering_yyc_child_enqueue_scripts() {
         array(
             'ajaxUrl' => admin_url('admin-ajax.php', 'https'),
             'nonce' => wp_create_nonce('da_booking_submit'),
+        )
+    );
+    wp_localize_script(
+        'da-catering-yyc-child-main',
+        'daContact',
+        array(
+            'ajaxUrl' => admin_url('admin-ajax.php', 'https'),
+            'nonce' => wp_create_nonce('da_contact_submit'),
+        )
+    );
+    wp_localize_script(
+        'da-catering-yyc-child-main',
+        'daCart',
+        array(
+            'ajaxUrl' => admin_url('admin-ajax.php', 'https'),
+            'nonce' => wp_create_nonce('da_cart_action'),
+        )
+    );
+    wp_localize_script(
+        'da-catering-yyc-child-main',
+        'daSite',
+        array(
+            'homeUrl' => home_url('/'),
         )
     );
 }
@@ -278,8 +301,10 @@ function da_catering_yyc_child_register_newsletter_table() {
         return;
     }
 
-    $option_key = 'da_newsletter_table_created';
-    if (get_option($option_key)) {
+    $version_key = 'da_newsletter_table_version';
+    $current_version = (int) get_option($version_key, 0);
+    $target_version = 2;
+    if ($current_version >= $target_version) {
         return;
     }
 
@@ -290,19 +315,28 @@ function da_catering_yyc_child_register_newsletter_table() {
         id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
         email VARCHAR(190) NOT NULL,
         created_at DATETIME NOT NULL,
+        subscribed_at DATETIME NULL,
         confirmed_at DATETIME NULL,
         unsubscribed_at DATETIME NULL,
         status VARCHAR(20) NOT NULL DEFAULT 'pending',
         token VARCHAR(64) NOT NULL,
         ip_address VARCHAR(45) NULL,
         user_agent TEXT NULL,
+        source VARCHAR(40) NULL,
         PRIMARY KEY  (id),
         UNIQUE KEY email (email)
     ) {$charset_collate};";
 
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
     dbDelta($sql);
-    update_option($option_key, 1);
+
+    if ($current_version < $target_version) {
+        $wpdb->query("UPDATE {$table} SET subscribed_at = created_at WHERE subscribed_at IS NULL");
+        $wpdb->query("UPDATE {$table} SET source = 'legacy' WHERE source IS NULL OR source = ''");
+    }
+
+    update_option($version_key, $target_version);
+    update_option('da_newsletter_table_created', 1);
 }
 add_action('init', 'da_catering_yyc_child_register_newsletter_table');
 
@@ -356,7 +390,7 @@ function da_catering_yyc_child_register_broadcasts_table() {
 }
 add_action('init', 'da_catering_yyc_child_register_broadcasts_table');
 
-function da_catering_yyc_child_get_or_create_subscriber($email) {
+function da_catering_yyc_child_get_or_create_subscriber($email, $source = 'order') {
     if (!$email || !is_email($email)) {
         return;
     }
@@ -370,6 +404,7 @@ function da_catering_yyc_child_get_or_create_subscriber($email) {
         if ($existing->status === 'confirmed') {
             return;
         }
+        $now = current_time('mysql');
         $token = da_catering_yyc_child_generate_newsletter_token();
         $wpdb->update(
             $table,
@@ -377,26 +412,33 @@ function da_catering_yyc_child_get_or_create_subscriber($email) {
                 'status' => 'confirmed',
                 'token' => $token,
                 'unsubscribed_at' => null,
+                'confirmed_at' => $now,
+                'subscribed_at' => $now,
+                'source' => $source,
             ),
             array('id' => $existing->id),
-            array('%s', '%s', '%s'),
+            array('%s', '%s', '%s', '%s', '%s', '%s'),
             array('%d')
         );
         return;
     }
 
+    $now = current_time('mysql');
     $token = da_catering_yyc_child_generate_newsletter_token();
     $wpdb->insert(
         $table,
         array(
             'email' => $email,
-            'created_at' => current_time('mysql'),
+            'created_at' => $now,
+            'subscribed_at' => $now,
+            'confirmed_at' => $now,
             'status' => 'confirmed',
             'token' => $token,
             'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            'source' => $source,
         ),
-        array('%s', '%s', '%s', '%s', '%s', '%s')
+        array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
     );
 }
 
@@ -575,6 +617,7 @@ function da_catering_yyc_child_handle_newsletter_subscribe() {
     }
 
     $email = isset($_POST['email']) ? sanitize_email(wp_unslash($_POST['email'])) : '';
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
     $honeypot = isset($_POST['company']) ? sanitize_text_field(wp_unslash($_POST['company'])) : '';
 
     if ($honeypot !== '') {
@@ -602,15 +645,18 @@ function da_catering_yyc_child_handle_newsletter_subscribe() {
         }
 
         $token = da_catering_yyc_child_generate_newsletter_token();
+        $now = current_time('mysql');
         $wpdb->update(
             $table,
             array(
                 'status' => 'pending',
                 'token' => $token,
                 'unsubscribed_at' => null,
+                'subscribed_at' => $now,
+                'source' => 'newsletter',
             ),
             array('id' => $existing->id),
-            array('%s', '%s', '%s'),
+            array('%s', '%s', '%s', '%s', '%s'),
             array('%d')
         );
         da_catering_yyc_child_send_confirmation_email($email, $token);
@@ -619,17 +665,20 @@ function da_catering_yyc_child_handle_newsletter_subscribe() {
     }
 
     $token = da_catering_yyc_child_generate_newsletter_token();
+    $now = current_time('mysql');
     $inserted = $wpdb->insert(
         $table,
         array(
             'email' => $email,
-            'created_at' => current_time('mysql'),
+            'created_at' => $now,
+            'subscribed_at' => $now,
             'status' => 'pending',
             'token' => $token,
             'ip_address' => $ip,
             'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+            'source' => 'newsletter',
         ),
-        array('%s', '%s', '%s', '%s', '%s', '%s')
+        array('%s', '%s', '%s', '%s', '%s', '%s', '%s')
     );
 
     if (!$inserted) {
@@ -668,15 +717,17 @@ function da_catering_yyc_child_handle_newsletter_actions() {
     }
 
     if ($action === 'confirm') {
+        $now = current_time('mysql');
         $wpdb->update(
             $table,
             array(
                 'status' => 'confirmed',
-                'confirmed_at' => current_time('mysql'),
+                'confirmed_at' => $now,
                 'unsubscribed_at' => null,
+                'subscribed_at' => $now,
             ),
             array('id' => $row->id),
-            array('%s', '%s', '%s'),
+            array('%s', '%s', '%s', '%s'),
             array('%d')
         );
         wp_die('Thanks! Your subscription is confirmed.', 'Newsletter');
@@ -1072,13 +1123,89 @@ function da_catering_yyc_child_render_broadcast_emails_admin() {
     }
     global $wpdb;
     $table = $wpdb->prefix . 'da_newsletter';
+    $notice = null;
+
+    if (isset($_POST['da_broadcast_emails_nonce']) && wp_verify_nonce($_POST['da_broadcast_emails_nonce'], 'da_broadcast_emails_manage')) {
+        $action = sanitize_text_field(wp_unslash($_POST['da_broadcast_emails_action'] ?? ''));
+        if ($action === 'add') {
+            $email = sanitize_email(wp_unslash($_POST['manual_email'] ?? ''));
+            if (!$email || !is_email($email)) {
+                $notice = array('type' => 'error', 'message' => 'Please enter a valid email address.');
+            } else {
+                $existing = $wpdb->get_row($wpdb->prepare("SELECT id, status, unsubscribed_at FROM {$table} WHERE email = %s", $email));
+                $now = current_time('mysql');
+                if ($existing) {
+                    if ($existing->status === 'unsubscribed' || !empty($existing->unsubscribed_at)) {
+                        $wpdb->update(
+                            $table,
+                            array(
+                                'status' => 'confirmed',
+                                'unsubscribed_at' => null,
+                                'confirmed_at' => $now,
+                                'subscribed_at' => $now,
+                                'source' => 'manual',
+                            ),
+                            array('id' => $existing->id),
+                            array('%s', '%s', '%s', '%s', '%s'),
+                            array('%d')
+                        );
+                        $notice = array('type' => 'success', 'message' => 'Email reactivated and added back to the list.');
+                    } else {
+                        $notice = array('type' => 'warning', 'message' => 'That email is already on the list.');
+                    }
+                } else {
+                    $token = da_catering_yyc_child_generate_newsletter_token();
+                    $inserted = $wpdb->insert(
+                        $table,
+                        array(
+                            'email' => $email,
+                            'created_at' => $now,
+                            'subscribed_at' => $now,
+                            'confirmed_at' => $now,
+                            'status' => 'confirmed',
+                            'token' => $token,
+                            'ip_address' => $_SERVER['REMOTE_ADDR'] ?? 'admin',
+                            'user_agent' => $_SERVER['HTTP_USER_AGENT'] ?? '',
+                            'source' => 'manual',
+                        ),
+                        array('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')
+                    );
+                    $notice = $inserted
+                        ? array('type' => 'success', 'message' => 'Email added successfully.')
+                        : array('type' => 'error', 'message' => 'Unable to add email. Please try again.');
+                }
+            }
+        } elseif ($action === 'delete') {
+            $email = sanitize_email(wp_unslash($_POST['delete_email'] ?? ''));
+            if (!$email || !is_email($email)) {
+                $notice = array('type' => 'error', 'message' => 'Invalid email for deletion.');
+            } else {
+                $deleted = $wpdb->delete($table, array('email' => $email), array('%s'));
+                $notice = $deleted
+                    ? array('type' => 'success', 'message' => 'Email removed from the list.')
+                    : array('type' => 'warning', 'message' => 'Email not found or already removed.');
+            }
+        }
+    }
     $rows = $wpdb->get_results(
-        "SELECT email, source, status, subscribed_at, unsubscribed_at FROM {$table} ORDER BY subscribed_at DESC LIMIT 5000"
+        "SELECT id, email, source, status, subscribed_at, unsubscribed_at FROM {$table} ORDER BY subscribed_at DESC LIMIT 5000"
     );
     ?>
     <div class="wrap">
         <h1>All Emails</h1>
         <p>This list shows the latest 5,000 emails collected from subscriptions, orders, and bookings.</p>
+        <?php if ($notice) : ?>
+            <div class="notice notice-<?php echo esc_attr($notice['type']); ?> is-dismissible">
+                <p><?php echo esc_html($notice['message']); ?></p>
+            </div>
+        <?php endif; ?>
+        <form method="post" style="margin: 16px 0 20px; display:flex; gap:10px; align-items:center;">
+            <?php wp_nonce_field('da_broadcast_emails_manage', 'da_broadcast_emails_nonce'); ?>
+            <input type="hidden" name="da_broadcast_emails_action" value="add">
+            <label for="manual-email" style="font-weight:600;">Add email</label>
+            <input id="manual-email" type="email" name="manual_email" placeholder="name@example.com" required style="min-width:260px;">
+            <button class="button button-secondary" type="submit">Add</button>
+        </form>
         <p>
             <?php
             $export_url = wp_nonce_url(admin_url('admin.php?page=da-broadcasts&da_broadcast_recipients_export=1'), 'da_broadcast_recipients_export');
@@ -1093,6 +1220,7 @@ function da_catering_yyc_child_render_broadcast_emails_admin() {
                     <th>Status</th>
                     <th>Subscribed</th>
                     <th>Unsubscribed</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
@@ -1103,9 +1231,17 @@ function da_catering_yyc_child_render_broadcast_emails_admin() {
                         <td><?php echo esc_html($row->status); ?></td>
                         <td><?php echo esc_html($row->subscribed_at); ?></td>
                         <td><?php echo esc_html($row->unsubscribed_at); ?></td>
+                        <td>
+                            <form method="post" style="display:inline;" onsubmit="return confirm('Delete this email from the list?');">
+                                <?php wp_nonce_field('da_broadcast_emails_manage', 'da_broadcast_emails_nonce'); ?>
+                                <input type="hidden" name="da_broadcast_emails_action" value="delete">
+                                <input type="hidden" name="delete_email" value="<?php echo esc_attr($row->email); ?>">
+                                <button class="button button-link-delete" type="submit">Delete</button>
+                            </form>
+                        </td>
                     </tr>
                 <?php endforeach; else : ?>
-                    <tr><td colspan="5">No emails yet.</td></tr>
+                    <tr><td colspan="6">No emails yet.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -1402,7 +1538,16 @@ function da_catering_yyc_child_save_promo_meta($post_id) {
     update_post_meta($post_id, '_da_promo_subline', isset($_POST['da_promo_subline']) ? sanitize_text_field(wp_unslash($_POST['da_promo_subline'])) : '');
     update_post_meta($post_id, '_da_promo_start', isset($_POST['da_promo_start']) ? sanitize_text_field(wp_unslash($_POST['da_promo_start'])) : '');
     update_post_meta($post_id, '_da_promo_end', isset($_POST['da_promo_end']) ? sanitize_text_field(wp_unslash($_POST['da_promo_end'])) : '');
-    update_post_meta($post_id, '_da_promo_poster', isset($_POST['da_promo_poster']) ? esc_url_raw(wp_unslash($_POST['da_promo_poster'])) : '');
+    $poster_url = isset($_POST['da_promo_poster']) ? esc_url_raw(wp_unslash($_POST['da_promo_poster'])) : '';
+    update_post_meta($post_id, '_da_promo_poster', $poster_url);
+
+    // If no featured image is set, try to attach the poster URL as the featured image.
+    if ($poster_url && !has_post_thumbnail($post_id)) {
+        $attachment_id = attachment_url_to_postid($poster_url);
+        if ($attachment_id) {
+            set_post_thumbnail($post_id, $attachment_id);
+        }
+    }
 }
 add_action('save_post_da_promo', 'da_catering_yyc_child_save_promo_meta');
 
@@ -1431,7 +1576,8 @@ function da_catering_yyc_child_get_active_promo() {
         if ($end && $end < $today) {
             continue;
         }
-        if (!has_post_thumbnail($post)) {
+        $poster = get_post_meta($post->ID, '_da_promo_poster', true);
+        if (!has_post_thumbnail($post) && !$poster) {
             continue;
         }
         return $post;
@@ -1439,7 +1585,59 @@ function da_catering_yyc_child_get_active_promo() {
     return null;
 }
 
+function da_catering_yyc_child_get_promo_debug_report() {
+    if (!current_user_can('manage_options')) {
+        return array();
+    }
+    $args = array(
+        'post_type' => 'da_promo',
+        'post_status' => 'publish',
+        'posts_per_page' => 5,
+        'meta_key' => '_da_promo_active',
+        'meta_value' => '1',
+        'orderby' => 'date',
+        'order' => 'DESC',
+    );
+    $query = new WP_Query($args);
+    if (!$query->have_posts()) {
+        return array(
+            array(
+                'title' => 'No active promos found.',
+                'issues' => array('No published promo has Active checked.'),
+            ),
+        );
+    }
+
+    $today = current_time('Y-m-d');
+    $report = array();
+    foreach ($query->posts as $post) {
+        $issues = array();
+        $start = get_post_meta($post->ID, '_da_promo_start', true);
+        $end = get_post_meta($post->ID, '_da_promo_end', true);
+        $poster = get_post_meta($post->ID, '_da_promo_poster', true);
+
+        if ($start && $start > $today) {
+            $issues[] = 'Start date is in the future: ' . $start;
+        }
+        if ($end && $end < $today) {
+            $issues[] = 'End date already passed: ' . $end;
+        }
+        if (!has_post_thumbnail($post) && !$poster) {
+            $issues[] = 'Missing featured image and poster URL.';
+        }
+
+        $report[] = array(
+            'title' => get_the_title($post),
+            'issues' => $issues,
+        );
+    }
+    return $report;
+}
+
 function da_catering_yyc_child_render_promo_modal() {
+    if (!is_front_page()) {
+        return;
+    }
     $promo = da_catering_yyc_child_get_active_promo();
     if (!$promo) {
         return;
@@ -1453,7 +1651,7 @@ function da_catering_yyc_child_render_promo_modal() {
     $subline = get_post_meta($promo->ID, '_da_promo_subline', true);
     $cta = get_post_meta($promo->ID, '_da_promo_cta', true);
     $price = get_post_meta($promo->ID, '_da_promo_price', true);
-    $cta_text = $cta ? $cta : 'Quick Order';
+    $cta_text = $cta ? $cta : 'Place Order';
     $promo_name = get_the_title($promo);
 
     $query_args = array(
@@ -1464,7 +1662,7 @@ function da_catering_yyc_child_render_promo_modal() {
     );
     $promo_url = add_query_arg($query_args, home_url('/booking/'));
     ?>
-    <div class="promo-modal" data-promo-modal data-promo-id="<?php echo esc_attr($promo->ID); ?>">
+    <div class="promo-modal is-visible" data-promo-modal data-promo-id="<?php echo esc_attr($promo->ID); ?>">
       <div class="promo-modal__backdrop" data-promo-close></div>
       <div class="promo-modal__dialog" role="dialog" aria-modal="true" aria-label="Promo">
         <button class="promo-modal__close" type="button" aria-label="Close" data-promo-close>×</button>
@@ -1480,13 +1678,87 @@ function da_catering_yyc_child_render_promo_modal() {
             <div class="promo-modal__price">Package price: <strong>$<?php echo esc_html($price); ?></strong></div>
           <?php endif; ?>
           <a class="btn btn-primary promo-modal__cta" href="<?php echo esc_url($promo_url); ?>"><?php echo esc_html($cta_text); ?></a>
-          <button class="btn btn-secondary promo-modal__dismiss" type="button" data-promo-close>Not now</button>
         </div>
       </div>
     </div>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        document.body.classList.add("promo-modal-open");
+        var modal = document.querySelector("[data-promo-modal]");
+        if (!modal) return;
+        modal.querySelectorAll("[data-promo-close]").forEach(function (btn) {
+          btn.addEventListener("click", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+            modal.classList.remove("is-visible");
+            document.body.classList.remove("promo-modal-open");
+          });
+        });
+        var cta = modal.querySelector(".promo-modal__cta");
+        if (cta) {
+          cta.addEventListener("click", function () {
+            modal.classList.remove("is-visible");
+            document.body.classList.remove("promo-modal-open");
+          });
+        }
+      });
+    </script>
     <?php
 }
 add_action('wp_footer', 'da_catering_yyc_child_render_promo_modal');
+
+add_action('wp_footer', function () {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    if (!is_front_page()) {
+        return;
+    }
+    $promo = da_catering_yyc_child_get_active_promo();
+    if ($promo) {
+        $image = get_the_post_thumbnail_url($promo, 'large');
+        if (!$image) {
+            $image = get_post_meta($promo->ID, '_da_promo_poster', true);
+        }
+        echo '<div style="position:fixed;bottom:20px;right:20px;z-index:3000;background:#111;color:#fff;padding:10px 12px;border-radius:8px;font-size:12px;">Promo modal: active #' . esc_html($promo->ID) . '<br>Image: ' . esc_html($image ? 'ok' : 'missing') . '</div>';
+    } else {
+        echo '<div style="position:fixed;bottom:20px;right:20px;z-index:3000;background:#b91c1c;color:#fff;padding:10px 12px;border-radius:8px;font-size:12px;">Promo modal: NOT RENDERED (no active promo)</div>';
+    }
+});
+
+add_action('admin_notices', function () {
+    if (!current_user_can('manage_options')) {
+        return;
+    }
+    if (!isset($_GET['post_type']) || $_GET['post_type'] !== 'da_promo') {
+        return;
+    }
+    if (!empty($_GET['post'])) {
+        return;
+    }
+    $report = da_catering_yyc_child_get_promo_debug_report();
+    if (!$report) {
+        return;
+    }
+    $all_clear = true;
+    foreach ($report as $item) {
+        if (!empty($item['issues'])) {
+            $all_clear = false;
+            break;
+        }
+    }
+    if ($all_clear) {
+        return;
+    }
+    echo '<div class="notice notice-warning"><p><strong>Promo modal check:</strong></p><ul style="margin:6px 0 0 18px;list-style:disc;">';
+    foreach ($report as $item) {
+        if (empty($item['issues'])) {
+            continue;
+        }
+        echo '<li><strong>' . esc_html($item['title']) . ':</strong> ' . esc_html(implode(' | ', $item['issues'])) . '</li>';
+    }
+    echo '</ul></div>';
+});
 
 // Ensure media uploader works on Promo editor and add a poster picker fallback.
 add_action('admin_enqueue_scripts', function ($hook) {
@@ -2086,13 +2358,145 @@ function da_catering_yyc_child_handle_booking_submit() {
 
     da_catering_yyc_child_send_booking_confirmation($booking);
     da_catering_yyc_child_send_booking_admin_notice($booking);
-    da_catering_yyc_child_get_or_create_subscriber($booking['email']);
+    da_catering_yyc_child_get_or_create_subscriber($booking['email'], 'booking');
 
     delete_transient($rate_key);
     wp_send_json_success(array('message' => 'Booking request submitted.'));
 }
 add_action('wp_ajax_da_booking_submit', 'da_catering_yyc_child_handle_booking_submit');
 add_action('wp_ajax_nopriv_da_booking_submit', 'da_catering_yyc_child_handle_booking_submit');
+
+function da_catering_yyc_child_handle_contact_submit() {
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'da_contact_submit')) {
+        wp_send_json_error(array('message' => 'Security check failed. Please refresh and try again.'), 403);
+    }
+
+    $full_name = sanitize_text_field(wp_unslash($_POST['full_name'] ?? ''));
+    $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+    $phone = sanitize_text_field(wp_unslash($_POST['phone'] ?? ''));
+    $event_type = sanitize_text_field(wp_unslash($_POST['event_type'] ?? ''));
+    $message = sanitize_textarea_field(wp_unslash($_POST['message'] ?? ''));
+
+    if (!$full_name || !$email || !is_email($email) || !$event_type) {
+        wp_send_json_error(array('message' => 'Please complete all required fields.'));
+    }
+
+    $rate_key = 'da_contact_rl_' . md5(strtolower($email));
+    if (!da_catering_yyc_child_rate_limit($rate_key, 5, HOUR_IN_SECONDS)) {
+        wp_send_json_error(array('message' => 'Too many attempts. Please try again later.'));
+    }
+
+    $subject = 'New website contact request';
+    $body = '<p><strong>Name:</strong> ' . esc_html($full_name) . '</p>'
+        . '<p><strong>Email:</strong> ' . esc_html($email) . '</p>'
+        . '<p><strong>Phone:</strong> ' . esc_html($phone ?: 'N/A') . '</p>'
+        . '<p><strong>Event Type:</strong> ' . esc_html($event_type) . '</p>'
+        . '<p><strong>Message:</strong><br>' . nl2br(esc_html($message ?: 'N/A')) . '</p>';
+
+    $headers = array(
+        'Content-Type: text/html; charset=UTF-8',
+        'Reply-To: ' . $full_name . ' <' . $email . '>',
+    );
+
+    $sent = wp_mail('deb@dacatering.ca', $subject, $body, $headers);
+    if ($sent) {
+        wp_send_json_success(array('message' => 'Thanks! We received your message and will respond soon.'));
+    }
+
+    wp_send_json_error(array('message' => 'Unable to send your message. Please try again.'));
+}
+add_action('wp_ajax_da_contact_submit', 'da_catering_yyc_child_handle_contact_submit');
+add_action('wp_ajax_nopriv_da_contact_submit', 'da_catering_yyc_child_handle_contact_submit');
+
+function da_catering_yyc_child_get_cart_token($create = true) {
+    $cookie_name = 'da_cart_token';
+    $token = isset($_COOKIE[$cookie_name]) ? sanitize_text_field(wp_unslash($_COOKIE[$cookie_name])) : '';
+    if (!$token && $create) {
+        $token = bin2hex(random_bytes(16));
+        setcookie($cookie_name, $token, array(
+            'expires' => time() + DAY_IN_SECONDS * 7,
+            'path' => '/',
+            'secure' => is_ssl(),
+            'httponly' => false,
+            'samesite' => 'Lax',
+        ));
+    }
+    return $token;
+}
+
+function da_catering_yyc_child_sanitize_cart_items($raw_items) {
+    if (!is_array($raw_items)) {
+        return array();
+    }
+    $items = array();
+    foreach ($raw_items as $item) {
+        if (!is_array($item)) {
+            continue;
+        }
+        $name = sanitize_text_field($item['name'] ?? '');
+        if ($name === '') {
+            continue;
+        }
+        $price = is_numeric($item['price'] ?? null) ? (float) $item['price'] : 0.0;
+        $qty = is_numeric($item['qty'] ?? null) ? max(1, (int) $item['qty']) : 1;
+        $notes = sanitize_text_field($item['notes'] ?? '');
+        $items[] = array(
+            'name' => $name,
+            'price' => $price,
+            'qty' => $qty,
+            'notes' => $notes,
+        );
+    }
+    return $items;
+}
+
+function da_catering_yyc_child_handle_cart_save() {
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'da_cart_action')) {
+        wp_send_json_error(array('message' => 'Security check failed.'), 403);
+    }
+    $raw_items = isset($_POST['items']) ? json_decode(wp_unslash($_POST['items']), true) : array();
+    $items = da_catering_yyc_child_sanitize_cart_items($raw_items);
+    $token = da_catering_yyc_child_get_cart_token(true);
+    if (!$token) {
+        wp_send_json_error(array('message' => 'Unable to create cart token.'), 500);
+    }
+    set_transient('da_cart_' . $token, $items, DAY_IN_SECONDS * 7);
+    wp_send_json_success(array('token' => $token, 'count' => count($items)));
+}
+add_action('wp_ajax_da_cart_save', 'da_catering_yyc_child_handle_cart_save');
+add_action('wp_ajax_nopriv_da_cart_save', 'da_catering_yyc_child_handle_cart_save');
+
+function da_catering_yyc_child_handle_cart_fetch() {
+    $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
+    if (!$nonce || !wp_verify_nonce($nonce, 'da_cart_action')) {
+        wp_send_json_error(array('message' => 'Security check failed.'), 403);
+    }
+    $token = isset($_POST['token']) ? sanitize_text_field(wp_unslash($_POST['token'])) : '';
+    if ($token === '') {
+        $token = da_catering_yyc_child_get_cart_token(false);
+    }
+    if (!$token) {
+        wp_send_json_success(array('items' => array()));
+    }
+    $items = get_transient('da_cart_' . $token);
+    if (!is_array($items)) {
+        $items = array();
+    }
+    if (!isset($_COOKIE['da_cart_token']) && $token) {
+        setcookie('da_cart_token', $token, array(
+            'expires' => time() + DAY_IN_SECONDS * 7,
+            'path' => '/',
+            'secure' => is_ssl(),
+            'httponly' => false,
+            'samesite' => 'Lax',
+        ));
+    }
+    wp_send_json_success(array('items' => $items, 'token' => $token));
+}
+add_action('wp_ajax_da_cart_fetch', 'da_catering_yyc_child_handle_cart_fetch');
+add_action('wp_ajax_nopriv_da_cart_fetch', 'da_catering_yyc_child_handle_cart_fetch');
 
 function da_catering_yyc_child_handle_order_submit() {
     $nonce = isset($_POST['nonce']) ? sanitize_text_field(wp_unslash($_POST['nonce'])) : '';
@@ -2199,7 +2603,7 @@ function da_catering_yyc_child_handle_order_submit() {
 
     da_catering_yyc_child_send_order_confirmation($order_id, $order, $validated_items, $subtotal);
     da_catering_yyc_child_send_order_admin_notice($order_id, $order, $validated_items, $subtotal);
-    da_catering_yyc_child_get_or_create_subscriber($order['order_email']);
+    da_catering_yyc_child_get_or_create_subscriber($order['order_email'], 'order');
 
     delete_transient($rate_key);
     wp_send_json_success(array('message' => 'Order received.'));

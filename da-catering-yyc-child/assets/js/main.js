@@ -18,6 +18,28 @@ const saveOrder = (items) => {
   localStorage.setItem(orderKey, JSON.stringify(items));
 };
 
+const saveCartToServer = async (items) => {
+  if (!window.daCart || !daCart.ajaxUrl) return null;
+  try {
+    const payload = new FormData();
+    payload.append("action", "da_cart_save");
+    payload.append("nonce", daCart.nonce);
+    payload.append("items", JSON.stringify(items || []));
+    const response = await fetch(daCart.ajaxUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      body: payload,
+    });
+    const data = await response.json();
+    if (data && data.success && data.data && data.data.token) {
+      return data.data.token;
+    }
+  } catch (e) {
+    return null;
+  }
+  return null;
+};
+
 const updateQtyDisplay = (wrapper, qty) => {
   const display = wrapper.querySelector("[data-qty-display]");
   if (display) {
@@ -90,7 +112,7 @@ const updateOrderSummary = () => {
   if (!container) return;
 
   const items = getStoredOrder();
-  const isBooking = document.body.classList.contains("booking-page");
+  const isBooking = document.body.classList.contains("booking-page") || !!document.querySelector(".booking-modern");
 
   if (isBooking) {
     renderBookingOrderSummary(items, container);
@@ -160,6 +182,8 @@ const applyPromoFromUrl = () => {
       wrap.style.display = "block";
     }
   }
+
+  updateOrderSummary();
 };
 
 const applyCateringPackageFromUrl = () => {
@@ -182,52 +206,60 @@ const applyCateringPackageFromUrl = () => {
   }
 };
 
+const getBookingUrl = (token) => {
+  const base = window.daSite && daSite.homeUrl ? String(daSite.homeUrl) : window.location.origin;
+  const url = `${base.replace(/\\/$/, "")}/booking/?quick_order=1`;
+  return token ? `${url}&cart_token=${encodeURIComponent(token)}` : url;
+};
+
 const initMenuActions = () => {
-  const cards = document.querySelectorAll("[data-product]");
-  if (!cards.length) return;
+  const grid = document.querySelector("#menu .product-grid");
+  if (!grid) return;
 
-  cards.forEach((card) => {
-    let qty = 1;
-    const minus = card.querySelector("[data-qty-minus]");
-    const plus = card.querySelector("[data-qty-plus]");
-    const addBtn = card.querySelector("[data-add-item]");
+  const getQty = (card) => {
+    const display = card.querySelector("[data-qty-display]");
+    if (!display) return 1;
+    const value = Number(display.textContent || "1");
+    return Number.isNaN(value) ? 1 : value;
+  };
+
+  const addItemFromCard = (card) => {
+    if (!card) return;
+    const name = card.getAttribute("data-name");
+    const price = card.getAttribute("data-price") || "0";
     const notesInput = card.querySelector("[data-notes]");
+    const notes = notesInput ? notesInput.value.trim() : "";
+    const qty = getQty(card);
+    if (!name) return;
 
-    updateQtyDisplay(card, qty);
-
-    if (minus) {
-      minus.addEventListener("click", () => {
-        qty = Math.max(1, qty - 1);
-        updateQtyDisplay(card, qty);
-      });
+    const items = getStoredOrder();
+    const existing = items.find((item) => item.name === name && item.notes === notes);
+    if (existing) {
+      existing.qty += qty;
+    } else {
+      items.push({ name, price, qty, notes });
     }
+    saveOrder(items);
+    updateOrderSummary();
+    saveCartToServer(items).then((token) => {
+      window.location.href = getBookingUrl(token);
+    });
+  };
 
-    if (plus) {
-      plus.addEventListener("click", () => {
-        qty += 1;
-        updateQtyDisplay(card, qty);
-      });
-    }
-
+  grid.addEventListener("click", (event) => {
+    const addBtn = event.target.closest("[data-add-item]");
     if (addBtn) {
-      addBtn.addEventListener("click", () => {
-        const name = card.getAttribute("data-name");
-        const price = card.getAttribute("data-price") || "0";
-        const notes = notesInput ? notesInput.value.trim() : "";
-
-        const items = getStoredOrder();
-        const existing = items.find((item) => item.name === name && item.notes === notes);
-        if (existing) {
-          existing.qty += qty;
-        } else {
-          items.push({ name, price, qty, notes });
-        }
-        saveOrder(items);
-        addBtn.textContent = "Added";
-        setTimeout(() => (addBtn.textContent = "Add to Order"), 1200);
-        window.location.href = `${window.location.origin}/booking/?quick_order=1`;
-      });
+      const card = addBtn.closest("[data-product]");
+      addItemFromCard(card);
+      addBtn.textContent = "Added";
+      setTimeout(() => (addBtn.textContent = "Add to Order"), 1200);
+      return;
     }
+
+    const card = event.target.closest("[data-product]");
+    if (!card) return;
+    if (event.target.closest("button, input, textarea, select, a")) return;
+    addItemFromCard(card);
   });
 };
 
@@ -300,13 +332,50 @@ const initCarousel = () => {
       return card.getBoundingClientRect().width + gap;
     };
 
+    const maxScroll = () => Math.max(0, track.scrollWidth - track.clientWidth);
+    const wrapScroll = () => {
+      const max = maxScroll();
+      if (max === 0) return;
+      if (track.scrollLeft <= 0) {
+        track.scrollLeft = max - 1;
+      } else if (track.scrollLeft >= max) {
+        track.scrollLeft = 1;
+      }
+    };
+
     prevBtn.addEventListener("click", () => {
       track.scrollBy({ left: -getScrollAmount(), behavior: "smooth" });
+      window.setTimeout(wrapScroll, 120);
     });
 
     nextBtn.addEventListener("click", () => {
       track.scrollBy({ left: getScrollAmount(), behavior: "smooth" });
+      window.setTimeout(wrapScroll, 120);
     });
+
+    let holdTimer = null;
+    const startHold = (dir) => {
+      if (holdTimer) return;
+      holdTimer = window.setInterval(() => {
+        track.scrollLeft += dir * 6;
+        wrapScroll();
+      }, 16);
+    };
+    const stopHold = () => {
+      if (holdTimer) {
+        window.clearInterval(holdTimer);
+        holdTimer = null;
+      }
+    };
+
+    prevBtn.addEventListener("mousedown", () => startHold(-1));
+    nextBtn.addEventListener("mousedown", () => startHold(1));
+    document.addEventListener("mouseup", stopHold);
+    prevBtn.addEventListener("mouseleave", stopHold);
+    nextBtn.addEventListener("mouseleave", stopHold);
+    prevBtn.addEventListener("touchstart", () => startHold(-1), { passive: true });
+    nextBtn.addEventListener("touchstart", () => startHold(1), { passive: true });
+    document.addEventListener("touchend", stopHold);
   });
 };
 
@@ -526,33 +595,27 @@ const initReviewsAutoScroll = () => {
   const track = document.querySelector("#reviews .testimonial-grid");
   if (!track) return;
 
-  let paused = false;
-  const speed = 0.3;
+  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    return;
+  }
 
-  const step = () => {
-    if (!paused) {
-      track.scrollLeft += speed;
-      if (track.scrollLeft >= track.scrollWidth - track.clientWidth - 1) {
-        track.scrollLeft = 0;
-      }
-    }
-    window.requestAnimationFrame(step);
-  };
+  if (track.dataset.marqueeReady === "true") return;
 
-  const pause = () => {
-    paused = true;
-  };
-  const resume = () => {
-    paused = false;
-  };
+  const cards = Array.from(track.children);
+  if (cards.length < 2) return;
 
-  track.addEventListener("pointerdown", pause);
-  track.addEventListener("pointerup", resume);
-  track.addEventListener("pointerleave", resume);
-  track.addEventListener("touchstart", pause, { passive: true });
-  track.addEventListener("touchend", resume, { passive: true });
+  cards.forEach((card) => {
+    track.appendChild(card.cloneNode(true));
+  });
 
-  step();
+  track.dataset.marqueeReady = "true";
+
+  window.requestAnimationFrame(() => {
+    const distance = track.scrollWidth / 2;
+    if (distance <= track.clientWidth + 1) return;
+    track.style.setProperty("--marquee-distance", `${distance}px`);
+    track.classList.add("is-marquee");
+  });
 };
 
 const initBookingTabs = () => {
@@ -746,7 +809,9 @@ const initSmoothiesButtons = () => {
       updateOrderSummary();
       button.textContent = "Added";
       setTimeout(() => (button.textContent = "Add Drinks to My Order"), 1200);
-      window.location.href = `${window.location.origin}/booking/?quick_order=1`;
+      saveCartToServer(items).then((token) => {
+        window.location.href = getBookingUrl(token);
+      });
     });
   });
 };
@@ -811,19 +876,36 @@ const initWhatsappWidget = () => {
   const expandBtn = document.querySelector("[data-whatsapp-expand]");
   if (!widget || !closeBtn) return;
 
-  closeBtn.addEventListener("click", () => {
+  const close = () => {
     widget.style.display = "none";
-  });
+  };
+
+  const minimize = () => {
+    widget.classList.add("is-minimized");
+  };
+
+  const expand = () => {
+    widget.classList.remove("is-minimized");
+  };
+
+  closeBtn.addEventListener("click", close);
 
   if (minimizeBtn && expandBtn) {
-    minimizeBtn.addEventListener("click", () => {
-      widget.classList.add("is-minimized");
-    });
-
-    expandBtn.addEventListener("click", () => {
-      widget.classList.remove("is-minimized");
-    });
+    minimizeBtn.addEventListener("click", minimize);
+    expandBtn.addEventListener("click", expand);
   }
+
+  widget.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!target) return;
+    if (target.closest("[data-whatsapp-close]")) {
+      close();
+    } else if (target.closest("[data-whatsapp-minimize]")) {
+      minimize();
+    } else if (target.closest("[data-whatsapp-expand]")) {
+      expand();
+    }
+  });
 };
 
 const submitQuickOrder = async (checkoutForm) => {
@@ -1002,6 +1084,15 @@ const initBookingModern = () => {
       const targetTab = btn.dataset.tab;
       activateTab(targetTab);
     });
+  });
+
+  // Fallback delegation in case direct listeners are blocked.
+  root.addEventListener("click", (event) => {
+    const button = event.target.closest(".tab-btn");
+    if (!button) return;
+    const targetTab = button.dataset.tab;
+    if (!targetTab) return;
+    activateTab(targetTab);
   });
 
   const params = new URLSearchParams(window.location.search);
@@ -1358,14 +1449,10 @@ const initPromoModal = () => {
 
   const promoId = modal.getAttribute("data-promo-id") || "promo";
   const key = `daPromoDismissed_${promoId}`;
-  const dismissedAt = Number(localStorage.getItem(key) || 0);
-  const dayMs = 24 * 60 * 60 * 1000;
-  if (dismissedAt && Date.now() - dismissedAt < dayMs) return;
 
   const close = () => {
     modal.classList.remove("is-visible");
     document.body.classList.remove("promo-modal-open");
-    localStorage.setItem(key, String(Date.now()));
   };
 
   modal.querySelectorAll("[data-promo-close]").forEach((btn) => {
@@ -1378,7 +1465,107 @@ const initPromoModal = () => {
   });
 };
 
+const initContactForm = () => {
+  const form = document.getElementById("contactForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    let messageEl = form.querySelector(".form-message");
+    if (!messageEl) {
+      messageEl = document.createElement("div");
+      messageEl.className = "form-message form-message--success";
+      messageEl.setAttribute("role", "status");
+      messageEl.setAttribute("aria-live", "polite");
+      form.appendChild(messageEl);
+    }
+
+    const requiredInputs = form.querySelectorAll("[required]");
+    let hasError = false;
+    requiredInputs.forEach((input) => {
+      const value = String(input.value || "").trim();
+      if (!value) {
+        hasError = true;
+        input.classList.add("field-error-input");
+      } else {
+        input.classList.remove("field-error-input");
+      }
+    });
+
+    if (hasError) {
+      messageEl.className = "form-message form-message--error";
+      messageEl.textContent = "Please complete all required fields.";
+      return;
+    }
+
+    if (!window.daContact) {
+      messageEl.className = "form-message form-message--error";
+      messageEl.textContent = "Contact service is unavailable. Please try again.";
+      return;
+    }
+
+    messageEl.className = "form-message form-message--success";
+    messageEl.textContent = "Sending...";
+
+    const formData = new FormData(form);
+    formData.append("action", "da_contact_submit");
+    formData.append("nonce", daContact.nonce);
+
+    try {
+      const response = await fetch(daContact.ajaxUrl, {
+        method: "POST",
+        credentials: "same-origin",
+        body: formData,
+      });
+      const data = await response.json();
+      if (data && data.success) {
+        messageEl.className = "form-message form-message--success";
+        messageEl.textContent = data.data && data.data.message ? data.data.message : "Thanks! We'll be in touch.";
+        form.reset();
+      } else {
+        messageEl.className = "form-message form-message--error";
+        messageEl.textContent = data && data.data && data.data.message ? data.data.message : "Sorry, something went wrong.";
+      }
+    } catch (error) {
+      messageEl.className = "form-message form-message--error";
+      messageEl.textContent = "Network error. Please try again.";
+    }
+  });
+};
+
+const syncCartFromServer = async () => {
+  if (!window.daCart || !daCart.ajaxUrl) return;
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get("cart_token") || "";
+  if (!token && !document.cookie.includes("da_cart_token=")) return;
+
+  try {
+    const payload = new FormData();
+    payload.append("action", "da_cart_fetch");
+    payload.append("nonce", daCart.nonce);
+    if (token) {
+      payload.append("token", token);
+    }
+    const response = await fetch(daCart.ajaxUrl, {
+      method: "POST",
+      credentials: "same-origin",
+      body: payload,
+    });
+    const data = await response.json();
+    if (data && data.success && data.data && Array.isArray(data.data.items)) {
+      saveOrder(data.data.items);
+      updateOrderSummary();
+    }
+  } catch (e) {
+    // ignore
+  }
+};
+
 document.addEventListener("DOMContentLoaded", () => {
+  if (!document.querySelector("[data-promo-modal]")) {
+    document.body.classList.remove("promo-modal-open");
+  }
   document.addEventListener("submit", (event) => {
     const form = event.target;
     if (form && form.id === "checkoutForm") {
@@ -1410,6 +1597,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initBookingModern();
   initNewsletterForm();
   initPromoModal();
+  initContactForm();
+  if (document.querySelector(".booking-modern") || document.body.classList.contains("booking-page")) {
+    syncCartFromServer();
+  }
 
   const clearBtn = document.querySelector("[data-clear-order]");
   if (clearBtn) {

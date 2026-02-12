@@ -608,4 +608,196 @@
       </div>
     </div>
   </section>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var root = document.querySelector(".booking-modern");
+      if (!root) return;
+      var buttons = root.querySelectorAll(".tab-btn");
+      var panels = root.querySelectorAll(".tab-panel");
+      if (!buttons.length || !panels.length) return;
+      var activate = function (target) {
+        buttons.forEach(function (btn) {
+          btn.classList.toggle("active", btn.getAttribute("data-tab") === target);
+        });
+        panels.forEach(function (panel) {
+          panel.classList.toggle("active", panel.getAttribute("data-panel") === target);
+        });
+      };
+      root.addEventListener("click", function (event) {
+        var btn = event.target.closest(".tab-btn");
+        if (!btn) return;
+        var target = btn.getAttribute("data-tab");
+        if (!target) return;
+        activate(target);
+      });
+      var params = new URLSearchParams(window.location.search);
+      if (params.get("quick_order") === "1" || params.get("promo_price")) {
+        activate("quick-order");
+      }
+      var cartToken = params.get("cart_token") || "";
+      if (cartToken && window.daCart && daCart.ajaxUrl) {
+        var payload = new FormData();
+        payload.append("action", "da_cart_fetch");
+        payload.append("nonce", daCart.nonce);
+        payload.append("token", cartToken);
+        fetch(daCart.ajaxUrl, { method: "POST", credentials: "same-origin", body: payload })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (!data || !data.success || !data.data || !Array.isArray(data.data.items)) return;
+            var items = data.data.items;
+            localStorage.setItem("daCateringOrder", JSON.stringify(items));
+            var summary = document.querySelector("[data-order-summary]");
+            if (!summary) return;
+            summary.innerHTML = "";
+            if (!items.length) {
+              summary.innerHTML = '<p class="booking-empty">Your order is empty. <a href="<?php echo esc_url(home_url('/')); ?>#menu" class="booking-link">Browse our menu</a> to add items.</p>';
+              return;
+            }
+            var subtotal = 0;
+            items.forEach(function (item, index) {
+              var price = Number(item.price) || 0;
+              var qty = Number(item.qty) || 1;
+              subtotal += price * qty;
+              var row = document.createElement("div");
+              row.className = "order-item";
+              row.innerHTML =
+                '<div class="order-item-info">' +
+                  '<div class="order-item-title">' + item.name + '</div>' +
+                  (item.notes ? '<div class="order-item-notes">Notes: ' + item.notes + '</div>' : '') +
+                '</div>' +
+                '<div class="order-item-actions">' +
+                  '<div class="order-qty">' +
+                    '<button type="button" class="order-qty-btn" data-qty-action="minus" data-idx="' + index + '">-</button>' +
+                    '<span class="order-qty-value">' + qty + '</span>' +
+                    '<button type="button" class="order-qty-btn" data-qty-action="plus" data-idx="' + index + '">+</button>' +
+                  '</div>' +
+                  '<div class="order-item-price">$' + (price * qty).toFixed(2) + '</div>' +
+                  '<button type="button" class="order-remove" data-qty-action="remove" data-idx="' + index + '">Remove</button>' +
+                '</div>';
+              summary.appendChild(row);
+            });
+            var total = document.createElement("div");
+            total.className = "order-item order-total";
+            total.innerHTML = "<span>Estimated subtotal</span><span>$" + subtotal.toFixed(2) + "</span>";
+            summary.appendChild(total);
+          })
+          .catch(function () {});
+      }
+      var promoPriceRaw = params.get("promo_price");
+      if (promoPriceRaw) {
+        var promoPrice = Number.parseFloat(promoPriceRaw);
+        if (!Number.isNaN(promoPrice)) {
+          var promoName = params.get("promo_name") ? decodeURIComponent(params.get("promo_name")) : "Promo Package";
+          var promoId = params.get("promo") || "";
+          var orderKey = "daCateringOrder";
+          var items = [];
+          try {
+            items = JSON.parse(localStorage.getItem(orderKey)) || [];
+          } catch (e) {
+            items = [];
+          }
+          var existing = items.find(function (item) { return item.name === promoName && !item.notes; });
+          if (existing) {
+            existing.qty = 1;
+            existing.price = promoPrice;
+          } else {
+            items.unshift({ name: promoName, price: promoPrice, qty: 1, notes: "" });
+          }
+          localStorage.setItem(orderKey, JSON.stringify(items));
+          if (promoId) {
+            localStorage.setItem("daPromoMeta", JSON.stringify({ id: promoId, name: promoName, price: promoPrice }));
+          }
+
+          var priceField = document.querySelector("[data-promo-price]");
+          var wrap = document.querySelector("[data-promo-price-wrap]");
+          if (priceField) {
+            priceField.value = promoName + " - $" + promoPrice.toFixed(2);
+          }
+          if (wrap) {
+            wrap.style.display = "block";
+          }
+
+          var summary = document.querySelector("[data-order-summary]");
+          if (summary) {
+            summary.innerHTML = "";
+            var row = document.createElement("div");
+            row.className = "order-item";
+            row.innerHTML = "<span>" + promoName + " x1</span><span>$" + promoPrice.toFixed(2) + "</span>";
+            summary.appendChild(row);
+            var total = document.createElement("div");
+            total.className = "order-item order-total";
+            total.innerHTML = "<span>Estimated subtotal</span><span>$" + promoPrice.toFixed(2) + "</span>";
+            summary.appendChild(total);
+          }
+        }
+      }
+
+      var summaryContainer = document.querySelector("[data-order-summary]");
+      if (summaryContainer) {
+        summaryContainer.addEventListener("click", function (event) {
+          var btn = event.target.closest("[data-qty-action]");
+          if (!btn) return;
+          var action = btn.getAttribute("data-qty-action");
+          var index = parseInt(btn.getAttribute("data-idx") || "-1", 10);
+          if (Number.isNaN(index) || index < 0) return;
+          var items = [];
+          try { items = JSON.parse(localStorage.getItem("daCateringOrder")) || []; } catch (e) { items = []; }
+          var item = items[index];
+          if (!item) return;
+          if (action === "plus") {
+            item.qty = (Number(item.qty) || 1) + 1;
+          } else if (action === "minus") {
+            item.qty = Math.max(1, (Number(item.qty) || 1) - 1);
+          } else if (action === "remove") {
+            items.splice(index, 1);
+          }
+          localStorage.setItem("daCateringOrder", JSON.stringify(items));
+
+          if (window.daCart && daCart.ajaxUrl) {
+            var payload = new FormData();
+            payload.append("action", "da_cart_save");
+            payload.append("nonce", daCart.nonce);
+            payload.append("items", JSON.stringify(items || []));
+            fetch(daCart.ajaxUrl, { method: "POST", credentials: "same-origin", body: payload })
+              .then(function (res) { return res.json(); })
+              .catch(function () {});
+          }
+
+          // Re-render summary
+          summaryContainer.innerHTML = "";
+          if (!items.length) {
+            summaryContainer.innerHTML = '<p class="booking-empty">Your order is empty. <a href="<?php echo esc_url(home_url('/')); ?>#menu" class="booking-link">Browse our menu</a> to add items.</p>';
+            return;
+          }
+          var subtotal = 0;
+          items.forEach(function (it, idx) {
+            var price = Number(it.price) || 0;
+            var qty = Number(it.qty) || 1;
+            subtotal += price * qty;
+            var row = document.createElement("div");
+            row.className = "order-item";
+            row.innerHTML =
+              '<div class="order-item-info">' +
+                '<div class="order-item-title">' + it.name + '</div>' +
+                (it.notes ? '<div class="order-item-notes">Notes: ' + it.notes + '</div>' : '') +
+              '</div>' +
+              '<div class="order-item-actions">' +
+                '<div class="order-qty">' +
+                  '<button type="button" class="order-qty-btn" data-qty-action="minus" data-idx="' + idx + '">-</button>' +
+                  '<span class="order-qty-value">' + qty + '</span>' +
+                  '<button type="button" class="order-qty-btn" data-qty-action="plus" data-idx="' + idx + '">+</button>' +
+                '</div>' +
+                '<div class="order-item-price">$' + (price * qty).toFixed(2) + '</div>' +
+                '<button type="button" class="order-remove" data-qty-action="remove" data-idx="' + idx + '">Remove</button>' +
+              '</div>';
+            summaryContainer.appendChild(row);
+          });
+          var total = document.createElement("div");
+          total.className = "order-item order-total";
+          total.innerHTML = "<span>Estimated subtotal</span><span>$" + subtotal.toFixed(2) + "</span>";
+          summaryContainer.appendChild(total);
+        });
+      }
+    });
+  </script>
 </div>

@@ -107,10 +107,6 @@
   <div class="container">
     <h2 class="section-title">Menu / Shop</h2>
     <p class="section-subtitle">What we have on our menu today.</p>
-    <div class="hero-actions" style="margin-bottom: 18px;">
-      <a class="btn btn-primary" href="<?php echo esc_url(home_url('/shop')); ?>">Go to Shop &amp; Checkout</a>
-      <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/cart')); ?>">View Cart</a>
-    </div>
     <div class="menu-filters">
       <button class="filter-btn active" data-filter="all">All</button>
       <button class="filter-btn" data-filter="rice">Rice Dishes</button>
@@ -124,8 +120,12 @@
       <button class="filter-btn" data-filter="tray">Party Trays</button>
     </div>
 
+    <div class="hero-actions" style="margin-bottom: 18px;">
+      <a class="btn btn-primary" href="<?php echo esc_url(home_url('/shop')); ?>">Go to Shop &amp; Checkout</a>
+      <a class="btn btn-secondary" href="<?php echo esc_url(home_url('/cart')); ?>">View Cart</a>
+    </div>
     <div class="menu-carousel" data-carousel>
-      <button class="carousel-btn prev" type="button" aria-label="Scroll menu left" data-carousel-prev>&lsaquo;</button>
+      <button class="carousel-btn prev menu-carousel__side" type="button" aria-label="Scroll menu left" data-carousel-prev>&lsaquo;</button>
       <div class="product-grid" data-carousel-track data-drag-track>
       <article class="product-card" data-product data-name="Jollof Rice" data-price="18" data-category="rice">
         <img decoding="async" src="https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&w=1200&q=80" alt="Authentic Nigerian Jollof rice with fried plantain and chicken - DA Catering Calgary" loading="lazy">
@@ -427,9 +427,13 @@
         </div>
       </article>
       </div>
-      <button class="carousel-btn next" type="button" aria-label="Scroll menu right" data-carousel-next>&rsaquo;</button>
+      <button class="carousel-btn next menu-carousel__side" type="button" aria-label="Scroll menu right" data-carousel-next>&rsaquo;</button>
     </div>
-    <div class="menu-pagination" data-menu-dots></div>
+    <div class="menu-pagination" data-menu-dots>
+      <?php for ($i = 0; $i < 17; $i++) : ?>
+        <button class="menu-dot" type="button" aria-label="Go to menu item <?php echo $i + 1; ?>" data-menu-dot="<?php echo $i; ?>"></button>
+      <?php endfor; ?>
+    </div>
   </div>
 </section>
 
@@ -678,7 +682,11 @@
           </div>
         </article>
       </div>
-      <div class="smoothies-dots" data-smoothies-dots></div>
+      <div class="smoothies-dots" data-smoothies-dots>
+        <?php for ($i = 0; $i < 11; $i++) : ?>
+          <button class="smoothies-dot" type="button" aria-label="Show smoothie <?php echo $i + 1; ?>" data-smoothie-dot="<?php echo $i; ?>"></button>
+        <?php endfor; ?>
+      </div>
     </div>
   </div>
   <div class="event-types">
@@ -861,7 +869,7 @@
         <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">x</a>
       </div>
     </div>
-    <form class="contact-card" action="mailto:order@dacatering.ca" method="post" enctype="text/plain">
+    <form class="contact-card" id="contactForm" action="" method="post">
       <label>
         Full Name
         <input type="text" name="full_name" placeholder="John Doe" required>
@@ -942,5 +950,261 @@
     <a class="btn btn-primary" href="https://wa.me/14034782475?text=Hi%20DA%20Catering%20YYC,%20I%20need%20help%20with%20my%20order.%20My%20event%20date%20is%20____%20and%20guest%20count%20is%20____." target="_blank" rel="noopener">Message on WhatsApp</a>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    var orderKey = "daCateringOrder";
+    var saveCart = function (items, cb) {
+      if (!window.daCart || !daCart.ajaxUrl) {
+        cb(null);
+        return;
+      }
+      var payload = new FormData();
+      payload.append("action", "da_cart_save");
+      payload.append("nonce", daCart.nonce);
+      payload.append("items", JSON.stringify(items || []));
+      fetch(daCart.ajaxUrl, { method: "POST", credentials: "same-origin", body: payload })
+        .then(function (res) { return res.json(); })
+        .then(function (data) {
+          if (data && data.success && data.data && data.data.token) {
+            cb(data.data.token);
+          } else {
+            cb(null);
+          }
+        })
+        .catch(function () { cb(null); });
+    };
+    var addItem = function (card) {
+      if (!card) return;
+      var name = card.getAttribute("data-name");
+      var price = card.getAttribute("data-price") || "0";
+      if (!name) return;
+      var qtyDisplay = card.querySelector("[data-qty-display]");
+      var qty = qtyDisplay ? parseInt(qtyDisplay.textContent || "1", 10) : 1;
+      if (!qty || Number.isNaN(qty)) qty = 1;
+      var notesInput = card.querySelector("[data-notes]");
+      var notes = notesInput ? notesInput.value.trim() : "";
+      var items = [];
+      try { items = JSON.parse(localStorage.getItem(orderKey)) || []; } catch (e) { items = []; }
+      var existing = items.find(function (item) { return item.name === name && item.notes === notes; });
+      if (existing) {
+        existing.qty += qty;
+      } else {
+        items.push({ name: name, price: price, qty: qty, notes: notes });
+      }
+      localStorage.setItem(orderKey, JSON.stringify(items));
+      saveCart(items, function (token) {
+        var url = "<?php echo esc_url(home_url('/booking/?quick_order=1')); ?>";
+        if (token) {
+          url += "&cart_token=" + encodeURIComponent(token);
+        }
+        window.location.href = url;
+      });
+    };
+
+    var grid = document.querySelector("#menu .product-grid");
+    if (grid) {
+      grid.addEventListener("click", function (event) {
+        var addBtn = event.target.closest("[data-add-item]");
+        if (addBtn) {
+          var card = addBtn.closest("[data-product]");
+          addItem(card);
+          return;
+        }
+        var card = event.target.closest("[data-product]");
+        if (!card) return;
+        if (event.target.closest("button, input, textarea, select, a")) return;
+        addItem(card);
+      });
+    }
+
+    var smoothieButtons = document.querySelectorAll(".smoothies-sticky .btn.btn-primary");
+    smoothieButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        var card = button.closest("[data-smoothie-card]");
+        if (!card) return;
+        var name = card.getAttribute("data-drink-name") || (card.querySelector("h3") && card.querySelector("h3").textContent.trim());
+        var priceRaw = card.getAttribute("data-drink-price") || "0";
+        var price = Number.parseFloat(priceRaw) || 0;
+        if (!name) return;
+        var items = [];
+        try { items = JSON.parse(localStorage.getItem(orderKey)) || []; } catch (e) { items = []; }
+        var existing = items.find(function (item) { return item.name === name && !item.notes; });
+        if (existing) {
+          existing.qty += 1;
+        } else {
+          items.push({ name: name, price: price, qty: 1, notes: "" });
+        }
+        localStorage.setItem(orderKey, JSON.stringify(items));
+        saveCart(items, function (token) {
+          var url = "<?php echo esc_url(home_url('/booking/?quick_order=1')); ?>";
+          if (token) {
+            url += "&cart_token=" + encodeURIComponent(token);
+          }
+          window.location.href = url;
+        });
+      });
+    });
+
+    document.querySelectorAll("[data-carousel]").forEach(function (carousel) {
+      var track = carousel.querySelector("[data-carousel-track]");
+      var prevBtn = carousel.querySelector("[data-carousel-prev]");
+      var nextBtn = carousel.querySelector("[data-carousel-next]");
+      if (!track || !prevBtn || !nextBtn) return;
+      var getScroll = function () {
+        var card = track.children[0];
+        if (!card) return 320;
+        var gap = parseInt(getComputedStyle(track).gap || "24", 10);
+        return card.getBoundingClientRect().width + gap;
+      };
+      prevBtn.addEventListener("click", function () {
+        track.scrollBy({ left: -getScroll(), behavior: "smooth" });
+      });
+      nextBtn.addEventListener("click", function () {
+        track.scrollBy({ left: getScroll(), behavior: "smooth" });
+      });
+    });
+
+    var menuDots = document.querySelector("[data-menu-dots]");
+    var menuTrack = document.querySelector("#menu .product-grid");
+    if (menuDots && menuTrack && menuDots.children.length === 0) {
+      var cards = Array.prototype.slice.call(menuTrack.querySelectorAll(".product-card"));
+      menuDots.innerHTML = "";
+      cards.forEach(function (card, index) {
+        if (card.getAttribute("data-clone") === "true") return;
+        var dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "menu-dot";
+        dot.setAttribute("aria-label", "Go to menu item " + (index + 1));
+        dot.addEventListener("click", function () {
+          card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        });
+        menuDots.appendChild(dot);
+      });
+    }
+
+    var smoothieDots = document.querySelector("[data-smoothies-dots]");
+    var smoothieCards = Array.prototype.slice.call(document.querySelectorAll("[data-smoothie-card]"));
+    if (smoothieDots && smoothieCards.length && smoothieDots.children.length === 0) {
+      var currentIndex = 0;
+      var updateSmoothie = function () {
+        smoothieCards.forEach(function (card, idx) {
+          card.classList.toggle("is-active", idx === currentIndex);
+        });
+        smoothieDots.querySelectorAll(".smoothies-dot").forEach(function (dot, idx) {
+          dot.classList.toggle("active", idx === currentIndex);
+        });
+      };
+      smoothieDots.innerHTML = "";
+      smoothieCards.forEach(function (card, idx) {
+        var dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "smoothies-dot";
+        dot.setAttribute("aria-label", "Show smoothie " + (idx + 1));
+        dot.addEventListener("click", function (event) {
+          event.stopPropagation();
+          currentIndex = idx;
+          updateSmoothie();
+        });
+        smoothieDots.appendChild(dot);
+      });
+      updateSmoothie();
+    }
+
+    if (menuDots && menuTrack) {
+      var menuCards = Array.prototype.slice.call(menuTrack.querySelectorAll(".product-card"));
+      var updateActiveCard = function () {
+        if (!menuCards.length) return;
+        var trackRect = menuTrack.getBoundingClientRect();
+        var centerX = trackRect.left + trackRect.width / 2;
+        var closest = null;
+        var closestDist = Infinity;
+        menuCards.forEach(function (card) {
+          if (card.getAttribute("data-clone") === "true") return;
+          var rect = card.getBoundingClientRect();
+          var cardCenter = rect.left + rect.width / 2;
+          var dist = Math.abs(centerX - cardCenter);
+          if (dist < closestDist) {
+            closestDist = dist;
+            closest = card;
+          }
+        });
+        menuCards.forEach(function (card) { card.classList.remove("is-active"); });
+        if (closest) {
+          closest.classList.add("is-active");
+        }
+      };
+      updateActiveCard();
+      setTimeout(updateActiveCard, 400);
+      menuTrack.addEventListener("scroll", function () {
+        window.requestAnimationFrame(updateActiveCard);
+      }, { passive: true });
+      menuDots.querySelectorAll("[data-menu-dot]").forEach(function (dot) {
+        dot.addEventListener("click", function () {
+          var idx = parseInt(dot.getAttribute("data-menu-dot") || "0", 10);
+          var card = menuCards[idx];
+          if (card) {
+            card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+          }
+        });
+      });
+    }
+
+    if (smoothieDots && smoothieCards.length) {
+      smoothieDots.querySelectorAll("[data-smoothie-dot]").forEach(function (dot) {
+        dot.addEventListener("click", function (event) {
+          event.stopPropagation();
+          var idx = parseInt(dot.getAttribute("data-smoothie-dot") || "0", 10);
+          smoothieCards.forEach(function (card, cidx) {
+            card.classList.toggle("is-active", cidx === idx);
+          });
+          smoothieDots.querySelectorAll(".smoothies-dot").forEach(function (d, didx) {
+            d.classList.toggle("active", didx === idx);
+          });
+        });
+      });
+    }
+  });
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const widget = document.querySelector("[data-whatsapp-widget]");
+    if (!widget) return;
+    const closeBtn = widget.querySelector("[data-whatsapp-close]");
+    const minimizeBtn = widget.querySelector("[data-whatsapp-minimize]");
+    const expandBtn = widget.querySelector("[data-whatsapp-expand]");
+
+    const close = () => {
+      widget.style.display = "none";
+    };
+    const minimize = () => {
+      widget.classList.add("is-minimized");
+    };
+    const expand = () => {
+      widget.classList.remove("is-minimized");
+    };
+
+    if (closeBtn) {
+      closeBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        close();
+      });
+    }
+    if (minimizeBtn) {
+      minimizeBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        minimize();
+      });
+    }
+    if (expandBtn) {
+      expandBtn.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        expand();
+      });
+    }
+  });
+</script>
 
 
