@@ -208,7 +208,7 @@ const applyCateringPackageFromUrl = () => {
 
 const getBookingUrl = (token) => {
   const base = window.daSite && daSite.homeUrl ? String(daSite.homeUrl) : window.location.origin;
-  const url = `${base.replace(/\\/$/, "")}/booking/?quick_order=1`;
+  const url = `${base.replace(/\/$/, "")}/booking/?quick_order=1`;
   return token ? `${url}&cart_token=${encodeURIComponent(token)}` : url;
 };
 
@@ -247,6 +247,24 @@ const initMenuActions = () => {
   };
 
   grid.addEventListener("click", (event) => {
+    const plusBtn = event.target.closest("[data-qty-plus]");
+    if (plusBtn) {
+      const card = plusBtn.closest("[data-product]");
+      if (!card) return;
+      const nextQty = getQty(card) + 1;
+      updateQtyDisplay(card, nextQty);
+      return;
+    }
+
+    const minusBtn = event.target.closest("[data-qty-minus]");
+    if (minusBtn) {
+      const card = minusBtn.closest("[data-product]");
+      if (!card) return;
+      const nextQty = Math.max(1, getQty(card) - 1);
+      updateQtyDisplay(card, nextQty);
+      return;
+    }
+
     const addBtn = event.target.closest("[data-add-item]");
     if (addBtn) {
       const card = addBtn.closest("[data-product]");
@@ -461,6 +479,12 @@ const initMenuCardFocus = () => {
   const dotsContainer = document.querySelector("[data-menu-dots]");
   let isLooping = false;
   let cloneCount = 0;
+  let trackInsetLeft = 0;
+
+  const updateTrackInset = () => {
+    const styles = getComputedStyle(menuTrack);
+    trackInsetLeft = parseFloat(styles.paddingLeft || "0") || 0;
+  };
 
   const buildLoopClones = () => {
     const visibleCards = getVisibleCards();
@@ -485,7 +509,7 @@ const initMenuCardFocus = () => {
       cards.unshift(clone);
     });
 
-    const offset = cardWidth * cloneCount;
+    const offset = (cardWidth * cloneCount) + trackInsetLeft;
     menuTrack.scrollLeft = offset;
   };
 
@@ -551,12 +575,14 @@ const initMenuCardFocus = () => {
           const totalOriginal = cardWidth * originalCards.length;
           const totalClones = cardWidth * cloneCount;
           const scrollLeft = menuTrack.scrollLeft;
+          const minLoopEdge = (totalClones + trackInsetLeft) - cardWidth;
+          const maxLoopEdge = totalClones + trackInsetLeft + totalOriginal;
 
-          if (scrollLeft <= totalClones - cardWidth) {
+          if (scrollLeft <= minLoopEdge) {
             isLooping = true;
             menuTrack.scrollLeft = scrollLeft + totalOriginal;
             isLooping = false;
-          } else if (scrollLeft >= totalClones + totalOriginal) {
+          } else if (scrollLeft >= maxLoopEdge) {
             isLooping = true;
             menuTrack.scrollLeft = scrollLeft - totalOriginal;
             isLooping = false;
@@ -570,7 +596,10 @@ const initMenuCardFocus = () => {
   };
 
   menuTrack.addEventListener("scroll", onScroll, { passive: true });
-  window.addEventListener("resize", updateActiveCard);
+  window.addEventListener("resize", () => {
+    updateTrackInset();
+    updateActiveCard();
+  });
 
   const filterButtons = document.querySelectorAll("#menu [data-filter]");
   filterButtons.forEach((btn) => {
@@ -586,36 +615,15 @@ const initMenuCardFocus = () => {
     });
   });
 
+  updateTrackInset();
   buildDots();
   buildLoopClones();
   updateActiveCard();
 };
 
 const initReviewsAutoScroll = () => {
-  const track = document.querySelector("#reviews .testimonial-grid");
-  if (!track) return;
-
-  if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-    return;
-  }
-
-  if (track.dataset.marqueeReady === "true") return;
-
-  const cards = Array.from(track.children);
-  if (cards.length < 2) return;
-
-  cards.forEach((card) => {
-    track.appendChild(card.cloneNode(true));
-  });
-
-  track.dataset.marqueeReady = "true";
-
-  window.requestAnimationFrame(() => {
-    const distance = track.scrollWidth / 2;
-    if (distance <= track.clientWidth + 1) return;
-    track.style.setProperty("--marquee-distance", `${distance}px`);
-    track.classList.add("is-marquee");
-  });
+  // Marquee disabled: keep testimonials static and fully visible.
+  return;
 };
 
 const initBookingTabs = () => {

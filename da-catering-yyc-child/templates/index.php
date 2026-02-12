@@ -863,11 +863,6 @@
           </div>
         </div>
       </div>
-      <div class="contact-social">
-        <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">f</a>
-        <a href="https://instagram.com/dacateringyyc" target="_blank" rel="noopener" aria-label="Instagram">ig</a>
-        <a href="https://x.com" target="_blank" rel="noopener" aria-label="X">x</a>
-      </div>
     </div>
     <form class="contact-card" id="contactForm" action="" method="post">
       <label>

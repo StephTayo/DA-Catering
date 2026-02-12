@@ -1510,7 +1510,14 @@ body {
 }
 
 #menu .menu-carousel {
+  --menu-card-width: clamp(280px, 70vw, 360px);
+  --menu-card-gap: 24px;
+  --menu-visible-width: calc((3 * var(--menu-card-width)) + (2 * var(--menu-card-gap)));
+  --menu-arrow-gutter: clamp(52px, 6vw, 76px);
   position: relative;
+  width: min(calc(var(--menu-visible-width) + (2 * var(--menu-arrow-gutter))), 100%);
+  margin: 0 auto;
+  padding-inline: var(--menu-arrow-gutter);
 }
 
 #menu .menu-carousel .carousel-btn {
@@ -1526,11 +1533,11 @@ body {
 }
 
 #menu .menu-carousel .carousel-btn.prev {
-  left: 16px;
+  left: 0;
 }
 
 #menu .menu-carousel .carousel-btn.next {
-  right: 16px;
+  right: 0;
 }
 
 @media (max-width: 900px) {
@@ -1643,21 +1650,26 @@ body {
 
 #reviews .testimonial-grid {
   display: flex;
+  flex-wrap: nowrap;
   gap: 18px;
   overflow-x: auto;
-  scroll-behavior: auto;
-  padding: 4px 0;
+  overflow-y: visible;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  padding: 4px 10px 10px;
+  cursor: grab;
 }
 
 #reviews {
-  overflow: hidden;
+  overflow: visible;
 }
 
 #reviews .testimonial-grid.is-marquee {
-  overflow: hidden;
-  width: max-content;
-  animation: reviewsMarquee 38s linear infinite;
-  will-change: transform;
+  overflow-x: auto;
+  width: auto;
+  animation: none;
+  will-change: auto;
+  transform: none;
 }
 
 #reviews .testimonial-grid.is-marquee:hover {
@@ -1678,8 +1690,10 @@ body {
   background: #fff;
   border-radius: 18px;
   padding: 22px;
-  flex: 0 0 280px;
-  min-width: 280px;
+  flex: 0 0 300px;
+  width: 300px;
+  min-width: 300px;
+  scroll-snap-align: start;
   box-shadow: none;
   border: 1px solid rgba(31, 61, 52, 0.08);
 }
@@ -2010,21 +2024,18 @@ body {
 
 /* Menu cards: 3-card viewport with center focus */
 #menu .product-grid {
-  --menu-card-width: clamp(280px, 70vw, 360px);
-  --menu-card-gap: 24px;
-  --menu-side-pad: 72px;
-  --menu-visible-width: calc((3 * var(--menu-card-width)) + (2 * var(--menu-card-gap)));
+  --menu-track-edge-pad: 12px;
   gap: var(--menu-card-gap);
-  padding: 26px 0 44px;
-  scroll-padding-inline: 0;
-  justify-content: center;
-  width: var(--menu-visible-width);
+  padding: 30px var(--menu-track-edge-pad) 48px;
+  scroll-padding-inline: var(--menu-track-edge-pad);
+  justify-content: flex-start;
+  width: min(calc(var(--menu-visible-width) + (2 * var(--menu-track-edge-pad))), 100%);
   max-width: 100%;
   margin: 0 auto;
 }
 
 @media (min-width: 1100px) {
-  #menu .product-grid {
+  #menu .menu-carousel {
     --menu-card-width: clamp(260px, 26vw, 320px);
   }
 }
@@ -2035,11 +2046,13 @@ body {
   min-width: var(--menu-card-width);
   max-width: var(--menu-card-width);
   margin: 0;
-  opacity: 1;
-  transform: none;
+  opacity: 0.74;
+  transform: translateY(12px) scale(0.93);
+  transform-origin: center top;
   scroll-snap-align: center;
-  transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: none;
+  transition: transform 0.4s ease, opacity 0.4s ease, box-shadow 0.4s ease, filter 0.4s ease;
+  filter: saturate(0.88);
+  box-shadow: 0 10px 24px rgba(24, 36, 31, 0.1);
 }
 
 #menu .product-card:not(:first-child) {
@@ -2047,31 +2060,37 @@ body {
 }
 
 #menu .product-card img {
-  height: 140px;
+  height: 128px;
+  transition: height 0.4s ease;
 }
 
 #menu .product-card.is-active img {
-  height: 170px;
+  height: 178px;
 }
 
 #menu .product-card:not(.is-active) .product-body {
-  padding-top: 8px;
+  padding-top: 12px;
 }
 
 #menu .product-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(8px) scale(0.95);
 }
 
 #menu .product-card.is-active {
-  transform: none;
+  transform: translateY(0) scale(1);
   opacity: 1;
+  filter: saturate(1);
   z-index: 3;
-  box-shadow: none;
+  box-shadow: 0 20px 44px rgba(24, 36, 31, 0.2);
 }
 
 #menu .product-card:not(.is-active) {
-  transform: none;
-  opacity: 1;
+  transform: translateY(12px) scale(0.93);
+  opacity: 0.74;
+}
+
+#menu .product-card.is-active:hover {
+  transform: translateY(-2px) scale(1.01);
 }
 
 #menu .product-card .btn {
@@ -2110,11 +2129,12 @@ body {
 }
 
 .smoothies-sticky {
+  --smoothies-bg-right-inset: clamp(36px, 5.2vw, 84px);
   display: block;
   background: transparent;
   background-image: url("assets/img/smoothies-family.jpeg");
-  background-size: 48% auto;
-  background-position: right center;
+  background-size: clamp(360px, 48%, 700px) auto;
+  background-position: calc(100% - var(--smoothies-bg-right-inset)) center;
   background-repeat: no-repeat;
   background-attachment: fixed;
 }
@@ -2126,6 +2146,20 @@ body {
   flex-direction: column;
   gap: 36px;
   max-width: 720px;
+}
+
+@media (max-width: 1200px) {
+  .smoothies-sticky {
+    --smoothies-bg-right-inset: clamp(40px, 6vw, 76px);
+    background-size: clamp(320px, 46vw, 520px) auto;
+    background-position: calc(100% - var(--smoothies-bg-right-inset)) center;
+    background-attachment: scroll;
+  }
+
+  .smoothies-content {
+    padding: 92px 44px 92px 52px;
+    max-width: 680px;
+  }
 }
 
 .smoothies-intro h2 {
@@ -2272,6 +2306,34 @@ body {
 
 
 @media (max-width: 900px) {
+  #menu .menu-carousel {
+    --menu-arrow-gutter: 12px;
+  }
+
+  #menu .product-card {
+    transform: none;
+    opacity: 1;
+    filter: none;
+    box-shadow: none;
+  }
+
+  #menu .product-card:hover,
+  #menu .product-card.is-active,
+  #menu .product-card.is-active:hover,
+  #menu .product-card:not(.is-active) {
+    transform: none;
+    opacity: 1;
+    box-shadow: none;
+  }
+
+  #menu .product-card img {
+    height: 146px;
+  }
+
+  #menu .product-card.is-active img {
+    height: 168px;
+  }
+
   #menu .product-card {
     min-width: var(--menu-card-width);
     max-width: var(--menu-card-width);
@@ -2283,15 +2345,42 @@ body {
   }
 
   .smoothies-sticky {
+    --smoothies-bg-right-inset: 72px;
     background-attachment: scroll;
-    background-size: 68% auto;
-    background-position: right center;
+    background-size: clamp(230px, 38vw, 320px) auto;
+    background-position: calc(100% - var(--smoothies-bg-right-inset)) top 190px;
+  }
+
+  .smoothies-content {
+    padding: 76px 28px 84px 28px;
+    max-width: 620px;
   }
 
 
 }
 
+@media (min-width: 641px) and (max-width: 900px) {
+  .smoothies-sticky {
+    --smoothies-bg-right-inset: 0px;
+    background-size: clamp(200px, 30vw, 280px) auto;
+    background-position: right -42px top 210px;
+  }
+
+  .smoothies-content {
+    padding: 76px 24px 84px 24px;
+  }
+}
+
 @media (max-width: 640px) {
+  #menu .menu-carousel {
+    --menu-arrow-gutter: 0px;
+    padding-inline: 0;
+  }
+
+  #menu .menu-carousel .carousel-btn {
+    display: none;
+  }
+
   #menu .product-grid {
     --menu-card-width: clamp(260px, 78vw, 320px);
   }
@@ -2435,6 +2524,12 @@ body {
 .booking-page .order-summary-box {
   background: #f8f5ee;
   border: 1px solid rgba(31, 61, 52, 0.15);
+}
+
+.booking-page .order-item-notes,
+.booking-modern .order-item-notes {
+  color: #b91c1c;
+  font-weight: 700;
 }
 
 .booking-page .bg-gradient-orb {
@@ -3475,7 +3570,7 @@ body {
 }
 
 #menu .product-card img {
-  height: 160px;
+  height: 128px;
 }
 
 .catering-card {
